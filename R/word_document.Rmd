@@ -1,0 +1,76 @@
+---
+title: "Fact Sheet Report"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, echo=FALSE}
+data(salaries)
+```
+
+**Title**
+
+```{r, echo=FALSE}
+unique(index$project_title)
+```
+
+**Project ID**
+
+```{r, echo=FALSE}
+unique(index$project_id)
+```
+
+**Description**
+
+```{r, echo=FALSE}
+unique(index$description)
+```
+
+**Deliverables**
+
+```{r, echo=FALSE}
+unique(index$deliverables)
+```
+
+**Objectives**
+
+```{r, echo=FALSE}
+if (unique(index$objectives) == 0) {
+  print("There are no identified objectives for this project")
+} else 
+unique(index$objectives)
+```
+
+**Status**
+```{r, echo=FALSE}
+unique(index$status)
+```
+
+
+
+## Allocation Funding
+
+
+```{r, echo=FALSE, fig.cap="Figure 2: Pie chart representing allocation of expenses for project over different years."}
+plotSPA(index, id=id, which="omAllocationGeneral")
+```
+
+## Station analysis
+# Cost per station per funding type (Figure 5)
+
+This all is hard coded in for now.
+
+```{r, echo=FALSE, fig.caption="Figure 7: Line graph showing number of stations under different funding scenarios"}
+plotSPA(om=om, salary=sal, which='predict', id=1093,funding= rep("NCP (A-base)",4),fundingChange=c(-25, -50, -75, -100))
+```
+
+
+
+
+
+
+
+
+
+

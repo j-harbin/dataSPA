@@ -1,0 +1,438 @@
+#' Plot an argoFloats Object
+#'
+#' This function plots specific graphs (determined by the
+#' `which` argument) using the data frames returned by
+#' [getData()].
+#'
+#' The various plot types are as follows:
+#'
+#' * For `which="omBar"`, a bar graph representing amount of money ($)
+#  invested in O&M per funding type for project years is plotted. Graph color
+#' coded by funding type.
+#'
+#' * For `which="omPie"`, a pie chart representing amount of money ($)
+#  invested in O&M per funding type for project years is plotted. Graph color
+#' coded by funding type
+#'
+#' * For `which="omAllocation"` a bar graph representing amount of money ($)
+#' invested per O&M category for project years is plotted
+#'
+#' * For `which=omAllocationGeneral` a pie chat representing proportion of
+#' funding per category type is plotted for year each of the specified project
+#'
+#' * For `which="salaryBar"` a bar graph representing amount of salary money ($)
+# invested per funding type for project years. Salaries are calculated
+#' using the median values of a specific job classification. Graph color
+#' coded by funding type indicated by the legend.
+#'
+#' * For `which="salaryAllocation"` a bar graph representing amount of salary money ($)
+# invested per job classification for project years. Salaries are calculated
+#' using the median values of a specific job classification.
+#'
+#' * For `which="weekAllocation"` a bar graph representing time (weeks)
+# invested per job classification for project years is plotted
+
+#' * For `which="indeterminate"` a pie chart representing proportion of indeterminate vs
+#' non-Indeterminate employees for project years is plotted
+#'
+#' * For `which="predict"`a line chart showing the trends for
+#' changes in different funding scenarios
+#'
+#' @param om a data frame likely from `getData(type='om')`
+#' @param salary a data frame likely from `getData(type='salary')`
+#' @param which indicates which plot to plot (See Details). The
+#' options to use include: `omBar`, `omPie`, `omAllocation`,
+#' `omAllocationGeneral`, `salaryBar`, `salaryAllocation`,
+#' `weekAllocation`,`indeterminate`, or `predict`
+#' @param id the project_id from the Project Planning Tool
+#' @param funding a variable used when `which='predict'` used
+#' to indicate which funding source will experience change in
+#' the prediction
+#' @param fundingChange a percentage used when `which='predict`
+#' used to indicate by how much the funding specified in
+#' `funding` will change by
+#' @param dataframe a Boolean indicating if the user wants the data frame
+#' of what is being plotted returned
+#' @param debug integer value indicating level of debugging.
+#'  If this is less than 1, no debugging is done. Otherwise,
+#'  some functions will print debugging information.
+#' @importFrom graphics barplot
+#' @importFrom graphics legend
+#' @importFrom graphics par
+#' @importFrom graphics pie
+#' @importFrom graphics title
+#' @importFrom graphics lines
+#' @importFrom graphics axis
+#' @importFrom graphics layout
+#' @importFrom graphics points
+#' @examples
+#' \dontrun{
+#' # Example 1: Plot Bar graph of O&M Allocations
+#' library(dataSPA)
+#' data <- getData(type="om", cookie=cookie)
+#' plotSPA(om=data, which="omBar")
+#'
+#' # Example 2: Plot a prediction of cost of station
+#' # for NCP funding decreasing by 25%, 50%, 75%, and 100%
+#' for the Snow Crab project
+#'
+#' library(dataSPA)
+#' data(salaries)
+#' data <- getData(type='om', cookie=cookie)
+#' data2 <- getData(type='salary', cookie=cookie)
+#' plotSPA(om=data, salary=data2, which='predict', id=1093,
+#' funding= rep("NCP (A-base)",4),
+#' fundingChange=c(-0.25, -0.5, -0.75, -1))
+#' }
+#' @export
+#'
+#' @return None (invisible NULL).
+#'
+#' @author Jaimie Harbin
+#'
+
+plotSPA <- function(om=NULL,salary=NULL, which=NULL, id=NULL, funding=NULL, fundingChange=NULL, debug=0, dataframe=FALSE) {
+project_id <- category_display <- project_year_id <- amount <- funding_source_display <- fiscal_year <- project_year_id <- category_type <- NULL
+
+if (is.null(which)) {
+stop("must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predict")
+}
+
+if (!(which %in% c("omBar", "omPie", "omAllocation", "omAllocationGeneral", "salaryBar", "salaryAllocation","weekAllocation","indeterminate", 'predict'))) {
+stop("must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate'")
+}
+
+if (is.null(id)) {
+stop("As of 2023/05/10, user must provide an id to plot specific projects")
+}
+
+if (debug > 0) {
+message("which= ", which, " and id = ", id)
+}
+
+if (which %in% c("omBar", "omPie", "omAllocation", "omAllocationGeneral", 'predict')) {
+if (debug > 0) {
+  message("om has been identified")
+}
+if (is.null(om)) {
+  stop("Must provide an om argument.")
+
+}
+if (!(identical(c("project_id","category_display","project_year_id","amount","funding_source_display", "id", "category_type", "description",
+            "fiscal_year", "project_title", "status", "overview", "objectives", "deliverables"), names(om)))) {
+  stop("Must obtain data for x using getData(type='om')")
+}
+
+
+crab <- om[which(om$project_id == id),]
+keep <- subset(crab, select=c(project_id, category_display, project_year_id, amount, funding_source_display, id, fiscal_year, category_type))
+
+m <- matrix(0, nrow=length(unique(keep$funding_source_display)), ncol=length(unique(keep$fiscal_year)))
+df <- as.data.frame(m, row.names=unique(keep$funding_source_display))
+names(df) <- unique(keep$fiscal_year)
+
+namesFunding <- unique(keep$funding_source_display)
+years <- unique(keep$fiscal_year)
+
+# Fill in corresponding values
+for (i in seq_along(years)) {
+  for (j in seq_along(namesFunding)) {
+    value <- keep[which(keep$fiscal_year == years[i]),] # Look at one year
+    value <- sum(value$amount[which(value$funding_source_display == namesFunding[j])])
+    #message("value = ", value, " for i = ",i, " and j = ",j)
+    df[paste0(namesFunding[j]), paste0(years[i])] <- value
+  }
+}
+
+# omBar
+if (which == "omBar") {
+  barplot(as.matrix(df), col=c(1:length(namesFunding)),  ylab="Amount of O&M Funding ($)", ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), xlab="Year")
+  legend("bottomright", c(namesFunding), col=c(1:length(namesFunding)), pch=rep(20,length(namesFunding)), cex=0.7)
+
+  if (dataframe == TRUE) {
+    return(df)
+  }
+} else if (which == "omPie") {
+  df2 <- df # Create storage
+  for (i in seq_along(years)) {
+    for (j in seq_along(namesFunding)) {
+      df2[paste0(namesFunding[j]), paste0(years[i])] <- 100*(df[paste0(namesFunding[j]), paste0(years[i])]/sum(df[paste0(years[i])]))
+    }
+  }
+
+  par(mfrow=c(1,length(years)))
+  for (i in seq_along(years)) {
+    pie(unname(unlist(df2[paste0(years[i])])), col=c(1:length(namesFunding)), labels=paste0(round(unname(unlist(df2[paste0(years[i])])),2), "%"))
+    title(paste0(years[i]))
+  }
+  legend("bottomright", c(namesFunding), col=c(1:length(namesFunding)), pch=rep(20,length(namesFunding)), cex=0.7)
+  if (dataframe == TRUE) {
+    return(df2)
+  }
+
+} else if (which == "omAllocation") {
+  par(mar=c(12,4,4,2)+0.1)
+  for (i in seq_along(years)) {
+    value <- keep[which(keep$fiscal_year == years[i]),] # Look at one year
+    mo <- matrix(0, nrow=1, ncol=length(unique(value$category_display)))
+    mdf <- as.data.frame(mo, col.names=unique(value$category_display))
+    names(mdf) <- unique(value$category_display)
+    for (j in seq_along(unique(value$category_display))) {
+      mdf[j] <- sum(value$amount[which(value$category_display == unique(value$category_display)[j])], na.rm=TRUE)
+    }
+    # Fill in values
+    barplot(as.matrix(mdf), col=1, las=2, ylab="Cost ($)", xlab=NULL, cex.axis = 0.7)
+    title(paste0(years[i]))
+  }
+  if (dataframe == TRUE) {
+    return(mdf)
+  }
+} else if (which == "omAllocationGeneral") {
+  par(mfrow=c(1,length(unique(years))))
+  for (i in seq_along(years)) {
+    value <- keep[which(keep$fiscal_year == years[i]),] # Look at one year
+    mg <- matrix(0, nrow=1, ncol=length(unique(value$category_type)))
+    gdf <- as.data.frame(mg, col.names=unique(value$category_type))
+    names(gdf) <- unique(value$category_type)
+    for (j in seq_along(unique(value$category_type))) {
+      gdf[j] <- sum(value$amount[which(value$category_type == unique(value$category_type)[j])], na.rm=TRUE)
+    }
+    # Fill in values
+    sum <- sum(unlist(unname(gdf)), na.rm=TRUE)
+    labels <- paste0(round(100*(unname(unlist(gdf))/sum),2), " %")
+    pie(unname(unlist(gdf)), labels <-labels, col=1:length(unique(value$category_type)), radius=1)
+    title(paste0(years[i]))
+    legend("topleft", c(unique(value$category_type)), col=c(1:length(unique(value$category_type))), pch=rep(20,length(unique(value$category_type))), cex=0.7)
+  }
+  if (dataframe == TRUE) {
+    return(gdf)
+  }
+}
+
+}
+
+if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate", "predict")) {
+  if (debug > 0) {
+    message("salary has been identified")
+  }
+
+  if (is.null(salary)) {
+    stop("Must provide a salary argument")
+  }
+  # This is now salary
+  if (debug > 0) {
+    message("The names of salary is ", paste0(names(salary), sep=","))
+  }
+  if (!(identical(c("id","overtime_hours","smart_name","duration_weeks",
+                      "level_display","funding_source_display","employee_type_display",  "project_year_id",
+                      "project_id","fiscal_year", "project_title","median_salary",
+                      "salary_per_week","amount_week","amount_overtime", "amount_total"), names(salary)))) {
+    stop("Must obtain data for x using getData(type='salary')")
+  }
+
+  salaryKeep <- salary[which(salary$project_id == "1093"),]
+
+  salm <- matrix(0, nrow=length(unique(salaryKeep$funding_source_display)), ncol=length(unique(salaryKeep$fiscal_year)))
+  saldf <- as.data.frame(salm, row.names=unique(salaryKeep$funding_source_display))
+  names(saldf) <- unique(salaryKeep$fiscal_year)
+
+  salnamesFunding <- unique(salaryKeep$funding_source_display)
+  salyears <- unique(salaryKeep$fiscal_year)
+
+  # Fill in corresponding values
+  # NOTE: Sometimes overtime is 1.5 or 2 times. This does not account for that.
+  for (i in seq_along(salyears)) {
+    for (j in seq_along(salnamesFunding)) {
+      value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
+      value2 <- value[which(value$funding_source_display == salnamesFunding[j]),]
+      totalSum <- sum(value2$amount_total[which(is.finite(value2$amount_total))], na.rm=TRUE)
+      saldf[paste0(salnamesFunding[j]), paste0(salyears[i])] <- totalSum
+    }
+  }
+
+  if (which == "salaryBar") {
+    par(mfrow=c(1,1))
+    barplot(as.matrix(saldf), col=c(1:length(salnamesFunding)),  ylab="Amount of Salary Funding ($)", ylim=c(0,sum(subset(saldf, select=c(paste0(salyears[1])))) + 109000), xlab="Year")
+    legend("topright", c(salnamesFunding), col=c(1:length(salnamesFunding)), pch=rep(20,length(salnamesFunding)), cex=0.7)
+    if (dataframe == TRUE) {
+      return(saldf)
+    }
+  } else if (which == "salaryAllocation") {
+    par(mfrow=c(1,length(salyears)))
+    for (i in seq_along(salyears)) {
+      value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
+      ml <- matrix(0, nrow=1, ncol=length(unique(value$level_display)))
+      dfl <- as.data.frame(ml, col.names=unique(value$level_display))
+      names(dfl) <- unique(value$level_display)
+
+      for (j in seq_along(unique(value$level_display))) {
+        dfl[j] <- sum(value$amount_total[which(value$level_display == unique(value$level_display)[j])], na.rm=TRUE)
+      }
+      # Fill in values
+      barplot(as.matrix(dfl), col=1,  ylab="Salary Cost ($)", xlab="Job Classification")
+      title(paste0(salyears[i]))
+      if (dataframe == TRUE) {
+        return(dfl)
+      }
+    }
+
+  } else if (which == "weekAllocation") {
+    for (i in seq_along(salyears)) {
+      value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
+      ml2 <- matrix(0, nrow=1, ncol=length(unique(value$level_display)))
+      dfl2 <- as.data.frame(ml2, col.names=unique(value$level_display))
+      names(dfl2) <- unique(value$level_display)
+      for (j in seq_along(unique(value$level_display))) {
+        dfl2[j] <- sum(value$duration_weeks[which(value$level_display == unique(value$level_display)[j])], na.rm=TRUE)
+      }
+      # Fill in values
+      barplot(as.matrix(dfl2), col=1,  ylab="Time (weeks)", xlab="Job Classification")
+      title(paste0(salyears[i]))
+      if (dataframe == TRUE) {
+        return(dfl2)
+      }
+    }
+
+  } else if (which == "indeterminate") {
+    par(mfrow=c(1,length(salyears)))
+    for (i in seq_along(salyears)) {
+      value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
+      mi <- matrix(0, nrow=1, ncol=2)
+      dfi <- as.data.frame(mi, col.names=c("indeterminate", "Non-Indeterminate"))
+      names(dfi) <- c("indeterminate", "Non-Indeterminate")
+      dfi[1] <- sum(value$amount_total[which(grepl("Indeterminate", value$employee_type_display))], na.rm=TRUE)
+      dfi[2] <- sum(value$amount_total[which(!(grepl("Indeterminate", value$employee_type_display)))], na.rm=TRUE)
+
+      # Fill in values
+      int <- round(unlist(unname(dfi[1]))/ sum(value$amount_total, na.rm=TRUE)*100,2)
+      non <- round(unlist(unname(dfi[2]))/ sum(value$amount_total, na.rm=TRUE)*100,2)
+
+      INT <- length(value$id[which(grepl("Indeterminate", value$employee_type_display))]) # For # of employees
+      NON <- length(value$id[which(!(grepl("Indeterminate", value$employee_type_display)))])
+
+      pie(unname(unlist(dfi)), col=c(1:2), labels <- paste0(c(int,non), "% ; ", c(INT,NON), " staff"))
+      title(paste0(salyears[i]))
+    }
+    legend("bottomright", c("Indeterminate", "Non-indeterminate"), col=c(1:2), pch=rep(20,2), cex=0.7)
+    if (dataframe == TRUE) {
+      return(dfi)
+    }
+  }
+
+}
+
+if (which == "predict") {
+  if (!(id == 1093)) {
+  stop("This code is just being started and only works for snow crab project (i.e. id=1093)")
+  }
+
+  if (is.null(funding)) {
+    stop('must specify funding argument. Choose one of the following: ', paste0(unique(keep$funding_source_display), collapse=","))
+  }
+
+  if (is.null(fundingChange)) {
+    stop("must specify fundingChange")
+  }
+
+  if (!(length(funding) == length(fundingChange))) {
+    stop("funding and fundingChange must be the same length")
+  }
+
+  for (i in seq_along(funding)) {
+    if (!(funding[i] %in% unique(keep$funding_source_display))) {
+stop("funding ", funding[i], " did not fund stations in this project. Try : ", paste0(unique(keep$funding_source_display), collapse=" or "))
+    }
+  }
+
+  # Cost allocated to station (Vessels, Boats)
+  stationFund <- unique(keep$funding_source_display[which(keep$category_display == "Vessels, Boats")])
+  cost <- data.frame(matrix(NA, nrow = length(stationFund), ncol = length(years)))
+  names(cost) <- years
+  rownames(cost) <- stationFund
+  for (i in seq_along(years)) {
+    for (j in seq_along(stationFund)) {
+      value <- keep[which(keep$fiscal_year == years[i]),] # Look at one year
+      value2 <- value[which(value$category_display == "Vessels, Boats"),] # Look at one year
+    cost[paste0(years[i])][,1][j] <- sum(value2$amount[which(value2$funding_source_display == stationFund[j])], na.rm=TRUE)
+    }
+  }
+  # identifying the new years to add
+  ly <- gsub("^[^-]*-\\s*([^.]+).*","\\1",years[length(years)]) # Getting last number of last year (ie. 2023-2024)
+  newyear <- paste0(ly, "-", as.numeric(ly)+1)
+
+  columnnames <- paste0(newyear,seq_along(funding))
+  # Addressing changes in funding based on user input
+  for (i in seq_along(funding)) {
+    for (j in seq_along(columnnames)) {
+  cc <- cost[years[length(years)]][funding[i],] #isolating cost from last year of specified funding
+  change <- cc*(fundingChange[j]/100)
+  changeAmount <- cc + change
+  cost[columnnames[j]] <- NA
+  cost[columnnames[j]][funding[i],] <- changeAmount
+    }
+  }
+# Filling in value from previous year if user didn't specify a change
+for (j in seq_along(columnnames)) {
+same <- which(is.na(unname(unlist(cost[columnnames[j]]))))
+#message("For j = ", j, " same = ", same)
+cost[columnnames[j]][same,] <- cost[years[length(years)]][same,]
+}
+
+# left of figure
+  layout(matrix(c(1,2), 1, 2, byrow = TRUE))
+  bp <- barplot(as.matrix(cost), col=c(1:length(namesFunding)),  ylab="Amount of O&M Funding ($)", ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), xlab="Year", las=2, cex.names=0.7)
+  tot <- colMeans(as.matrix(cost))
+  points(bp, tot, xpd = TRUE, col = c(rep(1, length(years)), 1+(1:length(funding))), pch=20)
+  legend("topright", c(namesFunding), col=c(1:length(namesFunding)), pch=rep(20,length(namesFunding)), cex=0.7)
+
+# right of figure
+station <- cost # Setting dimensions for station
+
+station[1,] <- rep(390)
+station[2,] <- rep(24)
+
+costPerStation <- cost[1:length(years)]/station[1:length(years)]
+
+# Now take the number of cost in the most recent year
+recent <- costPerStation[length(years)]
+for (i in seq_along(columnnames)) {
+  for (j in seq_along(stationFund)) {
+    station[columnnames[i]][j,] <- cost[columnnames[i]][j,]/recent[[1]][j]
+  }
+}
+
+# Now plotting (station)
+totalnames <- c(years, columnnames)
+
+# if we wanted color coded by funding this is where we would do it
+totalstations <- data.frame(matrix(NA, nrow = 1, ncol = length(totalnames)))
+names(totalstations) <- totalnames
+for (i in seq_along(totalnames)) {
+  totalstations[totalnames[i]] <- sum(station[totalnames[i]])
+}
+
+p <- totalstations[1:length(years)]
+yearPoint <- unlist(unname(p))
+x <- 1:(length(years)+1)
+for (i in seq_along(columnnames)) {
+y <- c(yearPoint, unname(unlist(totalstations[length(years)+i])))
+if (i == 1) {
+plot(x, y, type="l", ylab="Number of Stations", pch=20, col=i+1, ylim=c(min(unlist(unname(totalstations)))-10, max(unlist(unname(totalstations)))+10), xaxt="n", xlab="Year")
+  axis(1, at=seq_along(y), labels=c(years, newyear), las=2, cex.axis=0.7)
+} else {
+  lines(x, y, col=i+1, type="o", pch=20)
+}
+}
+labels <- paste0(funding, ",", fundingChange, "%")
+labels <- c("Status Quo", labels)
+y <- c(yearPoint, yearPoint[length(yearPoint)])
+lines(x,y, col=1, type="o", pch=20)
+legend("bottomleft", labels, col=1:(length(x)+1), pch=20, cex=0.9)
+
+if (dataframe == TRUE) {
+  return(totalstations)
+}
+}
+
+
+}

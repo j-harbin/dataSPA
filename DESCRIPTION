@@ -1,0 +1,23 @@
+Package: dataSPA
+Type: Package
+Title: Obtain Data for DFO Strategic Planning
+Version: 1.0.5
+Author:
+ person(given="Jaimie", family="Harbin", email="jm810136@dal.ca", role=c("aut"),
+        comment=c(ORCID="https://orcid.org/0000-0003-3774-3732"))
+Maintainer: Jaimie Harbin <jaimie.harbin@dfo-mpo.gc.ca>
+Depends: R (>= 3.5.0)
+Imports: httr2, magrittr, methods, readxl, stringr, stats, graphics, rmarkdown, testthat
+BugReports: https://github.com/j-harbin/dataSPA/issues
+Description: This package is intended to be used by Department
+ Of Fisheries and Oceans Canada (DFO) employees to obtain data
+ from A) the Project Planning Tool (PPT) API and B) Salary
+ Spread sheets to plot information related to allocation of
+ funding.
+License: GPL (>= 2)
+Encoding: UTF-8
+URL: https://github.com/j-harbin/dataSPA
+LazyData: false
+Roxygen: list(markdown = TRUE)
+RoxygenNote: 7.2.3
+BuildVignettes: true
