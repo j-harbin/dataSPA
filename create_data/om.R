@@ -1,8 +1,6 @@
 # om built in
-
 if (!FALSE) {
-  library(dataSPA)
-
+  #library(dataSPA)
   namesOM <- c("project_id","category_display","project_year_id",
                "amount","funding_source_display", "id", "category_type", "description","fiscal_year",
                "project_title","status", "overview", "objectives", "deliverables")
@@ -10,35 +8,28 @@ if (!FALSE) {
   om <- data.frame(matrix(NA, nrow = 10, ncol = length(namesOM)))
   names(om) <- namesOM
   om$project_id <- rep(1234, length(om$project_id))
-  om$category_display[1:3] <- "Field Travel"
-  om$category_display[4:5] <- "Training, domestic conferences"
-  om$category_display[6:9] <- "Vessels, Boats"
-  om$category_display[9:10] <- "Lab Equipment"
-  om$project_year_id[c(1,4,8,9)] <- 123
-  om$project_year_id[c(2,5,8,10)] <- 456
-  om$project_year_id[c(3,6,7)] <- 789
-  om$amount[1:3] <- 100000
-  om$amount[4:7] <- 500000
-  om$amount[7:10] <- 40000
-  om$funding_source_display[c(1:4)] <- "Core (A-base)"
-  om$funding_source_display[c(4:7)] <- "NCP (Oceans) (B-base)"
-  om$funding_source_display[c(8:10)] <- "CRSB (B-base)"
+  om$category_display <- c("Field Travel","Training, domestic conferences",
+  "Field Equipment", "IM/IT - computers, hardware, software",
+  "Field","Field", "Contracts", "Translation","Vessels, Boats", "Vessels, Boats")
+  om$project_year_id <- 111
+  om$amount <- c(15000, 1000, 4000, 1000, 15000, 3000, 65000, 1000, 430000, 70000)
+  om$funding_source_display <- c("Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)",
+                                 "Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)",
+                                 "Unspecified (C-base)", "NCP (A-base)")
+  om$category_type <- c("Travel","Travel","Equipment Purchase",
+                         "Equipment Purchase", "Material and Supplies","Material and Supplies",
+                         "Contracts, Leases, Services", "Contracts, Leases, Services", "Contracts, Leases, Services",
+                         "Contracts, Leases, Services")
+  om$fiscal_year <- "2014-2015"
+
   for (i in seq_along(om$id)) {
     om$id[i] <- i
   }
-  om$category_type[1:3] <- "Travel"
-  om$category_type[4:5] <- "Material and Supplies"
-  om$category_type[6:9] <- "Equipment Purchase"
-  om$category_type[9:10] <- "Equipment Purchase"
-
-  om$fiscal_year[c(1,4,8,9)] <- "2021-2022"
-  om$fiscal_year[c(2,5,8,10)] <- "2022-2023"
-  om$fiscal_year[c(3,6,7)] <- "2023-2024"
-  om$project_title <- "Example Project"
+  om$project_title <- "Fake project"
   om$status <- "Approved"
   om$overview <- "This project is an example for dataSPA test case"
   om$objectives <- "To check quality of our code"
-  om$deliverables <- "Validated code"
+  om$deliverables <- "Validate code"
   om$description <- "Used to validate our code"
 
   save(om, file="om.rda")
