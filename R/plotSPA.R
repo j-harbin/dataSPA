@@ -53,6 +53,9 @@
 #' `funding` will change by
 #' @param dataframe a Boolean indicating if the user wants the data frame
 #' of what is being plotted returned
+#' @param year a character indicating which year of the project to
+#' plot. This is given in the format "YYYY-YYYY". If `year` is `NULL`
+#' all years are plotted by default
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
 #'  some functions will print debugging information.
@@ -91,7 +94,7 @@
 #' @author Jaimie Harbin
 #'
 
-plotSPA <- function(om=NULL,salary=NULL, which=NULL, id=NULL, funding=NULL, fundingChange=NULL, debug=0, dataframe=FALSE) {
+plotSPA <- function(om=NULL,salary=NULL, which=NULL, id=NULL, funding=NULL, fundingChange=NULL, dataframe=FALSE, year=NULL, debug=0) {
 project_id <- category_display <- project_year_id <- amount <- funding_source_display <- fiscal_year <- project_year_id <- category_type <- NULL
 
 if (is.null(which)) {
@@ -127,12 +130,21 @@ if (!(identical(c("project_id","category_display","project_year_id","amount","fu
 crab <- om[which(om$project_id == id),]
 keep <- subset(crab, select=c(project_id, category_display, project_year_id, amount, funding_source_display, id, fiscal_year, category_type))
 
-m <- matrix(0, nrow=length(unique(keep$funding_source_display)), ncol=length(unique(keep$fiscal_year)))
+if (is.null(year)) {
+  years <- unique(keep$fiscal_year)
+} else {
+  years <- year
+}
+
+m <- matrix(0, nrow=length(unique(keep$funding_source_display)), ncol=length(years))
 df <- as.data.frame(m, row.names=unique(keep$funding_source_display))
-names(df) <- unique(keep$fiscal_year)
+names(df) <- years
 
 namesFunding <- unique(keep$funding_source_display)
-years <- unique(keep$fiscal_year)
+
+if (!(is.null(year)) && !(year %in% unique(keep$fiscal_year))) {
+  stop("This project does not have data for ", year, " try ", paste0(unique(keep$fiscal_year), collapse=","))
+}
 
 # Fill in corresponding values
 for (i in seq_along(years)) {
@@ -143,7 +155,6 @@ for (i in seq_along(years)) {
     df[paste0(namesFunding[j]), paste0(years[i])] <- value
   }
 }
-
 # omBar
 if (which == "omBar") {
   barplot(as.matrix(df), col=c(1:length(namesFunding)),  ylab="Amount of O&M Funding ($)", ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), xlab="Year")
@@ -172,6 +183,7 @@ if (which == "omBar") {
 
 } else if (which == "omAllocation") {
   par(mar=c(12,4,4,2)+0.1)
+  par(mfrow=c(1, length(years)))
   for (i in seq_along(years)) {
     value <- keep[which(keep$fiscal_year == years[i]),] # Look at one year
     mo <- matrix(0, nrow=1, ncol=length(unique(value$category_display)))
@@ -232,12 +244,21 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
 
   salaryKeep <- salary[which(salary$project_id == "1093"),]
 
-  salm <- matrix(0, nrow=length(unique(salaryKeep$funding_source_display)), ncol=length(unique(salaryKeep$fiscal_year)))
+  if (is.null(year)) {
+    salyears <- unique(salaryKeep$fiscal_year)
+  } else {
+    salyears <- year
+  }
+
+  if (!(is.null(year)) && !(year %in% unique(salaryKeep$fiscal_year))) {
+    stop("This project does not have data for ", year, " try ", paste0(unique(salaryKeep$fiscal_year), collapse=","))
+  }
+
+  salm <- matrix(0, nrow=length(unique(salaryKeep$funding_source_display)), ncol=length(salyears))
   saldf <- as.data.frame(salm, row.names=unique(salaryKeep$funding_source_display))
-  names(saldf) <- unique(salaryKeep$fiscal_year)
+  names(saldf) <- salyears
 
   salnamesFunding <- unique(salaryKeep$funding_source_display)
-  salyears <- unique(salaryKeep$fiscal_year)
 
   # Fill in corresponding values
   # NOTE: Sometimes overtime is 1.5 or 2 times. This does not account for that.
@@ -269,14 +290,16 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
         dfl[j] <- sum(value$amount_total[which(value$level_display == unique(value$level_display)[j])], na.rm=TRUE)
       }
       # Fill in values
+      #browser()
       barplot(as.matrix(dfl), col=1,  ylab="Salary Cost ($)", xlab="Job Classification")
       title(paste0(salyears[i]))
-      if (dataframe == TRUE) {
-        return(dfl)
-      }
     }
+    #if (dataframe == TRUE) {
+    #  return(dfl)
+    #}
 
   } else if (which == "weekAllocation") {
+    par(mfrow=c(1, length(salyears)))
     for (i in seq_along(salyears)) {
       value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
       ml2 <- matrix(0, nrow=1, ncol=length(unique(value$level_display)))
@@ -288,10 +311,11 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
       # Fill in values
       barplot(as.matrix(dfl2), col=1,  ylab="Time (weeks)", xlab="Job Classification")
       title(paste0(salyears[i]))
-      if (dataframe == TRUE) {
-        return(dfl2)
-      }
+
     }
+    #if (dataframe == TRUE) {
+    #  return(dfl2)
+    #}
 
   } else if (which == "indeterminate") {
     par(mfrow=c(1,length(salyears)))

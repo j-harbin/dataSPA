@@ -11,8 +11,9 @@ plotSPA(
   id = NULL,
   funding = NULL,
   fundingChange = NULL,
-  debug = 0,
-  dataframe = FALSE
+  dataframe = FALSE,
+  year = NULL,
+  debug = 0
 )
 }
 \arguments{
@@ -35,12 +36,16 @@ the prediction}
 used to indicate by how much the funding specified in
 \code{funding} will change by}
 
+\item{dataframe}{a Boolean indicating if the user wants the data frame
+of what is being plotted returned}
+
+\item{year}{a character indicating which year of the project to
+plot. This is given in the format "YYYY-YYYY". If \code{year} is \code{NULL}
+all years are plotted by default}
+
 \item{debug}{integer value indicating level of debugging.
 If this is less than 1, no debugging is done. Otherwise,
 some functions will print debugging information.}
-
-\item{dataframe}{a Boolean indicating if the user wants the data frame
-of what is being plotted returned}
 }
 \value{
 None (invisible NULL).
