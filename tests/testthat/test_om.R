@@ -1,7 +1,7 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 
 library(dataSPA)
-
+library(testthat)
 context("verify calculations")
 data(om)
 
@@ -12,3 +12,4 @@ test_that("omBar + omPie",
 
           }
 )
+

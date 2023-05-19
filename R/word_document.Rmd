@@ -48,17 +48,6 @@ unique(index$status)
 ```
 
 
-
-## Allocation Funding
-
-
-```{r, echo=FALSE, fig.cap="Figure 2: Pie chart representing allocation of expenses for project over different years."}
-plotSPA(index, id=id, which="omAllocationGeneral")
-```
-
-## Station analysis
-# Cost per station per funding type (Figure 5)
-
 This all is hard coded in for now.
 
 ```{r, echo=FALSE, fig.caption="Figure 7: Line graph showing number of stations under different funding scenarios"}
@@ -66,7 +55,9 @@ plotSPA(om=om, salary=sal, which='predict', id=1093,funding= rep("NCP (A-base)",
 ```
 
 
-
+```{r, echo=FALSE, fig.cap="Figure 2: Pie chart representing allocation of expenses for project over different years."}
+plotSPA(index, id=id, which="omAllocationGeneral")
+```
 
 
 
