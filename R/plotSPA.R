@@ -123,7 +123,7 @@ if (is.null(om)) {
 
 }
 if (!(identical(c("project_id","category_display","project_year_id","amount","funding_source_display", "id", "category_type", "description",
-            "fiscal_year", "project_title", "status", "overview", "objectives", "deliverables"), names(om)))) {
+            "fiscal_year", "project_title", "status", "overview", "objectives", "deliverables", "lead_staff"), names(om)))) {
   stop("Must obtain data for x using getData(type='om')")
 }
 

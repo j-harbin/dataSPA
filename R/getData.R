@@ -204,6 +204,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
 
     # Add objectives and overview
     p <- lapply(api_data2, function(x) x$project)
+    j <- lapply(api_data2, function(x) x$project$lead_staff)
+
 
     for (i in seq_along(p)) {
       if (length(p[[i]]$overview) == 0) {
@@ -225,10 +227,29 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       lov <- c(lov, p[[i]])
     }
 
+
+    for (i in seq_along(p)) {
+      if (length(j[[i]]) == 0) {
+        j[[i]] <- 0
+      } else if (is.na(j[[i]])) {
+        j[[i]]
+      }
+
+    }
+
+
     pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview")]))
 
+    for (i in seq_along(pp)) {
+      pp[[i]]$lead_staff <- j[[i]]
+    }
     ppp <- do.call(rbind, pp)
-    # JAIM test
+
+    lov <- list()
+    for (i in 1:length(p))  {
+      lov <- c(lov, p[[i]])
+    }
+
 
     # Add deliverables
 
@@ -247,8 +268,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     D$deliverables <- d
     D$project_id <- dd
 
-    # END TEST
-
     listofvectors <- list()
     for (i in 1:length(t))  {
       listofvectors <- c(listofvectors, t[[i]])
@@ -257,6 +276,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     tt <- lapply(listofvectors, function(x) as.data.frame(x[c("display_name", "id", "project_title", "status_display")]))
 
     ttt <- do.call(rbind, tt)
+
 
     # Testing snow crab
 
@@ -271,6 +291,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       replace4 <- ppp$overview[which(ppp$id == om$project_id[i])][1]
       replace5 <- ppp$objectives[which(ppp$id == om$project_id[i])][1]
       replace6 <- D$deliverables[which(D$project_id == om$project_id[i])][1]
+      replace7 <- ppp$lead_staff[which(ppp$id == om$project_id[i])][1]
+
 
       #message("replace is ", replace, " for ", i)
       om$fiscal_year[i] <- replace
@@ -279,6 +301,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       om$overview[i] <- replace4
       om$objectives[i] <- replace5
       om$deliverables[i] <- replace6
+      om$lead_staff[i] <- replace7
 
     }
     return(om)
