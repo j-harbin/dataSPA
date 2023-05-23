@@ -36,6 +36,6 @@ library(dataSPA)
 data(salaries)
 data <- getData(type="om",cookie=cookie)
 data2 <- getData(type="salary", cookie=cookie, salaries=salaries)
-createReport(om=data, salary=data2, Rmdpath="./R")
+createReport(om=data, salary=data2, Rmdpath="./R/", id=1234)
 }
 }

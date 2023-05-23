@@ -47,6 +47,10 @@ unique(index$objectives)
 unique(index$status)
 ```
 
+**Lead Contact**
+```{r, echo=FALSE}
+unique(index$lead_staff)
+```
 
 This all is hard coded in for now.
 
