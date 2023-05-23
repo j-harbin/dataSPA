@@ -37,7 +37,8 @@ used to indicate by how much the funding specified in
 \code{funding} will change by}
 
 \item{dataframe}{a Boolean indicating if the user wants the data frame
-of what is being plotted returned}
+of what is being plotted returned. For multi-year projects, a list of
+data frames for each year is returned. This is mainly for package testing}
 
 \item{year}{a character indicating which year of the project to
 plot. This is given in the format "YYYY-YYYY". If \code{year} is \code{NULL}

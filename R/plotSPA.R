@@ -52,7 +52,8 @@
 #' used to indicate by how much the funding specified in
 #' `funding` will change by
 #' @param dataframe a Boolean indicating if the user wants the data frame
-#' of what is being plotted returned
+#' of what is being plotted returned. For multi-year projects, a list of
+#' data frames for each year is returned. This is mainly for package testing
 #' @param year a character indicating which year of the project to
 #' plot. This is given in the format "YYYY-YYYY". If `year` is `NULL`
 #' all years are plotted by default
@@ -184,6 +185,7 @@ if (which == "omBar") {
 } else if (which == "omAllocation") {
   par(mar=c(12,4,4,2)+0.1)
   par(mfrow=c(1, length(years)))
+  DF <- NULL
   for (i in seq_along(years)) {
     value <- keep[which(keep$fiscal_year == years[i]),] # Look at one year
     mo <- matrix(0, nrow=1, ncol=length(unique(value$category_display)))
@@ -192,15 +194,16 @@ if (which == "omBar") {
     for (j in seq_along(unique(value$category_display))) {
       mdf[j] <- sum(value$amount[which(value$category_display == unique(value$category_display)[j])], na.rm=TRUE)
     }
-    # Fill in values
     barplot(as.matrix(mdf), col=1, las=2, ylab="Cost ($)", xlab=NULL, cex.axis = 0.7)
     title(paste0(years[i]))
+    DF[[i]] <- mdf
   }
   if (dataframe == TRUE) {
-    return(mdf)
+    return(DF)
   }
 } else if (which == "omAllocationGeneral") {
   par(mfrow=c(1,length(unique(years))))
+  DFG <- NULL
   for (i in seq_along(years)) {
     value <- keep[which(keep$fiscal_year == years[i]),] # Look at one year
     mg <- matrix(0, nrow=1, ncol=length(unique(value$category_type)))
@@ -215,9 +218,10 @@ if (which == "omBar") {
     pie(unname(unlist(gdf)), labels <-labels, col=1:length(unique(value$category_type)), radius=1)
     title(paste0(years[i]))
     legend("topleft", c(unique(value$category_type)), col=c(1:length(unique(value$category_type))), pch=rep(20,length(unique(value$category_type))), cex=0.7)
+    DFG[[i]] <- gdf
   }
   if (dataframe == TRUE) {
-    return(gdf)
+    return(DFG)
   }
 }
 
@@ -280,6 +284,7 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
     }
   } else if (which == "salaryAllocation") {
     par(mfrow=c(1,length(salyears)))
+    DFL <- NULL
     for (i in seq_along(salyears)) {
       value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
       ml <- matrix(0, nrow=1, ncol=length(unique(value$level_display)))
@@ -290,16 +295,17 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
         dfl[j] <- sum(value$amount_total[which(value$level_display == unique(value$level_display)[j])], na.rm=TRUE)
       }
       # Fill in values
-      #browser()
       barplot(as.matrix(dfl), col=1,  ylab="Salary Cost ($)", xlab="Job Classification")
       title(paste0(salyears[i]))
+      DFL[[i]] <- dfl
     }
-    #if (dataframe == TRUE) {
-    #  return(dfl)
-    #}
+    if (dataframe == TRUE) {
+      return(DFL)
+    }
 
   } else if (which == "weekAllocation") {
     par(mfrow=c(1, length(salyears)))
+    DFL2 <- NULL
     for (i in seq_along(salyears)) {
       value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
       ml2 <- matrix(0, nrow=1, ncol=length(unique(value$level_display)))
@@ -311,14 +317,16 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
       # Fill in values
       barplot(as.matrix(dfl2), col=1,  ylab="Time (weeks)", xlab="Job Classification")
       title(paste0(salyears[i]))
+      DFL2[[i]] <- dfl2
 
     }
-    #if (dataframe == TRUE) {
-    #  return(dfl2)
-    #}
+    if (dataframe == TRUE) {
+      return(DFL2)
+    }
 
   } else if (which == "indeterminate") {
     par(mfrow=c(1,length(salyears)))
+    DFI <- NULL
     for (i in seq_along(salyears)) {
       value <- salaryKeep[which(salaryKeep$fiscal_year == salyears[i]),] # Look at one year
       mi <- matrix(0, nrow=1, ncol=2)
@@ -336,10 +344,11 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
 
       pie(unname(unlist(dfi)), col=c(1:2), labels <- paste0(c(int,non), "% ; ", c(INT,NON), " staff"))
       title(paste0(salyears[i]))
+      DFI[[i]] <- dfi
     }
     legend("bottomright", c("Indeterminate", "Non-indeterminate"), col=c(1:2), pch=rep(20,2), cex=0.7)
     if (dataframe == TRUE) {
-      return(dfi)
+      return(DFI)
     }
   }
 
