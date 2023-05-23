@@ -12,7 +12,10 @@ Some disclaimers/ assumptions with this package include:
 
 1. For this package to work, you must be on the DFO VPN
 2. This code assumes some employees have not changed positions over the course of their career
+3. As of 2023/05/23, in some cases when a employment classification is not provided, it us assumed the employee was a PC-2.
 3. The salary calculations are based off of medians of federal employee pay scales, not the exact salary of individuals
+4. Calculated over time salary does not consider the fact
+sometimes overtime may be 1.5X or 2X regular salary
 
 To install the package, you must first be a collaborator of the private repository `dataSPA` hosted by `j-harbin` (Jaimie Harbin). Once you have been granted access, run the following code to install the package:
 
