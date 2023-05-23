@@ -246,7 +246,7 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
     stop("Must obtain data for x using getData(type='salary')")
   }
 
-  salaryKeep <- salary[which(salary$project_id == "1093"),]
+  salaryKeep <- salary[which(salary$project_id == id),]
 
   if (is.null(year)) {
     salyears <- unique(salaryKeep$fiscal_year)

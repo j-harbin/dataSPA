@@ -1,6 +1,6 @@
 ## vim:textwidth=128:expandtab:shiftwidth=4:softtabstop=4
 # These values are testing against manual calculations
-library(dataSPA)
+#library(dataSPA)
 library(testthat)
 context("verify calculations")
 data(om)

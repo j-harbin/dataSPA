@@ -47,3 +47,20 @@ NULL
 #' @name om
 NULL
 
+#' An example project including salary information
+#'
+#' This includes a sample of salary data obtained from an
+#' imaginary project. The purpose of this is for the user
+#' to get familiar with the structure of the data,
+#' and to allow the developers to validate their calculations
+#' in a suite of tests.
+#'
+#' @examples
+#' \dontrun{
+#' library(dataSPA)
+#' data(salary)
+#' plotSPA(salary=salary, which="salaryAllocation", id=1234)
+#' }
+#' @name salary
+NULL
+
