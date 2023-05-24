@@ -413,10 +413,13 @@ cost[columnnames[j]][same,] <- cost[years[length(years)]][same,]
 
 # left of figure
   layout(matrix(c(1,2), 1, 2, byrow = TRUE))
-  bp <- barplot(as.matrix(cost), col=c(1:length(namesFunding)),  ylab="Amount of O&M Funding ($)", ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), xlab="Year", las=2, cex.names=0.7)
-  tot <- colMeans(as.matrix(cost))
+  bp <- barplot(as.matrix(cost), col=c(1:length(namesFunding)), ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), las=2, cex.names=0.7, yaxt="n")
+  title(ylab = "Amount of O&M Funding ($)", mgp = c(1, 1, 0))
+
+  #tot <- colMeans(as.matrix(cost))
+  tot <- rep(40000, length(names(cost)))
   points(bp, tot, xpd = TRUE, col = c(rep(1, length(years)), 1+(1:length(funding))), pch=20)
-  legend("topright", c(namesFunding), col=c(1:length(namesFunding)), pch=rep(20,length(namesFunding)), cex=0.7)
+  legend("topright", c(namesFunding), col=c(1:length(namesFunding)), pch=rep(20,length(namesFunding)), cex=0.6)
 
 # right of figure
 station <- cost # Setting dimensions for station
@@ -450,7 +453,7 @@ x <- 1:(length(years)+1)
 for (i in seq_along(columnnames)) {
 y <- c(yearPoint, unname(unlist(totalstations[length(years)+i])))
 if (i == 1) {
-plot(x, y, type="l", ylab="Number of Stations", pch=20, col=i+1, ylim=c(min(unlist(unname(totalstations)))-10, max(unlist(unname(totalstations)))+10), xaxt="n", xlab="Year")
+plot(x, y, type="l", ylab="Number of Stations", pch=20, col=i+1, ylim=c(min(unlist(unname(totalstations)))-10, max(unlist(unname(totalstations)))+10), xaxt="n", xlab=" ")
   axis(1, at=seq_along(y), labels=c(years, newyear), las=2, cex.axis=0.7)
 } else {
   lines(x, y, col=i+1, type="o", pch=20)
