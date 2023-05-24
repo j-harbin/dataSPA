@@ -8,7 +8,9 @@
 #' @param id the project_id from the Project Planning Tool (PPT)
 #' @param Rmdpath the path to the template for the html output
 #' @param destdir parameter indicating where to save the html report
-#' @return A html fact sheet about the specified project id.
+#' @param output a character string of either `html`, `pdf`, or `word`
+#' indicating which type of file output to create.
+#' @return A fact sheet about the specified project id.
 #' @importFrom rmarkdown render
 #' @examples
 #' \dontrun{
@@ -20,7 +22,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./R/", destdir=".") {
+createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./R/", destdir=".", output='html') {
 
   if (is.null(id)) {
     stop("In documentInformation() must provide an id argument pertaining to the project_id")
@@ -62,5 +64,12 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./R/", destdir=
   index2 <- salary[which(salary$project_id == id),]
 
   ## Move into Rmd
-  rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir)
+  if (output == "html") {
+    rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir)
+  } else if (output == "pdf") {
+  rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir, output_format = "pdf_document")
+  } else if (output == "word") {
+    rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir, output_format = "word_document")
+
+}
 }

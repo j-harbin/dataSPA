@@ -1,5 +1,5 @@
 ---
-title: "Fact Sheet Report"
+title: "Monitoring Detail Fact Sheet"
 output:
   html_document: default
   pdf_document: default
@@ -21,29 +21,23 @@ unique(index$project_title)
 unique(index$project_id)
 ```
 
-**Description**
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 unique(index$description)
 ```
 
-**Deliverables**
-
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 unique(index$deliverables)
 ```
 
-**Objectives**
 
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 if (unique(index$objectives) == 0) {
   print("There are no identified objectives for this project")
 } else 
 unique(index$objectives)
 ```
 
-**Status**
-```{r, echo=FALSE}
+```{r, echo=FALSE, eval=FALSE}
 unique(index$status)
 ```
 
@@ -52,14 +46,13 @@ unique(index$status)
 unique(index$lead_staff)
 ```
 
-This all is hard coded in for now.
 
 ```{r, echo=FALSE, fig.caption="Figure 7: Line graph showing number of stations under different funding scenarios"}
 plotSPA(om=om, salary=sal, which='predict', id=1093,funding= rep("NCP (A-base)",4),fundingChange=c(-25, -50, -75, -100))
 ```
 
 
-```{r, echo=FALSE, fig.cap="Figure 2: Pie chart representing allocation of expenses for project over different years."}
+```{r, echo=FALSE, fig.cap="Figure 2: Pie chart representing allocation of expenses for project over different years.", eval=FALSE}
 plotSPA(index, id=id, which="omAllocationGeneral")
 ```
 

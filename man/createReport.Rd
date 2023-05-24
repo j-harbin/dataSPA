@@ -9,7 +9,8 @@ createReport(
   salary = NULL,
   id = NULL,
   Rmdpath = "./R/",
-  destdir = "."
+  destdir = ".",
+  output = "html"
 )
 }
 \arguments{
@@ -22,9 +23,12 @@ createReport(
 \item{Rmdpath}{the path to the template for the html output}
 
 \item{destdir}{parameter indicating where to save the html report}
+
+\item{output}{a character string of either \code{html}, \code{pdf}, or \code{word}
+indicating which type of file output to create.}
 }
 \value{
-A html fact sheet about the specified project id.
+A fact sheet about the specified project id.
 }
 \description{
 This function creates a fact sheet report for the
