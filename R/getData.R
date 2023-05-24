@@ -473,6 +473,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       SAL$amount_overtime[i] <- (SAL$salary_per_week[i]/37.5)*SAL$overtime_hours[i] # 40 hours in a work week
       SAL$amount_total[i] <- ifelse(SAL$overtime_hours[i] == 0, SAL$amount_week[i], (SAL$amount_week[i] + SAL$amount_overtime[i]))
     }
+    #browser()
+    bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
+    SAL <- SAL[-bad,]
     return(SAL)
 
   }
