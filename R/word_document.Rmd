@@ -11,39 +11,40 @@ data(salaries)
 
 **Title**
 
-```{r, echo=FALSE, comment=NA}
-unique(index$project_title)
+```{r, echo=FALSE, comment=NA, results='asis'}
+cat(paste0(unique(index$project_title)))
 ```
 
 **Project ID**
 
-```{r, echo=FALSE, comment=NA}
-unique(index$project_id)
+```{r, echo=FALSE, comment=NA,results='asis'}
+cat(paste0(unique(index$project_id)))
 ```
 
-```{r, echo=FALSE, eval=FALSE, comment=NA}
-unique(index$description)
+```{r, echo=FALSE, eval=FALSE, comment=NA, results='asis'}
+cat(paste0(unique(index$description)))
 ```
 
-```{r, echo=FALSE, eval=FALSE, comment=NA}
-unique(index$deliverables)
+```{r, echo=FALSE, eval=FALSE, comment=NA,results='asis'}
+cat(paste0(unique(index$deliverables)))
 ```
 
 
-```{r, echo=FALSE, eval=FALSE, comment=NA}
+```{r, echo=FALSE, eval=FALSE, comment=NA,results='asis'}
 if (unique(index$objectives) == 0) {
-  print("There are no identified objectives for this project")
+  cat(paste0("There are no identified objectives for this project"))
 } else 
-unique(index$objectives)
+cat(paste0(unique(index$objectives)))
 ```
 
-```{r, echo=FALSE, eval=FALSE, comment=NA}
-unique(index$status)
+```{r, echo=FALSE, eval=FALSE, comment=NA, results='asis'}
+cat(paste0(unique(index$status)))
 ```
 
-**Lead Contact**
-```{r, echo=FALSE, comment=NA}
-unique(index$lead_staff)
+**Lead Contact (s)**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+cat(paste0(unique(index$lead_staff)))
 ```
 
 
