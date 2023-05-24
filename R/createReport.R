@@ -71,5 +71,7 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./R/", destdir=
   } else if (output == "word") {
     rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir, output_format = "word_document")
 
+  } else {
+  stop("output must either be html, word, or pdf, not ", output)
 }
 }
