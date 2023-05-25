@@ -458,22 +458,40 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     SAL$amount_week <- rep(NA, length(SAL$id))
     SAL$amount_overtime <- rep(NA, length(SAL$id))
     SAL$amount_total <- rep(NA, length(SAL$id))
-
-
+    #browser()
     for (i in seq_along(fundingLevel)) {
       j <- salaries[which(grepl(fundingLevel[i], salaries$`Level and Step`)),] # keeping relevant salaries from excel
       excelyear <- sub('.* ', '', j$`Level and Step`) # extract everything after space in excel for year
+      #for (j in seq_along(SAL$fiscal_year)) {
+      #message("This is for i = ", i, " ie. fundingLevel= ", fundingLevel[i], " and j = ", j, " with fiscal year = ", SAL$fiscal_year[i])
+      sy <- SAL$fiscal_year[i]
+      #}
+      sy2 <- sub("([^-]*).*", "\\1", sy) # Remove everything before - in SAL year (2021-2022)
+      sy3 <- as.character(as.numeric(sy2)- round(as.numeric(sy2),-2))# Extract the last 2 digits
+      # if sy3 is in excel year .. do this... if not.. find the closest
+      if (sy3 %in% excelyear) {
+        jj <- j[which(grepl(sy3, j$`Level and Step`)),] # Takes the appropriate year
+      } else {
+        mins <- abs(as.numeric(excelyear) - as.numeric(sy3)) # Get the difference between numbers
+        dw <- sort(unique(mins))[1] # the difference you want
+        # sometimes there may be some years that are the equal difference (ie. 2016-2018 from 2017)
+        if (!(length(unique(excelyear[mins]) == 1))) {
+          # Multiple years have the same distance
+          jj <- j[which(grepl(unique(excelyear[mins])[1], j$`Level and Step`)),]
+        } else {
+          jj <- j[which(mins == dw),] # Takes the appropriate year
+        }
+      }
       if (is.na(max(excelyear))) {
         stop("This stopped at ", i, " and fundinglevel =", fundingLevel[i])
       }
-      jj <- j[which(grepl(max(excelyear), j$`Level and Step`)),] # Takes the most recent data
+      #jj <- j[which(grepl(max(excelyear), j$`Level and Step`)),] # Takes the most recent data
       SAL$median_salary[i] <- as.numeric(median(jj$`Annual Salary`))
       SAL$salary_per_week[i] <- SAL$median_salary[i]/52 # 52 weeks in a year
       SAL$amount_week[i] <- SAL$salary_per_week[i]*SAL$duration_weeks[i]
       SAL$amount_overtime[i] <- (SAL$salary_per_week[i]/37.5)*SAL$overtime_hours[i] # 40 hours in a work week
       SAL$amount_total[i] <- ifelse(SAL$overtime_hours[i] == 0, SAL$amount_week[i], (SAL$amount_week[i] + SAL$amount_overtime[i]))
     }
-    #browser()
     bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
     SAL <- SAL[-bad,]
     return(SAL)
