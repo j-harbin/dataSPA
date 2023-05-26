@@ -13,6 +13,7 @@ plotSPA(
   fundingChange = NULL,
   dataframe = FALSE,
   year = NULL,
+  endDate = NULL,
   debug = 0
 )
 }
@@ -24,17 +25,19 @@ plotSPA(
 \item{which}{indicates which plot to plot (See Details). The
 options to use include: \code{omBar}, \code{omPie}, \code{omAllocation},
 \code{omAllocationGeneral}, \code{salaryBar}, \code{salaryAllocation},
-\code{weekAllocation},\code{indeterminate}, or \code{predict}}
+\code{weekAllocation},\code{indeterminate}, \code{predictSummary}, or \code{predict}}
 
 \item{id}{the project_id from the Project Planning Tool}
 
-\item{funding}{a variable used when \code{which='predict'} used
-to indicate which funding source will experience change in
-the prediction}
+\item{funding}{a variable used when \code{which='predictSummary'} or
+\code{which='predict'} used to indicate which funding source will
+experience change in the prediction. If \code{endDate} is provided,
+only the length of this argument must equal 1.}
 
-\item{fundingChange}{a percentage used when \verb{which='predict}
-used to indicate by how much the funding specified in
-\code{funding} will change by}
+\item{fundingChange}{a percentage used when \verb{which='predictSummary}
+or \code{which=predict} used to indicate by how much the funding
+specified in \code{funding} will change by. If \code{endDate} is provided,
+this argument is ignored.}
 
 \item{dataframe}{a Boolean indicating if the user wants the data frame
 of what is being plotted returned. For multi-year projects, a list of
@@ -43,6 +46,10 @@ data frames for each year is returned. This is mainly for package testing}
 \item{year}{a character indicating which year of the project to
 plot. This is given in the format "YYYY-YYYY". If \code{year} is \code{NULL}
 all years are plotted by default}
+
+\item{endDate}{the end date in "YYYY-YYYY" format that indicates
+when the funding specified by \code{funding} ends. This is used
+when \code{which='predict'} and can only be an interval of one year.}
 
 \item{debug}{integer value indicating level of debugging.
 If this is less than 1, no debugging is done. Otherwise,
@@ -75,8 +82,13 @@ using the median values of a specific job classification.
 \item For \code{which="weekAllocation"} a bar graph representing time (weeks)
 \item For \code{which="indeterminate"} a pie chart representing proportion of indeterminate vs
 non-Indeterminate employees for project years is plotted
-\item For \code{which="predict"}a line chart showing the trends for
+\item For \code{which="predictSummary"}a line chart showing the trends for
 changes in different funding scenarios
+\item For \code{which="predict"} a bar chart showing the trends for changes
+in different funding scenarios is plotted with the number of stations
+overlying the figure with a line. A new plot is plotted for each
+funding scenario. If \code{endDate} is provided, the bar chart will
+represent funding as status quo until the end date (See example 3)
 }
 }
 \examples{
@@ -86,7 +98,7 @@ library(dataSPA)
 data <- getData(type="om", cookie=cookie)
 plotSPA(om=data, which="omBar")
 
-# Example 2: Plot a prediction of cost of station
+# Example 2: Plot a prediction of number of station
 # for NCP funding decreasing by 25\%, 50\%, 75\%, and 100\%
 for the Snow Crab project
 
@@ -94,9 +106,18 @@ library(dataSPA)
 data(salaries)
 data <- getData(type='om', cookie=cookie)
 data2 <- getData(type='salary', cookie=cookie)
+plotSPA(om=data, salary=data2, which='predictSummary', id=1093,
+funding= rep("NCP (A-base)",4),
+fundingChange=c(-25, -5, -75, -100))
+
+# Example 3: Bar plot predicting of the change in
+number of stations impact as a result of a certain funding
+ending
+
 plotSPA(om=data, salary=data2, which='predict', id=1093,
 funding= rep("NCP (A-base)",4),
-fundingChange=c(-0.25, -0.5, -0.75, -1))
+fundingChange=c(-25, -5, -75, -100), endDate="2026-2027")
+
 }
 }
 \author{

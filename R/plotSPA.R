@@ -35,28 +35,39 @@
 #' * For `which="indeterminate"` a pie chart representing proportion of indeterminate vs
 #' non-Indeterminate employees for project years is plotted
 #'
-#' * For `which="predict"`a line chart showing the trends for
+#' * For `which="predictSummary"`a line chart showing the trends for
 #' changes in different funding scenarios
+#'
+#' * For `which="predict"` a bar chart showing the trends for changes
+#' in different funding scenarios is plotted with the number of stations
+#' overlying the figure with a line. A new plot is plotted for each
+#' funding scenario. If `endDate` is provided, the bar chart will
+#' represent funding as status quo until the end date (See example 3)
 #'
 #' @param om a data frame likely from `getData(type='om')`
 #' @param salary a data frame likely from `getData(type='salary')`
 #' @param which indicates which plot to plot (See Details). The
 #' options to use include: `omBar`, `omPie`, `omAllocation`,
 #' `omAllocationGeneral`, `salaryBar`, `salaryAllocation`,
-#' `weekAllocation`,`indeterminate`, or `predict`
+#' `weekAllocation`,`indeterminate`, `predictSummary`, or `predict`
 #' @param id the project_id from the Project Planning Tool
-#' @param funding a variable used when `which='predict'` used
-#' to indicate which funding source will experience change in
-#' the prediction
-#' @param fundingChange a percentage used when `which='predict`
-#' used to indicate by how much the funding specified in
-#' `funding` will change by
+#' @param funding a variable used when `which='predictSummary'` or
+#' `which='predict'` used to indicate which funding source will
+#' experience change in the prediction. If `endDate` is provided,
+#' only the length of this argument must equal 1.
+#' @param fundingChange a percentage used when `which='predictSummary`
+#' or `which=predict` used to indicate by how much the funding
+#' specified in `funding` will change by. If `endDate` is provided,
+#' this argument is ignored.
 #' @param dataframe a Boolean indicating if the user wants the data frame
 #' of what is being plotted returned. For multi-year projects, a list of
 #' data frames for each year is returned. This is mainly for package testing
 #' @param year a character indicating which year of the project to
 #' plot. This is given in the format "YYYY-YYYY". If `year` is `NULL`
 #' all years are plotted by default
+#' @param endDate the end date in "YYYY-YYYY" format that indicates
+#' when the funding specified by `funding` ends. This is used
+#' when `which='predict'` and can only be an interval of one year.
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
 #'  some functions will print debugging information.
@@ -69,6 +80,8 @@
 #' @importFrom graphics axis
 #' @importFrom graphics layout
 #' @importFrom graphics points
+#' @importFrom graphics abline
+#' @importFrom graphics mtext
 #' @examples
 #' \dontrun{
 #' # Example 1: Plot Bar graph of O&M Allocations
@@ -76,7 +89,7 @@
 #' data <- getData(type="om", cookie=cookie)
 #' plotSPA(om=data, which="omBar")
 #'
-#' # Example 2: Plot a prediction of cost of station
+#' # Example 2: Plot a prediction of number of station
 #' # for NCP funding decreasing by 25%, 50%, 75%, and 100%
 #' for the Snow Crab project
 #'
@@ -84,9 +97,18 @@
 #' data(salaries)
 #' data <- getData(type='om', cookie=cookie)
 #' data2 <- getData(type='salary', cookie=cookie)
+#' plotSPA(om=data, salary=data2, which='predictSummary', id=1093,
+#' funding= rep("NCP (A-base)",4),
+#' fundingChange=c(-25, -5, -75, -100))
+#'
+#' # Example 3: Bar plot predicting of the change in
+#' number of stations impact as a result of a certain funding
+#' ending
+#'
 #' plotSPA(om=data, salary=data2, which='predict', id=1093,
 #' funding= rep("NCP (A-base)",4),
-#' fundingChange=c(-0.25, -0.5, -0.75, -1))
+#' fundingChange=c(-25, -5, -75, -100), endDate="2026-2027")
+#'
 #' }
 #' @export
 #'
@@ -95,14 +117,14 @@
 #' @author Jaimie Harbin
 #'
 
-plotSPA <- function(om=NULL,salary=NULL, which=NULL, id=NULL, funding=NULL, fundingChange=NULL, dataframe=FALSE, year=NULL, debug=0) {
+plotSPA <- function(om=NULL,salary=NULL, which=NULL, id=NULL, funding=NULL, fundingChange=NULL, dataframe=FALSE, year=NULL, endDate=NULL, debug=0) {
 project_id <- category_display <- project_year_id <- amount <- funding_source_display <- fiscal_year <- project_year_id <- category_type <- NULL
 
 if (is.null(which)) {
-stop("must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predict")
+stop("must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary", 'predict')
 }
 
-if (!(which %in% c("omBar", "omPie", "omAllocation", "omAllocationGeneral", "salaryBar", "salaryAllocation","weekAllocation","indeterminate", 'predict'))) {
+if (!(which %in% c("omBar", "omPie", "omAllocation", "omAllocationGeneral", "salaryBar", "salaryAllocation","weekAllocation","indeterminate", 'predictSummary', 'predict'))) {
 stop("must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate'")
 }
 
@@ -114,7 +136,7 @@ if (debug > 0) {
 message("which= ", which, " and id = ", id)
 }
 
-if (which %in% c("omBar", "omPie", "omAllocation", "omAllocationGeneral", 'predict')) {
+if (which %in% c("omBar", "omPie", "omAllocation", "omAllocationGeneral", 'predictSummary', 'predict')) {
 if (debug > 0) {
   message("om has been identified")
 }
@@ -227,7 +249,7 @@ if (which == "omBar") {
 
 }
 
-if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate", "predict")) {
+if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate", "predictSummary", "predict")) {
   if (debug > 0) {
     message("salary has been identified")
   }
@@ -354,7 +376,7 @@ if (which %in% c("salaryBar", "salaryAllocation","weekAllocation","indeterminate
 
 }
 
-if (which == "predict") {
+if (which %in% c("predictSummary", "predict")) {
   if (!(id == 1093)) {
   stop("This code is just being started and only works for snow crab project (i.e. id=1093)")
   }
@@ -363,11 +385,11 @@ if (which == "predict") {
     stop('must specify funding argument. Choose one of the following: ', paste0(unique(keep$funding_source_display), collapse=","))
   }
 
-  if (is.null(fundingChange)) {
+  if (is.null(fundingChange) && is.null(endDate)) {
     stop("must specify fundingChange")
   }
 
-  if (!(length(funding) == length(fundingChange))) {
+  if (!(length(funding) == length(fundingChange)) && is.null(endDate)) {
     stop("funding and fundingChange must be the same length")
   }
 
@@ -392,7 +414,9 @@ stop("funding ", funding[i], " did not fund stations in this project. Try : ", p
   # identifying the new years to add
   ly <- gsub("^[^-]*-\\s*([^.]+).*","\\1",years[length(years)]) # Getting last number of last year (ie. 2023-2024)
   newyear <- paste0(ly, "-", as.numeric(ly)+1)
-
+  if (!(is.null(endDate))) {
+    fundingChange <- -100
+  }
   columnnames <- paste0(newyear,seq_along(funding))
   # Addressing changes in funding based on user input
   for (i in seq_along(funding)) {
@@ -410,17 +434,6 @@ same <- which(is.na(unname(unlist(cost[columnnames[j]]))))
 #message("For j = ", j, " same = ", same)
 cost[columnnames[j]][same,] <- cost[years[length(years)]][same,]
 }
-
-# left of figure
-  layout(matrix(c(1,2), 1, 2, byrow = TRUE))
-  bp <- barplot(as.matrix(cost), col=c(1:length(namesFunding)), ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), las=2, cex.names=0.7, yaxt="n")
-  title(ylab = "Amount of O&M Funding ($)", mgp = c(1, 1, 0))
-
-  #tot <- colMeans(as.matrix(cost))
-  tot <- rep(40000, length(names(cost)))
-  points(bp, tot, xpd = TRUE, col = c(rep(1, length(years)), 1+(1:length(funding))), pch=20)
-  legend("topright", c(namesFunding), col=c(1:length(namesFunding)), pch=rep(20,length(namesFunding)), cex=0.6)
-
 # right of figure
 station <- cost # Setting dimensions for station
 
@@ -437,7 +450,6 @@ for (i in seq_along(columnnames)) {
   }
 }
 
-# Now plotting (station)
 totalnames <- c(years, columnnames)
 
 # if we wanted color coded by funding this is where we would do it
@@ -446,19 +458,29 @@ names(totalstations) <- totalnames
 for (i in seq_along(totalnames)) {
   totalstations[totalnames[i]] <- sum(station[totalnames[i]])
 }
-
+if (which == "predictSummary") {
+# left of figure
+layout(matrix(c(1,2), 1, 2, byrow = TRUE))
+bp <- barplot(as.matrix(cost), col=c(1:length(namesFunding)), ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), las=2, cex.names=0.7, ylab="")
+abline(v = mean(bp[length(years):(length(years)+1)]), col = "red")
+title(ylab = "Amount of O&M Funding ($)", mgp = c(3.3, 1, 0))
+tot <- rep(40000, length(names(cost)))
+points(bp, tot, xpd = TRUE, col = c(rep(1, length(years)), 1+(1:length(funding))), pch=20)
+legend("topright", c(namesFunding), col=c(1:length(namesFunding)), pch=rep(20,length(namesFunding)), cex=0.6)
 p <- totalstations[1:length(years)]
 yearPoint <- unlist(unname(p))
 x <- 1:(length(years)+1)
 for (i in seq_along(columnnames)) {
 y <- c(yearPoint, unname(unlist(totalstations[length(years)+i])))
+
 if (i == 1) {
-plot(x, y, type="l", ylab="Number of Stations", pch=20, col=i+1, ylim=c(min(unlist(unname(totalstations)))-10, max(unlist(unname(totalstations)))+10), xaxt="n", xlab=" ")
+plot(x, y, type="o", ylab="Number of Stations", pch=20, col=i+1, ylim=c(min(unlist(unname(totalstations)))-10, max(unlist(unname(totalstations)))+10), xaxt="n", xlab=" ")
   axis(1, at=seq_along(y), labels=c(years, newyear), las=2, cex.axis=0.7)
 } else {
   lines(x, y, col=i+1, type="o", pch=20)
 }
 }
+abline(v=length(years), col="red")
 labels <- paste0(funding, ",", fundingChange, "%")
 labels <- c("Status Quo", labels)
 y <- c(yearPoint, yearPoint[length(yearPoint)])
@@ -468,6 +490,83 @@ legend("bottomleft", labels, col=1:(length(x)+1), pch=20, cex=0.9)
 if (dataframe == TRUE) {
   return(totalstations)
 }
+} else if (which == "predict") {
+  if (is.null(endDate)) {
+  #fundingChange <- -100
+  par(mar = c(5, 5, 4, 4) + 0.3)
+  ny2<- as.numeric(gsub("^[^-]*-\\s*([^.]+).*","\\1",newyear))
+  newyear2 <- paste0(ny2, "-", ny2+1)
+  ny3 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*","\\1",newyear2))
+  newyear3 <- paste0(ny3, "-", ny3+1)
+  labels <- c(years, newyear, newyear2, newyear3)
+
+  for (i in seq_along(fundingChange)) { # Each scenario gets a separate plot
+    mat <- cbind(cost[1:length(years)], cost[length(years)+i],cost[length(years)+i], cost[length(years)+i] )
+    names(mat) <- labels
+    bp <- barplot(as.matrix(mat), col=c(1:length(namesFunding)), ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), las=2, cex.names=0.7, ylab="")
+    abline(v = mean(bp[length(years):(length(years)+1)]), col = "red")
+    par(new=TRUE)
+    ts <-cbind(totalstations[1:length(years)], totalstations[length(years)+i],totalstations[length(years)+i], totalstations[length(years)+i])
+    plot(1:length(ts), unlist(unname(ts)), type="o", pch=20, axes=FALSE, xlab="", ylab="", ylim=c(0, max(unlist(unname(ts)))), col="blue")
+    axis(side=4, at = pretty(range(0, max(unlist(unname(ts))))), col="blue", col.ticks = "blue")
+    mtext("Number of Stations", side=4, line=3, col="blue")
+    title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
+}
+  } else {
+    if (!(length(funding) == 1)) {
+      stop("Can only predict the ending of one funding at a time. Your funding argument has length = ", length(funding))
+    }
+
+    # Determine how many years until ending
+    ny2<- as.numeric(gsub("^[^-]*-\\s*([^.]+).*","\\1",newyear))
+    endYears <- NULL
+    for (i in seq_along(0:20)) {
+    endYears[[i]] <- paste0(ny2+i, "-", ny2+(i+1))
+    }
+
+    year1 <- as.numeric(gsub("(.+?)(\\-.*)", "\\1", endDate))
+    year2 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*","\\1",endDate))
+    if (!(year2-year1 == 1)) {
+      stop("endDate must only be one year interval not ", year2-year1)
+    }
+
+    if (length(which(endYears %in% endDate)) == 0) {
+      stop("It's not possible to predict for endDate ", endDate, " Make
+           sure to have it in YYYY-YYYY format. You also may on predict for
+           up to 20 years in advance")
+    }
+    labels <- c(years,newyear, endYears[1:which(endYears %in% endDate)])
+    ey <- data.frame(matrix(NA, nrow = 2, ncol = length(labels)))
+    names(ey) <- labels
+    ey[1:length(years)] <- cost[1:length(years)]
+    ey[(length(years)+1):(length(labels)-1)] <- cost[length(years)]
+    rownames(ey) <- stationFund
+    ey[length(labels)][paste0(funding),] <- 0
+    ey[length(labels)][which(!(stationFund %in% funding)),] <- ey[length(labels)-1][which(!(stationFund %in% funding)),] # copying over non impacting funding
+
+
+    # TEST NOW
+    par(mar = c(5, 5, 4, 4) + 0.3)
+    bp <- barplot(as.matrix(ey), col=c(1:length(namesFunding)), ylim=c(0,sum(subset(df, select=c(paste0(years[1])))) + 109000), las=2, cex.names=0.7, ylab="")
+    abline(v = mean(bp[length(years):(length(years)+1)]), col = "red")
+
+    # Creating number of stations
+
+
+    ts <- data.frame(matrix(NA, nrow = 1, ncol = length(labels)))
+    names(ts) <- labels
+    ts[1:length(years)] <- totalstations[1:length(years)]
+    ts[(length(years)+1):(length(labels)-1)] <- totalstations[length(years)]
+    gone <- station[length(years)][which(stationFund %in% funding),]
+    ts[length(labels)] <- unlist(unname(totalstations[length(years)]))-gone
+    par(new=TRUE)
+    plot(1:length(ts), unlist(unname(ts)), type="o", pch=20, axes=FALSE, xlab="", ylab="", ylim=c(0, max(unlist(unname(ts)))), col="blue")
+    axis(side=4, at = pretty(range(0, max(unlist(unname(ts))))), col="blue", col.ticks = "blue")
+    mtext("Number of Stations", side=4, line=3, col="blue")
+    title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
+
+  }
+  }
 }
 
 
