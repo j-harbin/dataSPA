@@ -450,6 +450,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       fundingLevel[[i]] <- paste0(levels[i], class[i])
     }
     fundingLevel <- unlist(fundingLevel)
+    SAL$level_display <- fundingLevel
 
     # Now sub the excel sheet
 
@@ -458,7 +459,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     SAL$amount_week <- rep(NA, length(SAL$id))
     SAL$amount_overtime <- rep(NA, length(SAL$id))
     SAL$amount_total <- rep(NA, length(SAL$id))
-    #browser()
     for (i in seq_along(fundingLevel)) {
       j <- salaries[which(grepl(fundingLevel[i], salaries$`Level and Step`)),] # keeping relevant salaries from excel
       excelyear <- sub('.* ', '', j$`Level and Step`) # extract everything after space in excel for year
