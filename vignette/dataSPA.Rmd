@@ -1,7 +1,9 @@
 ---
 output:
-  html_document: default
-  pdf_document: default
+  html_document: 
+    fig_caption: yes
+  pdf_document: 
+    fig_caption: yes
 ---
 # dataSPA Package:A Package for Obtaining Data for DFO Strategic Planning
 ## Jaimie Harbin
@@ -31,13 +33,27 @@ usethis::create_github_token()
 credentials::set_github_pat()
 
 install.packages("devtools") # optional
-devtools::install_github("j-harbin/dataSPA", repo = "main")
+devtools::install_github("j-harbin/dataSPA")
 library(dataSPA)
 ```
 
 Once the package is installed, the user should follow the following workflow to successfully use the package:
 
-![Figure 1: Work flow for the `dataSPA` package](workflow.png)
+
+```{r fig1,fig.width=8.5,fig.height=3,fig.cap="\\label{fig:fig1}Figure 1: Work flow for the `dataSPA` package",echo=FALSE}
+DiagrammeR::grViz("digraph flowchart {
+      node [fontname = Helvetica, shape = rectangle]
+      tab1 [label = '@@1']
+      tab2 [label = '@@2']
+
+      # edge definitions with the node IDs
+      tab1 -> tab2;
+      }
+
+      [1]: 'getData()'
+      [2]: 'createReport()'
+      ")
+```
 
 ## getData()
 
