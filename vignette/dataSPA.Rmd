@@ -83,7 +83,7 @@ This variable `cookie` will then act as your `cookie` argument in the `getData()
 ```{r, eval=FALSE}
 data(salaries)
 om <- getData(type="om", cookie=cookie)
-salary <- getData(type="om", cookie=cookie, salaries=salaries)
+salary <- getData(type="salary", cookie=cookie, salaries=salaries)
 
 ```
 
@@ -113,7 +113,7 @@ The various plot types are as follows:
 To plot the amount of money invested in O&M per funding type for the Snow crab project, for example, the code is as follows:
 
 ```{r, eval=FALSE}
-plotSPA(om, which="omBar")
+plotSPA(om, which="omBar", id=1093)
 ```
 
 ![Figure 3 Bar graph representing amount of money ($) invested in O&M per funding type for project years 2021-2022, 2022-2023 and 2023-2024 for the snow crab project (# 1093). Graph color coded by funding type indicated by the legend. ](om.png)
