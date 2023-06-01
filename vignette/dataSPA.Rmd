@@ -23,7 +23,14 @@ project, they are not included in total weeks or salary.
 To install the package, you must first be a collaborator of the private repository `dataSPA` hosted by `j-harbin` (Jaimie Harbin). Once you have been granted access, run the following code to install the package:
 
 ```{r, eval=FALSE}
-install.packages("devtools")
+# configure github and generate token
+usethis::use_git_config(user.name = "YourName", user.email = "your@mail.com")
+usethis::create_github_token() 
+
+# paste your personal access token into pop-up that follows...
+credentials::set_github_pat()
+
+install.packages("devtools") # optional
 devtools::install_github("j-harbin/dataSPA", repo = "main")
 library(dataSPA)
 ```
