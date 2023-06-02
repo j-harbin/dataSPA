@@ -115,7 +115,8 @@ The various plot types are as follows:
 
 * For `which="predict"` a bar chart showing the trends for changes in different funding scenarios is plotted with the number of stations overlying the figure with a line. A new plot is plotted for each funding scenario. If `endDate` is provided, the bar chart will represent funding as status quo until the end date (See example 3)
 
-* For `which="predictSalary` a bar chat showing the trends of salary increasing while funding amount remains the same
+* For `which="predictSalary` a bar chat showing the trends of salary increasing while funding amount remains the same.Note: This plot does
+#' not include amount of overtime as that is hard to predict.
 
 To plot the amount of money invested in O&M per funding type for the Snow crab project, for example, the code is as follows:
 

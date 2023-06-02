@@ -45,7 +45,8 @@
 #' represent funding as status quo until the end date (See example 3)
 #'
 #' * For `which="predictSalary` a bar chat showing the trends of salary
-#' increasing while funding amount remains the same
+#' increasing while funding amount remains the same. Note: This plot does
+#' not include amount of overtime as that is hard to predict.
 #'
 #' @param om a data frame likely from `getData(type='om')`
 #' @param salary a data frame likely from `getData(type='salary')`
