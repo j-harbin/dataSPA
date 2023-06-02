@@ -49,7 +49,7 @@ cat(paste0(unique(index$lead_staff)))
 
 
 ```{r, echo=FALSE, fig.caption="Figure 7: Line graph showing number of stations under different funding scenarios"}
-plotSPA(om=om, salary=sal, which='predict', id=1093,funding= rep("NCP (A-base)",4),fundingChange=c(-25, -50, -75, -100))
+plotSPA(om=om, salary=salary, which='predict', id=1093,funding= rep("NCP (A-base)",4),fundingChange=c(-25, -50, -75, -100))
 ```
 
 
