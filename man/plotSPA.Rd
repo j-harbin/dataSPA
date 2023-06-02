@@ -95,7 +95,8 @@ overlying the figure with a line. A new plot is plotted for each
 funding scenario. If \code{endDate} is provided, the bar chart will
 represent funding as status quo until the end date (See example 3)
 \item For \verb{which="predictSalary} a bar chat showing the trends of salary
-increasing while funding amount remains the same
+increasing while funding amount remains the same. Note: This plot does
+not include amount of overtime as that is hard to predict.
 }
 }
 \examples{

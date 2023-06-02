@@ -20,7 +20,7 @@ Some disclaimers/ assumptions with this package include:
 sometimes overtime may be 1.5X or 2X regular salary
 6. When a person with job classification EX is associated with a
 project, they are not included in total weeks or salary.
-7. For salary predictions in `plotSPA(which="salaryPredict")`, overtime is not accounted for
+7. For salary predictions in `plotSPA(which="salaryPredict")`, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
 
 
 To install the package, you must first be a collaborator of the private repository `dataSPA` hosted by `j-harbin` (Jaimie Harbin). Once you have been granted access, run the following code to install the package:

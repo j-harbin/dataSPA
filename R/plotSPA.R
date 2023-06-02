@@ -1020,25 +1020,22 @@ plotSPA <-
       DFSAL[1:length(salyears)] <- saldf
 
       # Need to determine rate of increase
-      # ERASE JAIM
-
       fundingLevel <- salary$level_display
-
       soi <- vector(mode = "list", length(unique(salary$level_display)))
+      if (is.null(salaries)) {
+        stop(
+          "must load salaries data frame by using data(salaries) and set salaries=salaries in plotSPA() argument"
+        )
+      }
       for (i in seq_along(unique(fundingLevel))) {
-        if (is.null(salaries)) {
-          stop(
-            "must load salaries data frame by using data(salaries) and set salaries=salaries in plotSPA() argument"
-          )
-        }
         s <-
-          salaries[which(grepl(unique(fundingLevel)[[i]], salaries$`Level and Step`)), ]
+          salaries[which(grepl(unique(fundingLevel)[[i]], salaries$`Level and Step`)), ] # Find which salary spreadsheet to take median
         eyears <-
           as.numeric(sub('.* ', '', s$`Level and Step`)) # Extract everything after space to get year
         EY <- sort(unique(as.numeric(eyears)))
         for (j in seq_along(EY)) {
           soi[[i]][j] <-
-            mean(s[which(eyears %in% EY[j]), ]$`Annual Salary`, na.rm = TRUE)
+            median(s[which(eyears %in% EY[j]), ]$`Annual Salary`, na.rm = TRUE)
         }
       }
       names(soi) <- unique(fundingLevel)
@@ -1049,7 +1046,7 @@ plotSPA <-
         m <- lm(y ~ x)
         roi[[i]] <- unname(m$coefficients[2]) # Approx 1500 every year
       }
-      names(roi) <- unique(fundingLevel) # This is the rate of increase
+      names(roi) <- unique(fundingLevel) # This is the rate of increase/year
 
       # FIX GL-MAN-04, GL-MAN-05, GL-MAN-07
 
@@ -1059,7 +1056,6 @@ plotSPA <-
           nrow = length(salnamesFunding),
           ncol = length(salyears) + 3
         ))
-      #browser()
       # Removing overtime hours (they\re hard to predict)
       for (i in seq_along(salyears)) {
         for (j in seq_along(salnamesFunding)) {
@@ -1076,23 +1072,18 @@ plotSPA <-
       dfROI[1:length(salyears)] <- saldf
       names(dfROI) <- labels
       row.names(dfROI) <- salnamesFunding
-
       # Fill in next values
       value <-
         salaryKeep[which(salaryKeep$fiscal_year == salyears[length(salyears)]), ] # Look at last
       new <- value
-      for (j in length(salyears) + 1:3) {
-        # Assigning new
-        if (!(j == length(salyears) + 1)) {
-          value <- new
-        }
-
+      extraYears <- length(salyears)+1:3
+      for (j in seq_along(extraYears)) {
         for (i in seq_along(value$level_display)) {
           for (k in seq_along(unique(value$funding_source_display))) {
             newAmount <-
               unname(unlist(roi[which(names(roi) == new$level_display[i])])) # Find ROI for level
             new$median_salary[i] <-
-              value$median_salary[i] + newAmount # Update calculations
+              value$median_salary[i] + (j*newAmount) # Update calculations
             new$salary_per_week[i] <- new$median_salary[i] / 52
             new$amount_week[i] <- new$salary_per_week[i] * new$duration_weeks[i]
             new$amount_overtime[i] <-
@@ -1103,10 +1094,11 @@ plotSPA <-
                 new$amount_week[i],
                 (new$amount_week[i] + new$amount_overtime[i])
               )
+            # Ignoring overtime
             totalSum <-
-              sum(new$amount_total[which(new$funding_source_display == unique(new$funding_source_display[k]))], na.rm =
+              sum(new$amount_week[which(new$funding_source_display == unique(new$funding_source_display[k]))], na.rm =
                     TRUE)
-            dfROI[j][k, ] <- round(totalSum, 2)
+            dfROI[extraYears[j]][k, ] <- round(totalSum, 2)
             new <- new # Reset new
 
           }
@@ -1114,7 +1106,6 @@ plotSPA <-
         }
 
       }
-      browser()
 par(mfrow = c(1, 1))
 bp <-
   barplot(
