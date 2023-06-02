@@ -1058,12 +1058,25 @@ plotSPA <-
           nrow = length(salnamesFunding),
           ncol = length(salyears) + 3
         ))
+      #browser()
+      # Removing overtime hours (they\re hard to predict)
+      for (i in seq_along(salyears)) {
+        for (j in seq_along(salnamesFunding)) {
+          value <-
+            salaryKeep[which(salaryKeep$fiscal_year == salyears[i]), ] # Look at one year
+          value2 <-
+            value[which(value$funding_source_display == salnamesFunding[j]), ]
+          totalSum <-
+            sum(value2$amount_week[which(is.finite(value2$amount_week))], na.rm =
+                  TRUE)
+          saldf[paste0(salnamesFunding[j]), paste0(salyears[i])] <- totalSum
+        }
+      }
       dfROI[1:length(salyears)] <- saldf
       names(dfROI) <- labels
       row.names(dfROI) <- salnamesFunding
 
       # Fill in next values
-      #browser()
       value <-
         salaryKeep[which(salaryKeep$fiscal_year == salyears[length(salyears)]), ] # Look at last
       new <- value
@@ -1100,6 +1113,7 @@ plotSPA <-
         }
 
       }
+      browser()
 par(mfrow = c(1, 1))
 bp <-
   barplot(
