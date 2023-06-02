@@ -1036,7 +1036,6 @@ plotSPA <-
           as.numeric(sub('.* ', '', s$`Level and Step`)) # Extract everything after space to get year
         EY <- sort(unique(as.numeric(eyears)))
         for (j in seq_along(EY)) {
-          #message("i = ",i, " and j =", j)
           soi[[i]][j] <-
             mean(s[which(eyears %in% EY[j]), ]$`Annual Salary`, na.rm = TRUE)
         }
@@ -1101,7 +1100,6 @@ plotSPA <-
         }
 
       }
-#browser()
 par(mfrow = c(1, 1))
 bp <-
   barplot(
