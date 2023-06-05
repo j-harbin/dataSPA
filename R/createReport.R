@@ -22,7 +22,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./inst/rmarkdown/templates/word_document/skeleton/", destdir=".", output='html') {
+createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath=file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton"), destdir=".", output='html') {
 
   if (is.null(id)) {
     stop("In documentInformation() must provide an id argument pertaining to the project_id")
@@ -65,12 +65,11 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./inst/rmarkdow
 
   ## Move into Rmd
   if (output == "html") {
-    rmarkdown::render(paste0(Rmdpath, "skeleton.Rmd"), output_dir=destdir)
+    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir)
   } else if (output == "pdf") {
-  rmarkdown::render(paste0(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "pdf_document")
+  rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "pdf_document")
   } else if (output == "word") {
-    rmarkdown::render(paste0(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "word_document")
-
+    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "word_document")
   } else {
   stop("output must either be html, word, or pdf, not ", output)
 }
