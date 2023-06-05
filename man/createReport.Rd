@@ -8,7 +8,7 @@ createReport(
   om = NULL,
   salary = NULL,
   id = NULL,
-  Rmdpath = "./R/",
+  Rmdpath = "./inst/rmarkdown/templates/word_document/skeleton/",
   destdir = ".",
   output = "html"
 )
@@ -40,6 +40,6 @@ library(dataSPA)
 data(salaries)
 data <- getData(type="om",cookie=cookie)
 data2 <- getData(type="salary", cookie=cookie, salaries=salaries)
-createReport(om=data, salary=data2, Rmdpath="./R/", id=1234)
+createReport(om=data, salary=data2, id=1234)
 }
 }

@@ -56,10 +56,3 @@ plotSPA(om=om, salary=salary, which='predict', id=1093,funding= rep("NCP (A-base
 ```{r, echo=FALSE, fig.cap="Figure 2: Pie chart representing allocation of expenses for project over different years.", eval=FALSE}
 plotSPA(index, id=id, which="omAllocationGeneral")
 ```
-
-
-
-
-
-
-

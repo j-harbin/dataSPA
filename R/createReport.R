@@ -18,11 +18,11 @@
 #' data(salaries)
 #' data <- getData(type="om",cookie=cookie)
 #' data2 <- getData(type="salary", cookie=cookie, salaries=salaries)
-#' createReport(om=data, salary=data2, Rmdpath="./R/", id=1234)
+#' createReport(om=data, salary=data2, id=1234)
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./R/", destdir=".", output='html') {
+createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./inst/rmarkdown/templates/word_document/skeleton/", destdir=".", output='html') {
 
   if (is.null(id)) {
     stop("In documentInformation() must provide an id argument pertaining to the project_id")
@@ -65,11 +65,11 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath="./R/", destdir=
 
   ## Move into Rmd
   if (output == "html") {
-    rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir)
+    rmarkdown::render(paste0(Rmdpath, "skeleton.Rmd"), output_dir=destdir)
   } else if (output == "pdf") {
-  rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir, output_format = "pdf_document")
+  rmarkdown::render(paste0(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "pdf_document")
   } else if (output == "word") {
-    rmarkdown::render(paste0(Rmdpath, "word_document.Rmd"), output_dir=destdir, output_format = "word_document")
+    rmarkdown::render(paste0(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "word_document")
 
   } else {
   stop("output must either be html, word, or pdf, not ", output)
