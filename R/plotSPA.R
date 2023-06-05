@@ -1047,9 +1047,6 @@ plotSPA <-
         roi[[i]] <- unname(m$coefficients[2]) # Approx 1500 every year
       }
       names(roi) <- unique(fundingLevel) # This is the rate of increase/year
-
-      # FIX GL-MAN-04, GL-MAN-05, GL-MAN-07
-
       dfROI <-
         data.frame(matrix(
           " ",

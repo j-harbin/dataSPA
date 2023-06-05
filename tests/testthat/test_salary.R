@@ -47,4 +47,3 @@ test_that("indeterminate",
 
           }
 )
-
