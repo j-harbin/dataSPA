@@ -6,7 +6,6 @@
 #' @param om a data frame created by `getData(type='om')`
 #' @param salary a data frame created by `getData(type='salary')`
 #' @param id the project_id from the Project Planning Tool (PPT)
-#' @param Rmdpath the path to the template for the html output
 #' @param destdir parameter indicating where to save the html report
 #' @param output a character string of either `html`, `pdf`, or `word`
 #' indicating which type of file output to create.
@@ -22,7 +21,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath=file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton"), destdir=".", output='html') {
+createReport <- function(om=NULL, salary=NULL, id=NULL, destdir=".", output='html') {
 
   if (is.null(id)) {
     stop("In documentInformation() must provide an id argument pertaining to the project_id")
@@ -40,6 +39,7 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, Rmdpath=file.path(system
                     "fiscal_year", "project_title", "status", "overview", "objectives", "deliverables", "lead_staff"), names(om)))) {
     stop("Must obtain data for om using getData(type='om')")
   }
+  Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
 
   if (!(identical(c("id","overtime_hours","smart_name","duration_weeks",
                     "level_display","funding_source_display","employee_type_display",  "project_year_id",

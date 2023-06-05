@@ -8,7 +8,6 @@ createReport(
   om = NULL,
   salary = NULL,
   id = NULL,
-  Rmdpath = "./inst/rmarkdown/templates/word_document/skeleton/",
   destdir = ".",
   output = "html"
 )
@@ -19,8 +18,6 @@ createReport(
 \item{salary}{a data frame created by \code{getData(type='salary')}}
 
 \item{id}{the project_id from the Project Planning Tool (PPT)}
-
-\item{Rmdpath}{the path to the template for the html output}
 
 \item{destdir}{parameter indicating where to save the html report}
 
