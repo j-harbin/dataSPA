@@ -267,8 +267,6 @@ plotSPA <-
       }
       # omBar
       if (which == "omBar") {
-        #browser()
-
         ylim <- NULL
         for (i in seq_along(years)) {
           ylim[[i]] <- sum(subset(
@@ -493,17 +491,21 @@ plotSPA <-
 
       if (which == "salaryBar") {
         par(mfrow = c(1, 1))
+        ylim <- NULL
+        for (i in seq_along(salyears)) {
+          ylim[[i]] <- sum(subset(
+            saldf, select = c(paste0(salyears[i]))
+          ))
+        }
         barplot(
           as.matrix(saldf),
           col = c(1:length(salnamesFunding)),
           ylab = "Amount of Salary Funding ($)",
-          ylim = c(0, sum(subset(
-            saldf, select = c(paste0(salyears[1]))
-          )) + 109000),
+          ylim = c(0, max(unlist(ylim))*2),
           xlab = "Year"
         )
         legend(
-          "topright",
+          "topleft",
           c(salnamesFunding),
           col = c(1:length(salnamesFunding)),
           pch = rep(20, length(salnamesFunding)),

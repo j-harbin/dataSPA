@@ -85,6 +85,9 @@ plotSPA(om=index, id=ID, which="omBar")
 plotSPA(om=index, id=ID, which="omAllocation")
 ```
 
-#plotSPA(salary=index2, id=ID, which="salaryBar")
+```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+plotSPA(salary=index2, id=ID, which="salaryBar")
+```
+
 #plotSPA(salary=index2, id=ID, which="salaryAllocation")
 
