@@ -533,8 +533,9 @@ plotSPA <-
           barplot(
             as.matrix(dfl),
             col = 1,
-            ylab = "Salary Cost ($)",
-            xlab = "Job Classification"
+            ylab = ifelse(i==1, "Salary Cost ($)"," "),
+            xlab = " ",
+            las=2
           )
           title(paste0(salyears[i]))
           DFL[[i]] <- dfl
