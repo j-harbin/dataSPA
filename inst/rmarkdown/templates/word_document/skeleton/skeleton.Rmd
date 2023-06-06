@@ -21,24 +21,48 @@ cat(paste0(unique(index$project_title)))
 cat(paste0(unique(index$project_id)))
 ```
 
-```{r, echo=FALSE, eval=FALSE, comment=NA, results='asis'}
+**Description**
+
+```{r, echo=FALSE, comment=NA, results='asis'}
 cat(paste0(unique(index$description)))
 ```
 
-```{r, echo=FALSE, eval=FALSE, comment=NA,results='asis'}
+**Deliverables**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+
+if (unique(index$deliverables) == 0) {
+  cat(paste0("There are no identified deliverables for this project"))
+} else {
 cat(paste0(unique(index$deliverables)))
+}
 ```
 
+**Objectives**
 
-```{r, echo=FALSE, eval=FALSE, comment=NA,results='asis'}
+```{r, echo=FALSE, comment=NA,results='asis'}
 if (unique(index$objectives) == 0) {
   cat(paste0("There are no identified objectives for this project"))
-} else 
+} else {
 cat(paste0(unique(index$objectives)))
+}
 ```
 
-```{r, echo=FALSE, eval=FALSE, comment=NA, results='asis'}
-cat(paste0(unique(index$status)))
+**Status**
+
+```{r, echo=FALSE, comment=NA, results='asis'}
+years <- unique(index$fiscal_year)
+status <- NULL
+if (!(length(unique(index$status)) == 1)) {
+  for (i in seq_along(years)) {
+    ii <- index[which(index$fiscal_year == years[i]),]
+    status[[i]] <- unique(ii$status)
+  }
+  status <- unlist(status)
+  cat(paste0(years," : ", status, collapse=", "))
+} else {
+  cat(paste0(unique(index$status)), " for all project years")
+}
 ```
 
 **Lead Contact (s)**
@@ -47,12 +71,12 @@ cat(paste0(unique(index$status)))
 cat(paste0(unique(index$lead_staff)))
 ```
 
+**Plot**
 
-```{r, echo=FALSE, fig.caption="Figure 7: Line graph showing number of stations under different funding scenarios"}
-plotSPA(om=om, salary=salary, which='predict', id=1093,funding= rep("NCP (A-base)",4),fundingChange=c(-25, -50, -75, -100))
+```{r, echo=FALSE}
+ID <- unique(index$project_id)
 ```
 
-
-```{r, echo=FALSE, fig.cap="Figure 2: Pie chart representing allocation of expenses for project over different years.", eval=FALSE}
-plotSPA(index, id=id, which="omAllocationGeneral")
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chat showing the amount of money ($) invested into the project. Graph color coded by funding type"}
+plotSPA(om=index, id=ID, which="omBar")
 ```

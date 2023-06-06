@@ -60,7 +60,7 @@ DiagrammeR::grViz("digraph flowchart {
 
 If `type` is `om`, this function extracts data from the om-costs project planning tool (PPT) API (http://dmapps/api/ppt/om-costs/) and combines it with the fiscal year from the project_years API (http://dmapps/api/ppt/). If `type` is `salary`, this function obtains the data from the staff API (http://dmapps/api/ppt/staff/) and combines it with information from a Human Resources (HR) spreadsheet.
 
-It should be noted that this function will only work for authorized Department of Fisheries and Oceans Canada (DFO) employees. As shown in the help documentation for this function (`?getData`), a `cookie` is required. A `cookie` can be obtained by DFO staff by following the steps outlined below:
+It should be noted that this function will only work for authorized Department of Fisheries and Oceans Canada (DFO) employees. As shown in the help documentation for this function (`?getData`), a `cookie` is required. A `cookie` can be obtained by DFO staff and will need to be updated every few weeks by following the steps outlined below:
 
 **1. Sign into DMApps on the internet**
 
