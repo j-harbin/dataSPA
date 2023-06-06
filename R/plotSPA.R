@@ -350,7 +350,7 @@ plotSPA <-
             as.matrix(mdf),
             col = 1,
             las = 2,
-            ylab = "Cost ($)",
+            ylab = ifelse(i== 1, "Cost ($)", " "),
             xlab = NULL,
             cex.axis = 0.7
           )

@@ -77,10 +77,14 @@ cat(paste0(unique(index$lead_staff)))
 ID <- unique(index$project_id)
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chat showing the amount of money ($) invested into the project. Graph color coded by funding type"}
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chat showing the amount of O&M money ($) invested into the project. Graph color coded by funding type"}
 plotSPA(om=index, id=ID, which="omBar")
-#plotSPA(om=index, id=ID, which="omAllocationGeneral")
+```
+
+```{r, echo=FALSE, fig.cap="Figure 2: Bar chat showing the O&M money allocation for each year of the project"}
+plotSPA(om=index, id=ID, which="omAllocation")
+```
+
 #plotSPA(salary=index2, id=ID, which="salaryBar")
 #plotSPA(salary=index2, id=ID, which="salaryAllocation")
 
-```
