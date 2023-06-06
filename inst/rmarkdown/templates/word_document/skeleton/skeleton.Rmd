@@ -79,4 +79,8 @@ ID <- unique(index$project_id)
 
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chat showing the amount of money ($) invested into the project. Graph color coded by funding type"}
 plotSPA(om=index, id=ID, which="omBar")
+#plotSPA(om=index, id=ID, which="omAllocationGeneral")
+#plotSPA(salary=index2, id=ID, which="salaryBar")
+#plotSPA(salary=index2, id=ID, which="salaryAllocation")
+
 ```

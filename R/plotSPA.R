@@ -267,17 +267,30 @@ plotSPA <-
       }
       # omBar
       if (which == "omBar") {
+        #browser()
+
+        ylim <- NULL
+        for (i in seq_along(years)) {
+          ylim[[i]] <- sum(subset(
+            df, select = c(paste0(years[i]))
+          ))
+        }
+
+        par(mar = c(5, 5, 4, 4) + 0.3)
         barplot(
           as.matrix(df),
           col = c(1:length(namesFunding)),
-          ylab = "Amount of O&M Funding ($)",
-          ylim = c(0, sum(subset(
-            df, select = c(paste0(years[1]))
-          )) + 109000),
-          xlab = "Year"
+          ylab = " ",
+          ylim = c(0, max(unlist(ylim))*2),
+          xlab = " ",
+          las=2
+          #JAIM
+
         )
+        title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
+
         legend(
-          "bottomright",
+          "topleft",
           c(namesFunding),
           col = c(1:length(namesFunding)),
           pch = rep(20, length(namesFunding)),
