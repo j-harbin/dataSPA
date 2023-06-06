@@ -58,19 +58,21 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, destdir=".", output='htm
 
 
   # Dealing with om
-  index <- om[which(om$project_id == id),]
+  for (i in seq_along(id)) {
+  index <- om[which(om$project_id == id[i]),]
 
   # Dealing with salary
-  index2 <- salary[which(salary$project_id == id),]
+  index2 <- salary[which(salary$project_id == id[i]),]
 
   ## Move into Rmd
   if (output == "html") {
-    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir)
+    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_file=id[i])
   } else if (output == "pdf") {
-  rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "pdf_document")
+  rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "pdf_document",output_file=id[i])
   } else if (output == "word") {
-    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "word_document")
+    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "word_document",output_file=id[i])
   } else {
   stop("output must either be html, word, or pdf, not ", output)
-}
+  }
+  }
 }
