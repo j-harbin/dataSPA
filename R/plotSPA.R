@@ -282,7 +282,6 @@ plotSPA <-
           ylim = c(0, max(unlist(ylim))*2),
           xlab = " ",
           las=2
-          #JAIM
 
         )
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
@@ -344,13 +343,15 @@ plotSPA <-
               sum(value$amount[which(value$category_display == unique(value$category_display)[j])], na.rm =
                     TRUE)
           }
+
           barplot(
             as.matrix(mdf),
             col = 1,
             las = 2,
             ylab = ifelse(i== 1, "Cost ($)", " "),
             xlab = NULL,
-            cex.axis = 0.7
+            cex.axis = 0.7,
+            cex.names=0.8
           )
           title(paste0(years[i]))
           DF[[i]] <- mdf
@@ -491,6 +492,8 @@ plotSPA <-
 
       if (which == "salaryBar") {
         par(mfrow = c(1, 1))
+        par(mar = c(5, 5, 4, 4) + 0.3)
+
         ylim <- NULL
         for (i in seq_along(salyears)) {
           ylim[[i]] <- sum(subset(
@@ -500,11 +503,12 @@ plotSPA <-
         barplot(
           as.matrix(saldf),
           col = c(1:length(salnamesFunding)),
-          ylab = "Amount of Salary Funding ($)",
+          ylab = " ",
           ylim = c(0, max(unlist(ylim))*2),
           xlab = " ",
           las=2
         )
+        title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
         legend(
           "topleft",
           c(salnamesFunding),
@@ -536,7 +540,8 @@ plotSPA <-
             col = 1,
             ylab = ifelse(i==1, "Salary Cost ($)"," "),
             xlab = " ",
-            las=2
+            las=2,
+            cex.names=0.9
           )
           title(paste0(salyears[i]))
           DFL[[i]] <- dfl
