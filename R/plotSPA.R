@@ -502,7 +502,8 @@ plotSPA <-
           col = c(1:length(salnamesFunding)),
           ylab = "Amount of Salary Funding ($)",
           ylim = c(0, max(unlist(ylim))*2),
-          xlab = "Year"
+          xlab = " ",
+          las=2
         )
         legend(
           "topleft",

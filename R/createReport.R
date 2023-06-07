@@ -59,7 +59,7 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, destdir=".", output='htm
 
   # Dealing with om
   for (i in seq_along(id)) {
-  #message("Now working with id = ", id[i], " in createReport()")
+  message("Now working with id = ", id[i], " in createReport()")
   index <- om[which(om$project_id == id[i]),]
 
   # Dealing with salary

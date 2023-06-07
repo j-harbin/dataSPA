@@ -89,5 +89,8 @@ plotSPA(om=index, id=ID, which="omAllocation")
 plotSPA(salary=index2, id=ID, which="salaryBar")
 ```
 
-#plotSPA(salary=index2, id=ID, which="salaryAllocation")
+```{r, echo=FALSE, fig.cap="Figure 4: Bar graph representing amount of salary money ($) using the median values of a specific job classification"}
+plotSPA(salary=index2, id=ID, which="salaryAllocation")
+```
 
+# ADD indeterminate
