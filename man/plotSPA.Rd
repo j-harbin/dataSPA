@@ -86,7 +86,8 @@ coded by funding type indicated by the legend.
 using the median values of a specific job classification.
 \item For \code{which="weekAllocation"} a bar graph representing time (weeks)
 \item For \code{which="indeterminate"} a bar chart representing percentage of indeterminate vs
-non-Indeterminate employees for project years
+non-Indeterminate employees for project years. Number of staff shown on the
+figure in red
 \item For \code{which="predictSummary"}a line chart showing the trends for
 changes in different funding scenarios
 \item For \code{which="predict"} a bar chart showing the trends for changes

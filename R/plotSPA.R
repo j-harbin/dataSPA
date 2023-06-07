@@ -33,7 +33,8 @@
 # invested per job classification for project years is plotted
 
 #' * For `which="indeterminate"` a bar chart representing percentage of indeterminate vs
-#' non-Indeterminate employees for project years
+#' non-Indeterminate employees for project years. Number of staff shown on the
+#' figure in red
 #'
 #' * For `which="predictSummary"`a line chart showing the trends for
 #' changes in different funding scenarios
@@ -619,9 +620,11 @@ plotSPA <-
           dfi[2] <- non
           par(mar = c(12, 4, 4, 2) + 0.1)
           if (i == 1) {
-          barplot(as.matrix(dfi), las=2, ylim=c(0,110), ylab= "Percent (%)", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+          b <- barplot(as.matrix(dfi), las=2, ylim=c(0,120), ylab= "Percent (%)", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+          text(x= b, y=1:2,pos = 3, label = c(INT,NON), cex = 1, col = "red")
           } else {
-            barplot(as.matrix(dfi), las=2, ylim=c(0,110), ylab= " ", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+          b <- barplot(as.matrix(dfi), las=2, ylim=c(0,120), ylab= " ", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+          text(x= b, y=c(1,1),pos = 3, label = c(INT,NON), cex = 1, col = "red")
           }
           #pie(unname(unlist(dfi)),
           #    col = c(1:2),

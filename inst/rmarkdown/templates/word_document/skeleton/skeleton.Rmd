@@ -93,6 +93,6 @@ plotSPA(salary=index2, id=ID, which="salaryBar")
 plotSPA(salary=index2, id=ID, which="salaryAllocation")
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years"}
+```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 plotSPA(om=index, salary=index2, id=ID, which="indeterminate")
 ```

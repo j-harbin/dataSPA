@@ -109,7 +109,7 @@ The various plot types are as follows:
 
 * For `which="weekAllocation"` a bar graph representing time (weeks)
 
-* For `which="indeterminate"` a pie chart representing proportion of indeterminate vs non-Indeterminate employees for project years is plotted
+* For `which="indeterminate"` a bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red
 
 * For `which="predictSummary"`a line chart showing the trends for changes in different funding scenarios
 
