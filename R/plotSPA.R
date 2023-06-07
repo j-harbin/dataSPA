@@ -32,8 +32,8 @@
 #' * For `which="weekAllocation"` a bar graph representing time (weeks)
 # invested per job classification for project years is plotted
 
-#' * For `which="indeterminate"` a pie chart representing proportion of indeterminate vs
-#' non-Indeterminate employees for project years is plotted
+#' * For `which="indeterminate"` a bar chart representing percentage of indeterminate vs
+#' non-Indeterminate employees for project years
 #'
 #' * For `which="predictSummary"`a line chart showing the trends for
 #' changes in different funding scenarios
@@ -589,8 +589,8 @@ plotSPA <-
             salaryKeep[which(salaryKeep$fiscal_year == salyears[i]), ] # Look at one year
           mi <- matrix(0, nrow = 1, ncol = 2)
           dfi <-
-            as.data.frame(mi, col.names = c("indeterminate", "Non-Indeterminate"))
-          names(dfi) <- c("indeterminate", "Non-Indeterminate")
+            as.data.frame(mi, col.names = c("Indeterminate", "Non-indeterminate"))
+          names(dfi) <- c("Indeterminate", "Non-indeterminate")
           dfi[1] <-
             sum(value$amount_total[which(grepl("Indeterminate", value$employee_type_display))], na.rm =
                   TRUE)
@@ -615,20 +615,27 @@ plotSPA <-
             length(value$id[which(!(grepl(
               "Indeterminate", value$employee_type_display
             )))])
-
-          pie(unname(unlist(dfi)),
-              col = c(1:2),
-              labels <- paste0(c(int, non), "% ; ", c(INT, NON), " staff"))
+          dfi[1] <- int
+          dfi[2] <- non
+          par(mar = c(12, 4, 4, 2) + 0.1)
+          if (i == 1) {
+          barplot(as.matrix(dfi), las=2, ylim=c(0,110), ylab= "Percent (%)", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+          } else {
+            barplot(as.matrix(dfi), las=2, ylim=c(0,110), ylab= " ", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+          }
+          #pie(unname(unlist(dfi)),
+          #    col = c(1:2),
+          #    labels <- paste0(c(int, non), "% ; ", c(INT, NON), " staff"))
           title(paste0(salyears[i]))
           DFI[[i]] <- dfi
         }
-        legend(
-          "bottomright",
-          c("Indeterminate", "Non-indeterminate"),
-          col = c(1:2),
-          pch = rep(20, 2),
-          cex = 0.7
-        )
+        #legend(
+        #  "topleft",
+        #  c("Indeterminate", "Non-indeterminate"),
+        #  col = c(1:2),
+        #  pch = rep(20, 2),
+        #  cex = 0.7
+        #)
         if (dataframe == TRUE) {
           return(DFI)
         }

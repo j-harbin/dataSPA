@@ -71,7 +71,7 @@ if (!(length(unique(index$status)) == 1)) {
 cat(paste0(unique(index$lead_staff)))
 ```
 
-**Plot**
+**Plots**
 
 ```{r, echo=FALSE}
 ID <- unique(index$project_id)
@@ -93,4 +93,6 @@ plotSPA(salary=index2, id=ID, which="salaryBar")
 plotSPA(salary=index2, id=ID, which="salaryAllocation")
 ```
 
-# ADD indeterminate
+```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years"}
+plotSPA(om=index, salary=index2, id=ID, which="indeterminate")
+```

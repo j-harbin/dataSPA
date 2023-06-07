@@ -85,8 +85,8 @@ coded by funding type indicated by the legend.
 \item For \code{which="salaryAllocation"} a bar graph representing amount of salary money ($)
 using the median values of a specific job classification.
 \item For \code{which="weekAllocation"} a bar graph representing time (weeks)
-\item For \code{which="indeterminate"} a pie chart representing proportion of indeterminate vs
-non-Indeterminate employees for project years is plotted
+\item For \code{which="indeterminate"} a bar chart representing percentage of indeterminate vs
+non-Indeterminate employees for project years
 \item For \code{which="predictSummary"}a line chart showing the trends for
 changes in different funding scenarios
 \item For \code{which="predict"} a bar chart showing the trends for changes
