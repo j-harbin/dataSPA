@@ -30,11 +30,23 @@ cat(paste0(unique(index$description)))
 **Deliverables**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
-
-if (unique(index$deliverables) == 0) {
+d <- unique(index$deliverables)
+if (d == 0) {
   cat(paste0("There are no identified deliverables for this project"))
 } else {
-cat(paste0(unique(index$deliverables)))
+  if (!(grepl("\t\t\t\t", d))) {
+    cat(paste0(d))
+  } else {
+    # first tab has been identified
+    d <- sub("\t\t\t\t", "", d) # Remove first tab
+    if (grepl("\t\t\t\t\t\t",d)) {
+    d <- sub("[\t]+","", d)
+    cat(paste0(d))
+    } else {
+      cat(paste0(d))
+    }
+
+  }
 }
 ```
 
