@@ -344,7 +344,6 @@ plotSPA <-
               sum(value$amount[which(value$category_display == unique(value$category_display)[j])], na.rm =
                     TRUE)
           }
-
           barplot(
             as.matrix(mdf),
             col = 1,
