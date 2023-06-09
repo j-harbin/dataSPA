@@ -26,7 +26,8 @@ names(amounty) <- category
 
 max <- lapply(amounty, max)
 max <- max(unlist(unname(max))) # Find ylim
-# FIGURE 1
+
+# FIGURE 1 COMBINED LINES
 plot(1:(length(years)+1), 1:(length(years)+1), type="o", pch=20, ylim=c(0,max*1.1), ylab="O&M Cost ($)", xlab=" ",xaxt = "n", col="white")
 for (i in seq_along(category)) {
   lines(seq_along(yearsx[[i]]), unlist(amounty[[i]]), type="o", pch=20, col=i)
@@ -41,7 +42,7 @@ axis(
 legend("topright", category, col=1:length(category), pch=rep(20, length(category)), cex=0.55)
 
 
-# FIGURE 2
+# FIGURE 2 INDEPENDANT Y-AXIS
 par(mfrow=c(2,2), mar=c(2,4,2,0.5))
 for (i in seq_along(category)) {
   plot(seq_along(yearsx[[i]]), unlist(amounty[[i]]), type="o", pch=20, col="black", xlab=" ", ylab=" ", xaxt="n")
@@ -52,10 +53,12 @@ for (i in seq_along(category)) {
     #las = 2,
     cex.axis = 0.7
   )
+  m <- lm(unlist(amounty[[i]])~seq_along(yearsx[[i]]))
+  mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=-1, cex=0.5)
   title(category[i])
 }
 
-# FIGURE 3
+# FIGURE 3 RELATIVE INDEPENDANT LINE CHART
 
 par(mfrow=c(2,2), mar=c(2,4,2,0.5))
 for (j in seq_along(category)) {
@@ -64,10 +67,12 @@ for (j in seq_along(category)) {
     lines(seq_along(yearsx[[i]]), unlist(amounty[[i]]), type="o", pch=20, col="gray", cex=1.4)
   }
   lines(seq_along(yearsx[[j]]), unlist(amounty[[j]]), type="o", pch=20, col="red", cex=1.4)
+  m <- lm(unlist(amounty[[j]])~seq_along(yearsx[[j]]))
+  mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=-1, cex=0.5)
   title(category[j])
 }
 
-# Figure 4 bar graph
+# Figure 4 GROUPED BAR CHART
 
 data <- matrix(NA,ncol=length(category), nrow=length(years))
 colnames(data) <- category
@@ -90,4 +95,11 @@ par(mfrow=c(1,1),mar = c(9, 4, 4, 2) + 0.1)
 barplot(data, col=1:length(years), beside=T, las=2, ylim=c(0,max(unname(unlist(data)))*1.5), cex.names=0.7)
 legend("topleft", years, col=1:length(years), pch=rep(20, length(years)), cex=0.8)
 
-# Figure 5
+# Figure 5 INDEPENDANT BAR CHART
+par(mfrow=c(4,2),mar=c(2,4,2,0.5))
+for (i in seq_along(category)) {
+  barplot(data[,i], cex.names=0.7, ylim=c(0,max(data[,i])*1.3))
+  m <- lm(data[,i]~seq_along(yearsx[[i]]))
+  mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=-1, cex=0.5)
+  title(category[i])
+}
