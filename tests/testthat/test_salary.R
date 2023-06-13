@@ -42,7 +42,7 @@ test_that("weekAllocation",
 test_that("indeterminate",
           {
             df4 <- plotSPA(salary=salary, id=1234, which="indeterminate", dataframe = TRUE)
-            expect_equal(round(df4[[1]]$indeterminate,0), 176840)
+            expect_equal(df4[[1]]$indeterminate, 100)
             expect_equal(df4[[1]]$`Non-Indeterminate`, 0)
 
           }

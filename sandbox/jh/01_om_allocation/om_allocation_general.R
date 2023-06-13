@@ -96,7 +96,7 @@ barplot(data, col=1:length(years), beside=T, las=2, ylim=c(0,max(unname(unlist(d
 legend("topleft", years, col=1:length(years), pch=rep(20, length(years)), cex=0.8)
 
 # Figure 5 INDEPENDANT BAR CHART
-par(mfrow=c(4,2),mar=c(2,4,2,0.5))
+par(mfrow=c(2,2),mar=c(2,4,2,0.5))
 for (i in seq_along(category)) {
   barplot(data[,i], cex.names=0.7, ylim=c(0,max(data[,i])*1.3))
   m <- lm(data[,i]~seq_along(yearsx[[i]]))

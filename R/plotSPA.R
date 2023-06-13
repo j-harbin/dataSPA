@@ -1038,7 +1038,7 @@ plotSPA <-
       ncol <- length(salyears) + 3 # For three years
       DFSAL <-
         data.frame(matrix(NA, nrow = length(salnamesFunding), ncol = ncol))
-
+      # Creating new year labels
       ly <-
         gsub("^[^-]*-\\s*([^.]+).*", "\\1", salyears[length(salyears)]) # Getting last number of last year (ie. 2023-2024)
       newyear <- paste0(ly, "-", as.numeric(ly) + 1)
@@ -1069,7 +1069,7 @@ plotSPA <-
             median(s[which(eyears %in% EY[j]), ]$`Annual Salary`, na.rm = TRUE)
         }
       }
-      names(soi) <- unique(fundingLevel)
+      names(soi) <- unique(fundingLevel) # This is the medians over the years
       roi <- NULL
       for (i in seq_along(soi)) {
         x <- 1:length(soi[[i]])
@@ -1085,12 +1085,13 @@ plotSPA <-
           ncol = length(salyears) + 3
         ))
       # Removing overtime hours (they\re hard to predict)
+      # Find total amount spent on the project per funding type (need this for bar chart)
       for (i in seq_along(salyears)) {
         for (j in seq_along(salnamesFunding)) {
           value <-
             salaryKeep[which(salaryKeep$fiscal_year == salyears[i]), ] # Look at one year
           value2 <-
-            value[which(value$funding_source_display == salnamesFunding[j]), ]
+            value[which(value$funding_source_display == salnamesFunding[j]), ] # specific funding source
           totalSum <-
             sum(value2$amount_week[which(is.finite(value2$amount_week))], na.rm =
                   TRUE)
@@ -1104,6 +1105,7 @@ plotSPA <-
       value <-
         salaryKeep[which(salaryKeep$fiscal_year == salyears[length(salyears)]), ] # Look at last
       new <- value
+      # Change the median salary by adding roi
       extraYears <- length(salyears)+1:3
       for (j in seq_along(extraYears)) {
         for (i in seq_along(value$level_display)) {
@@ -1134,24 +1136,64 @@ plotSPA <-
         }
 
       }
+
+# Determine how much gap there is (red)
+dfROI2 <- data.frame(matrix(0, ncol=length(labels), nrow=length(salnamesFunding)+2))
+names(dfROI2) <- labels
+rownames(dfROI2) <- c(salnamesFunding, paste0(salnamesFunding, "GAP"))
+dfROI2[1:length(salnamesFunding),] <- dfROI
+dfROI2[length(salnamesFunding)+1,]
+
+old <- dfROI[length(salyears)]
+N <- dfROI[(length(salyears)+1):length(labels)]
+# determine the gap from the last year for each funding type
+gap <- NULL
+g <- NULL
+for (i in seq_along(N)) {
+gap[[i]] <- old
+g[[i]] <- as.numeric(unlist(unname(N[i])))-unlist(unname(old[1]))
+for (j in seq_along(salnamesFunding)) {
+  gap[[i]][j,] <- g[[i]][j]
+}
+}
+keep <- (length(salyears)+1):length(labels)
+
+# Fill in the gap values for the new data frame
+# Subtract missing values from prediction
+for (i in seq_along(keep)) {
+  for (k in seq_along(salnamesFunding)) {
+    dfROI2[keep][i][(length(salnamesFunding) + k), ] <- gap[[i]][k, ]
+    re <- as.numeric(dfROI2[keep][i][k,])-gap[[i]][k,]
+    dfROI2[keep][i][k,] <- re
+      }
+
+}
+
+# Structuring data frame so reds aren't together
+inc1 <- seq(from=1, to=length(rownames(dfROI2)), by=2)
+inc2 <- seq(from=2, to=length(rownames(dfROI2)), by=2)
+dfROI2 <- dfROI2[c(inc1,inc2),]
+# Show gap + number
+col <- seq_along(1:length(rownames(dfROI2)))
+col[which(grepl("GAP", rownames(dfROI2)))] <- "red"
 par(mfrow = c(1, 1))
 bp <-
   barplot(
-    as.matrix(dfROI),
-    col = c(1:length(salnamesFunding)),
+    as.matrix(dfROI2),
+    col = col,
     ylim = c(0, sum(subset(
       saldf, select = c(paste0(salyears[1]))
     )) + 109000),
-    xlab = "Year",
+    xlab = " ",
     las = 2,
-    ylab = "Amount of Salary Funding ($)"
+    ylab = " "
   )
-#title(ylab = "Amount of Salary Funding ($)", mgp = c(2, 1, 0))
+title(ylab = "Amount of Salary Funding ($)", mgp = c(2, 1, 0))
 abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red")
 legend(
   "topright",
   c(salnamesFunding),
-  col = c(1:length(salnamesFunding)),
+  col = inc1,
   pch = rep(20, length(salnamesFunding)),
   cex = 0.7
 )
