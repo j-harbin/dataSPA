@@ -3,7 +3,7 @@ if (!FALSE) {
   #library(dataSPA)
   namesOM <- c("project_id","category_display","project_year_id",
                "amount","funding_source_display", "id", "category_type", "description","fiscal_year",
-               "project_title","status", "overview", "objectives", "deliverables", "lead_staff")
+               "project_title","status", "overview", "objectives", "lead_staff", "deliverables", "milestones")
 
   om <- data.frame(matrix(NA, nrow = 10, ncol = length(namesOM)))
   names(om) <- namesOM
@@ -32,6 +32,7 @@ if (!FALSE) {
   om$deliverables <- "Validate code"
   om$description <- "Used to validate our code"
   om$lead_staff <- "John Smith"
+  om$milestones <- "Create package"
 
   save(om, file="om.rda")
   tools::resaveRdaFiles('om.rda')

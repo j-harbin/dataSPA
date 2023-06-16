@@ -200,6 +200,116 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
 
     }
 
+    #  OBTAINING MILESTONE AND DELIVERABLE ACTIVITIES DATA
+    # Initializing API Call
+    req3 <- httr2::request("http://dmapps/api/ppt/activities-full/")
+
+    # Add custom headers
+    req3 <- req3 %>% httr2::req_headers("Cookie" = cookie)
+    req3 <- req3 %>% httr2::req_headers("Accept" = "application/json")
+
+    # Automatically retry if the request fails
+    req3 <- req3 %>% httr2::req_retry(max_tries = 5)
+
+    # Get the requested data by querying the API
+    resp3 <- httr2::req_perform(req3)
+
+    # Read the returned data as a JSON file
+    page_data3 <- httr2::resp_body_json(resp3)
+
+    # Create a list to hold the list of full API results
+    api_data3 <- page_data3$results
+
+    # Get the information about the next page in the API results
+    next_page3 <- page_data3$`next`
+    cat(paste0(next_page3, '\n'))
+
+    cat(paste0('Number of API records = ', length(api_data3), '\n'))
+
+    # Check if the next page is not null (end of pages) before extract the data from
+    # next page.
+    while (!is.null(next_page3)) {
+
+      # Modifying API Call
+      req3 <- httr2::request(next_page3)
+
+      # Add custom headers
+      req3 <- req3 %>% httr2::req_headers("Cookie" = cookie)
+      req3 <- req3 %>% httr2::req_headers("Accept" = "application/json")
+
+      # Automatically retry if the request fails
+      req3 <- req3 %>% httr2::req_retry(max_tries = 5)
+
+      # Get the requested data by querying the API
+      resp3 <- httr2::req_perform(req3)
+
+      # Read the returned data as a JSON file
+      page_data3 <- httr2::resp_body_json(resp3)
+
+      # Add current page data to full list
+      api_data3 <- c(api_data3, page_data3$results)
+
+      cat(paste0('Number of API records = ', length(api_data3), '\n'))
+
+      # Get the information about the next page in the API results
+      next_page3 <- page_data3$`next`
+      cat(paste0(next_page3, '\n'))
+
+    }
+    deliv <- lapply(api_data3, function(x) x[c("type_display", "description")])
+    titles <- lapply(api_data3, function(x) x$project_year_obj)
+    Dyears <- lapply(titles, function(x) x$display_name)
+    titles <- lapply(titles, function(x) x$project_title)
+    ddf <- NULL
+    for (i in seq_along(deliv)){
+      if (is.null(deliv[[i]]$description)) {
+        deliv[[i]]$description <- 0
+      }
+    DF <- c(deliv[[i]], titles[[i]], Dyears[[i]])
+    names(DF) <- c("type", "description", "title", "year")
+    ddf[[i]] <- as.data.frame(DF)
+    }
+    DDF <- do.call(rbind, ddf)
+    #1. isolate specific title. #2. isolate year. #3. Combine deliverables. #4. Combine milestones
+    DELIVERABLES <- vector(mode = "list", length(unique(DDF$title)))
+    MILESTONES <- vector(mode = "list", length(unique(DDF$title)))
+
+    for (i in seq_along(unique(DDF$title))) {
+      d <- DDF[which(DDF$title == unique(DDF$title)[[i]]),] #1
+      for (j in seq_along(unique(d$year))) {
+      d2 <- d[which(d$year == unique(d$year)[[j]]),] #2
+      DELIV <- d2[which(d2$type == "Deliverable"),] #3
+      MS <- d2[which(d2$type == "Milestone"),] #4
+      DELIVERABLES[[i]][j] <- paste0(unique(DELIV$description), collapse="(DELIVERABLE):")
+      MILESTONES[[i]][j] <- paste0(MS$description, collapse="(MILESTONE):")
+      }
+    }
+    names(DELIVERABLES) <- unique(DDF$title)
+    names(MILESTONES) <- unique(DDF$title)
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     t <- lapply(api_data2, function(x) x$project$years)
 
     # Add objectives and overview
@@ -250,24 +360,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       lov <- c(lov, p[[i]])
     }
 
-
-    # Add deliverables
-
-    for (i in seq_along(api_data2)) {
-      if (length(api_data2[[i]]$deliverables) == 0) {
-        api_data2[[i]]$deliverables <- 0
-      } else if (is.na(api_data2[[i]]$deliverables)) {
-        api_data2[[i]]$deliverables <- 0
-      }
-    }
-
-    d <- unlist(lapply(api_data2, function(x) x$deliverables))
-    dd <- unlist(lapply(api_data2, function(x) x$project$id))
-    D <- data.frame(matrix(NA, nrow = length(d), ncol = 1), header=TRUE)
-    names(D) <- c("deliverables", "project_id")
-    D$deliverables <- d
-    D$project_id <- dd
-
     listofvectors <- list()
     for (i in 1:length(t))  {
       listofvectors <- c(listofvectors, t[[i]])
@@ -276,9 +368,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     tt <- lapply(listofvectors, function(x) as.data.frame(x[c("display_name", "id", "project_title", "status_display")]))
 
     ttt <- do.call(rbind, tt)
-
-
-    # Testing snow crab
 
     # CONCLUSION: id from ttt is equal to project_year_id in om
     # All om$project_year_id are in ttt$id
@@ -290,20 +379,37 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       replace3 <- ttt$status_display[which(ttt$id == om$project_year_id[i])][1]
       replace4 <- ppp$overview[which(ppp$id == om$project_id[i])][1]
       replace5 <- ppp$objectives[which(ppp$id == om$project_id[i])][1]
-      replace6 <- D$deliverables[which(D$project_id == om$project_id[i])][1]
       replace7 <- ppp$lead_staff[which(ppp$id == om$project_id[i])][1]
-
-
-      #message("replace is ", replace, " for ", i)
       om$fiscal_year[i] <- replace
       om$project_title[i] <- replace2
       om$status[i] <- replace3
       om$overview[i] <- replace4
       om$objectives[i] <- replace5
-      om$deliverables[i] <- replace6
+      #om$deliverables[i] <- replace6
       om$lead_staff[i] <- replace7
 
     }
+
+    # Adding in milestones and deliverables
+    om$deliverables <- rep(0, length(om$project_id))
+    om$milestones <- rep(0, length(om$project_id))
+    for (j in seq_along(unique(DDF$title))) {
+      value <-
+        om[which(om$project_title == unique(DDF$title)[j]), ] # Look at one project
+        for (k in seq_along(unique(value$fiscal_year))) {
+          value2 <-
+            value[which(value$fiscal_year == unique(value$fiscal_year)[k]), ] # Look at one year
+          om$deliverables[which(
+            om$project_title == unique(value2$project_title) &
+              om$fiscal_year == unique(value2$fiscal_year)
+          )] <- DELIVERABLES[[j]][k]
+          om$milestones[which(
+            om$project_title == unique(value2$project_title) &
+              om$fiscal_year == unique(value2$fiscal_year)
+          )] <- MILESTONES[[j]][k]
+      }
+    }
+
     return(om)
   } else if (type == "salary") {
     if (is.null(salaries)) {

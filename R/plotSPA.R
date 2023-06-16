@@ -209,8 +209,9 @@ plotSPA <-
           "status",
           "overview",
           "objectives",
+          "lead_staff",
           "deliverables",
-          "lead_staff"
+          "milestones"
         ),
         names(om)
       ))) {
@@ -760,7 +761,7 @@ plotSPA <-
             cex.names = 0.7,
             ylab = ""
           )
-        abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red")
+        abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
         title(ylab = "Amount of O&M Funding ($)", mgp = c(3.3, 1, 0))
         tot <- rep(40000, length(names(cost)))
         points(bp,
@@ -878,7 +879,7 @@ plotSPA <-
                 cex.names = 0.7,
                 ylab = ""
               )
-            abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red")
+            abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
             par(new = TRUE)
             ts <-
               cbind(totalstations[1:length(years)],
@@ -1176,7 +1177,16 @@ dfROI2 <- dfROI2[c(inc1,inc2),]
 # Show gap + number
 col <- seq_along(1:length(rownames(dfROI2)))
 col[which(grepl("GAP", rownames(dfROI2)))] <- "red"
-par(mfrow = c(1, 1))
+par(mfrow=c(1,1), mar = c(5, 5, 1.5, 4) + 0.1)
+#Print amount of money
+sums <- NULL
+for (i in seq_along(dfROI2[inc2,][(length(salyears)+1):length(labels)])) {
+  sums[[i]] <- round(sum(as.numeric(unlist(unname(dfROI2[inc2,][(length(salyears)+1):length(labels)][i])))),0)
+}
+sums2 <- NULL
+for (i in seq_along(dfROI[(length(salyears)+1):length(labels)])) {
+  sums2[[i]] <- round(sum(as.numeric(unlist(unname(dfROI[(length(salyears)+1):length(labels)][i])))),0)
+}
 bp <-
   barplot(
     as.matrix(dfROI2),
@@ -1186,16 +1196,26 @@ bp <-
     )) + 109000),
     xlab = " ",
     las = 2,
-    ylab = " "
+    ylab = " ",
+    cex.names=0.8
   )
-title(ylab = "Amount of Salary Funding ($)", mgp = c(2, 1, 0))
-abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red")
+title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
+abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
 legend(
   "topright",
-  c(salnamesFunding),
-  col = inc1,
-  pch = rep(20, length(salnamesFunding)),
+  c(salnamesFunding, "Gap in funding"),
+  col = c(inc1, "red"),
+  pch = rep(20, (length(salnamesFunding)+1)),
   cex = 0.7
+)
+
+text(
+  x = bp[(length(salyears)+1):length(labels)],
+  y = max(unlist(sums2)),
+  labels = paste0("$", sums),
+  pos = 3,
+  cex = 0.7,
+  col="red"
 )
 
 }

@@ -36,7 +36,7 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, destdir=".", output='htm
   }
 
   if (!(identical(c("project_id","category_display","project_year_id","amount","funding_source_display", "id", "category_type", "description",
-                    "fiscal_year", "project_title", "status", "overview", "objectives", "deliverables", "lead_staff"), names(om)))) {
+                    "fiscal_year", "project_title", "status", "overview", "objectives","lead_staff", "deliverables", "milestones"), names(om)))) {
     stop("Must obtain data for om using getData(type='om')")
   }
   Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
@@ -59,7 +59,7 @@ createReport <- function(om=NULL, salary=NULL, id=NULL, destdir=".", output='htm
 
   # Dealing with om
   for (i in seq_along(id)) {
-  message("Now working with id = ", id[i], " in createReport()")
+  #message("Now working with id = ", id[i], " in createReport()")
   index <- om[which(om$project_id == id[i]),]
 
   # Dealing with salary
