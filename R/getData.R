@@ -260,16 +260,19 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     titles <- lapply(api_data3, function(x) x$project_year_obj)
     Dyears <- lapply(titles, function(x) x$display_name)
     titles <- lapply(titles, function(x) x$project_title)
+    names <- lapply(api_data3, function(x) x$name)
     ddf <- NULL
     for (i in seq_along(deliv)){
       if (is.null(deliv[[i]]$description)) {
         deliv[[i]]$description <- 0
       }
-    DF <- c(deliv[[i]], titles[[i]], Dyears[[i]])
-    names(DF) <- c("type", "description", "title", "year")
+    DF <- c(deliv[[i]], titles[[i]], Dyears[[i]], names[[i]])
+    names(DF) <- c("type", "description", "title", "year", "name")
     ddf[[i]] <- as.data.frame(DF)
     }
     DDF <- do.call(rbind, ddf)
+    # If no description, fill in name
+    DDF$description[which(DDF$description == "")] <- DDF$name[which(DDF$description == "")]
     #1. isolate specific title. #2. isolate year. #3. Combine deliverables. #4. Combine milestones
     DELIVERABLES <- vector(mode = "list", length(unique(DDF$title)))
     MILESTONES <- vector(mode = "list", length(unique(DDF$title)))
@@ -280,35 +283,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       d2 <- d[which(d$year == unique(d$year)[[j]]),] #2
       DELIV <- d2[which(d2$type == "Deliverable"),] #3
       MS <- d2[which(d2$type == "Milestone"),] #4
-      DELIVERABLES[[i]][j] <- paste0(unique(DELIV$description), collapse="(DELIVERABLE):")
-      MILESTONES[[i]][j] <- paste0(MS$description, collapse="(MILESTONE):")
+      DELIVERABLES[[i]][j] <- paste0(unique(DELIV$description), collapse="|-----|")
+      MILESTONES[[i]][j] <- paste0(MS$description, collapse="|-----|")
       }
     }
     names(DELIVERABLES) <- unique(DDF$title)
     names(MILESTONES) <- unique(DDF$title)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     t <- lapply(api_data2, function(x) x$project$years)
 
@@ -396,19 +376,21 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     for (j in seq_along(unique(DDF$title))) {
       value <-
         om[which(om$project_title == unique(DDF$title)[j]), ] # Look at one project
-        for (k in seq_along(unique(value$fiscal_year))) {
+      d <- DDF[which(DDF$title == unique(DDF$title)[j]),]
+        for (k in seq_along(unique(d$year))) {
           value2 <-
-            value[which(value$fiscal_year == unique(value$fiscal_year)[k]), ] # Look at one year
+            value[which(value$fiscal_year == unique(d$year)[k]), ] # Look at one year
           om$deliverables[which(
             om$project_title == unique(value2$project_title) &
-              om$fiscal_year == unique(value2$fiscal_year)
+              om$fiscal_year == unique(d$year)[k]
           )] <- DELIVERABLES[[j]][k]
           om$milestones[which(
             om$project_title == unique(value2$project_title) &
-              om$fiscal_year == unique(value2$fiscal_year)
+              om$fiscal_year == unique(d$year)[k]
           )] <- MILESTONES[[j]][k]
       }
     }
+    om$milestones[which(om$milestones == "")] <- 0 # This means there was no milestones
 
     return(om)
   } else if (type == "salary") {
@@ -515,10 +497,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     SAL$fiscal_year <- pyo2$display_name
     SAL$project_title <- pyo2$project_title
 
-    # FIXME: TEMPORARY. If no level funding available, they are treated like PC2
     SAL$level_display[which(SAL$level_display == 0)] <- "PC-02"
-
-    #salaries <- read_excel(payscale) # Trish's table
 
     # Make level classification in SAL match salaries format
     # AS-01
