@@ -7,6 +7,7 @@ output:
 
 ```{r, echo=FALSE}
 data(salaries)
+years <- unique(index$fiscal_year)
 ```
 
 **Title**
@@ -31,30 +32,86 @@ cat(paste0(unique(index$description)))
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
 d <- unique(index$deliverables)
-if (d == 0) {
-  cat(paste0("There are no identified deliverables for this project"))
+if (length(unique(d)) == 1 && unique(d) == 0) {
+  cat(paste0("There are no identified deliverables for this project."))
 } else {
-  if (!(grepl("\t\t\t\t", d))) {
-    cat(paste0(d))
-  } else {
-    # first tab has been identified
-    d <- sub("\t\t\t\t", "", d) # Remove first tab
-    if (grepl("\t\t\t\t\t\t",d)) {
-    d <- sub("[\t]+","", d)
-    cat(paste0(d))
+    deliverables <- NULL
+    if (!(length(unique(d))) == 1) {
+      for (i in seq_along(years)) {
+        ii <- index[which(index$fiscal_year == years[i]), ]
+        deliverables[[i]] <- unique(ii$deliverables)
+      }
+      deliverables <- unlist(deliverables)
+      for (i in seq_along(years)) {
+      if (deliverables[i] == 0) {
+        deliverables[i] <- "No identified deliverables for this year."
+      }
+      cat(paste0(years[i], " : ", deliverables[i]))
+      cat("  \n")
+      cat("  \n") 
+
+      }
     } else {
+      
+      if (grepl("\t\t\t\t", d)) {
+        d <- sub("\t\t\t\t", "", d) # Remove first tab
+        if (grepl("\t\t\t\t\t\t",d)) {
+          d <- sub("[\t]+","", d)
+        }
+      }
+      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same deliverables:"))
+      cat("  \n")
+      cat("  \n")
       cat(paste0(d))
     }
-
-  }
 }
 ```
+
+**Milestones**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+m <- unique(index$milestones)
+if (length(unique(m)) == 1 && unique(m) == 0) {
+  cat(paste0("There are no identified milestones for this project."))
+} else {
+    milestones <- NULL
+    if (!(length(unique(m))) == 1) {
+      for (i in seq_along(years)) {
+        ii <- index[which(index$fiscal_year == years[i]), ]
+        milestones[[i]] <- unique(ii$milestones)
+      }
+      milestones <- unlist(milestones)
+      for (i in seq_along(years)) {
+      if (milestones[i] == 0) {
+        milestones[i] <- "No identified milestone for this year."
+      }
+      cat(paste0(years[i], " : ", milestones[i]))
+      cat("  \n")
+      cat("  \n") 
+
+      }
+    } else {
+      
+      if (grepl("\t\t\t\t", m)) {
+        m <- sub("\t\t\t\t", "", m) # Remove first tab
+        if (grepl("\t\t\t\t\t\t",m)) {
+          m <- sub("[\t]+","", m)
+        }
+      }
+      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same milestones:"))
+      cat("  \n")
+      cat("  \n")
+      cat(paste0(m))
+    }
+}
+```
+
 
 **Objectives**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
 if (unique(index$objectives) == 0) {
-  cat(paste0("There are no identified objectives for this project"))
+  cat(paste0("There are no identified objectives for this project."))
 } else {
 cat(paste0(unique(index$objectives)))
 }
@@ -63,7 +120,6 @@ cat(paste0(unique(index$objectives)))
 **Status**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
-years <- unique(index$fiscal_year)
 status <- NULL
 if (!(length(unique(index$status)) == 1)) {
   for (i in seq_along(years)) {
