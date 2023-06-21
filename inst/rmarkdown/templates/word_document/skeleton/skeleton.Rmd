@@ -83,7 +83,7 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
       milestones <- unlist(milestones)
       for (i in seq_along(years)) {
       if (milestones[i] == 0) {
-        milestones[i] <- "No identified milestone for this year."
+        milestones[i] <- "No identified milestones for this year."
       }
       cat(paste0(years[i], " : ", milestones[i]))
       cat("  \n")

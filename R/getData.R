@@ -391,6 +391,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
       }
     }
     om$milestones[which(om$milestones == "")] <- 0 # This means there was no milestones
+    om$deliverables[which(om$deliverables == "")] <- 0
 
     return(om)
   } else if (type == "salary") {
