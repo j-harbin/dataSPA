@@ -1109,42 +1109,37 @@ plotSPA <-
       # Change the median salary by adding roi
       extraYears <- length(salyears)+1:3
       for (j in seq_along(extraYears)) {
+        for (k in seq_along(unique(value$funding_source_display))) {
         for (i in seq_along(value$level_display)) {
-          for (k in seq_along(unique(value$funding_source_display))) {
             newAmount <-
               unname(unlist(roi[which(names(roi) == new$level_display[i])])) # Find ROI for level
             new$median_salary[i] <-
               value$median_salary[i] + (j*newAmount) # Update calculations
             new$salary_per_week[i] <- new$median_salary[i] / 52
             new$amount_week[i] <- new$salary_per_week[i] * new$duration_weeks[i]
-            new$amount_overtime[i] <-
-              (new$salary_per_week[i] / 37.5) * new$overtime_hours[i]
-            new$amount_total[i] <-
-              ifelse(
-                value$overtime_hours[i] == 0,
-                new$amount_week[i],
-                (new$amount_week[i] + new$amount_overtime[i])
-              )
+            new$amount_overtime[i] <- 0
+        }
+
             # Ignoring overtime
             totalSum <-
-              sum(new$amount_week[which(new$funding_source_display == unique(new$funding_source_display[k]))], na.rm =
+              sum(new$amount_week[which(new$funding_source_display == unique(new$funding_source_display)[k])], na.rm =
                     TRUE)
-            dfROI[extraYears[j]][k, ] <- round(totalSum, 2)
+            dfROI[extraYears[j]][which(rownames(dfROI) == unique(value$funding_source_display)[k]),] <- round(totalSum, 2)
             new <- new # Reset new
-
-          }
 
         }
 
       }
+      keep <- (length(salyears) + 1):length(labels)
+      for (i in seq_along(keep)) {
+        dfROI[keep][i][which(dfROI[keep][[i]] == " "), ] <- 0
+      }
 
 # Determine how much gap there is (red)
-dfROI2 <- data.frame(matrix(0, ncol=length(labels), nrow=length(salnamesFunding)+2))
+dfROI2 <- data.frame(matrix(0, ncol=length(labels), nrow=length(salnamesFunding)+length(salnamesFunding)))
 names(dfROI2) <- labels
 rownames(dfROI2) <- c(salnamesFunding, paste0(salnamesFunding, "GAP"))
 dfROI2[1:length(salnamesFunding),] <- dfROI
-dfROI2[length(salnamesFunding)+1,]
-
 old <- dfROI[length(salyears)]
 N <- dfROI[(length(salyears)+1):length(labels)]
 # determine the gap from the last year for each funding type
@@ -1157,7 +1152,6 @@ for (j in seq_along(salnamesFunding)) {
   gap[[i]][j,] <- g[[i]][j]
 }
 }
-keep <- (length(salyears)+1):length(labels)
 
 # Fill in the gap values for the new data frame
 # Subtract missing values from prediction
@@ -1171,17 +1165,16 @@ for (i in seq_along(keep)) {
 }
 
 # Structuring data frame so reds aren't together
-inc1 <- seq(from=1, to=length(rownames(dfROI2)), by=2)
-inc2 <- seq(from=2, to=length(rownames(dfROI2)), by=2)
-dfROI2 <- dfROI2[c(inc1,inc2),]
+dfROI2 <- dfROI2[sort(row.names(dfROI2)),]
 # Show gap + number
 col <- seq_along(1:length(rownames(dfROI2)))
 col[which(grepl("GAP", rownames(dfROI2)))] <- "red"
 par(mfrow=c(1,1), mar = c(5, 5, 1.5, 4) + 0.1)
 #Print amount of money
+
 sums <- NULL
-for (i in seq_along(dfROI2[inc2,][(length(salyears)+1):length(labels)])) {
-  sums[[i]] <- round(sum(as.numeric(unlist(unname(dfROI2[inc2,][(length(salyears)+1):length(labels)][i])))),0)
+for (i in seq_along(dfROI2[which(grepl("GAP", row.names(dfROI2))),][(length(salyears)+1):length(labels)])) {
+  sums[[i]] <- round(sum(as.numeric(unlist(unname(dfROI2[which(grepl("GAP", row.names(dfROI2))),][(length(salyears)+1):length(labels)][i])))),0)
 }
 sums2 <- NULL
 for (i in seq_along(dfROI[(length(salyears)+1):length(labels)])) {
@@ -1191,9 +1184,7 @@ bp <-
   barplot(
     as.matrix(dfROI2),
     col = col,
-    ylim = c(0, sum(subset(
-      saldf, select = c(paste0(salyears[1]))
-    )) + 109000),
+    ylim = c(0, max(unlist(sums2))*2),
     xlab = " ",
     las = 2,
     ylab = " ",
@@ -1202,9 +1193,9 @@ bp <-
 title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
 abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
 legend(
-  "topright",
+  "topleft",
   c(salnamesFunding, "Gap in funding"),
-  col = c(inc1, "red"),
+  col = c(which(!(col == "red")), "red"),
   pch = rep(20, (length(salnamesFunding)+1)),
   cex = 0.7
 )
@@ -1214,7 +1205,7 @@ text(
   y = max(unlist(sums2)),
   labels = paste0("$", sums),
   pos = 3,
-  cex = 0.7,
+  cex = 0.65,
   col="red"
 )
 
