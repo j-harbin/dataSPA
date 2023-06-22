@@ -92,6 +92,8 @@
 #' @importFrom graphics mtext
 #' @importFrom graphics text
 #' @importFrom stats lm
+#' @importFrom stats coef
+#' @importFrom grDevices extendrange
 #' @examples
 #' \dontrun{
 #' # Example 1: Plot Bar graph of O&M Allocations
@@ -331,35 +333,111 @@ plotSPA <-
         }
 
       } else if (which == "omAllocation") {
-        par(mar = c(12, 4, 4, 2) + 0.1)
-        par(mfrow = c(1, length(years)))
-        DF <- NULL
-        for (i in seq_along(years)) {
-          value <-
-            keep[which(keep$fiscal_year == years[i]), ] # Look at one year
-          mo <- matrix(0, nrow = 1, ncol = length(unique(value$category_display)))
-          mdf <- as.data.frame(mo, col.names = unique(value$category_display))
-          names(mdf) <- unique(value$category_display)
-          for (j in seq_along(unique(value$category_display))) {
-            mdf[j] <-
-              sum(value$amount[which(value$category_display == unique(value$category_display)[j])], na.rm =
-                    TRUE)
+        category <- unique(keep$category_display)
+        years <- unique(keep$fiscal_year)
+        yearsx <- vector(mode="list", length(category))
+        amounty <- vector(mode="list", length(category))
+        for (i in seq_along(category)) {
+          for (j in seq_along(years)) {
+            value <- keep[which(keep$category_display == category[i]),] # Look at one category
+            value2 <- value[which(value$fiscal_year == years[j]),] # Look at specific year
+            if (!(sum(value2$amount == 0))) {
+            yearsx[[i]][[j]] <- unique(value2$fiscal_year)
+            amounty[[i]][[j]] <-sum(value2$amount, na.rm=TRUE)
+            }
           }
-          barplot(
-            as.matrix(mdf),
-            col = 1,
-            las = 2,
-            ylab = ifelse(i== 1, "Cost ($)", " "),
-            xlab = NULL,
-            cex.axis = 0.7,
-            cex.names=0.8
+        }
+        # unlisting
+        for (i in seq_along(amounty)){
+          amounty[[i]] <- unlist(amounty[[i]])
+        }
+
+        for (i in seq_along(yearsx)){
+          yearsx[[i]] <- unlist(yearsx[[i]])
+        }
+
+        for (i in seq_along(amounty)) {
+          amounty[[i]] <- amounty[[i]][which(!(amounty[[i]] == 0))]
+        }
+        names(yearsx) <- category
+        names(amounty) <- category
+        max <- NULL
+        for (i in seq_along(amounty)) {
+          if (!(identical(amounty[[i]],numeric(0)))) {
+          max[[i]] <- max(amounty[[i]])
+          } else {
+            max[[i]] <- numeric(0)
+          }
+        }
+
+        max <- max(unlist(unname(max))) # Find ylim
+        for (i in seq_along(yearsx)) {
+          for (j in seq_along(yearsx[[i]])) {
+            yearsx[[i]][[j]] <- which(years == yearsx[[i]][[j]])
+          }
+        }
+
+
+        # Setting layout
+        if (length(amounty) == 1) {
+          par(mfrow = c(1, 1), mar = c(2, 4, 2, 0.5))
+        } else {
+          par(mfrow = c(round((length(amounty) / 2)), 2), mar = c(2, 4, 2, 0.5))
+        }
+        for (i in seq_along(category)) {
+          if (!(identical(amounty[[i]], numeric(0)))) {
+          if (length(amounty[[i]]) == 1) {
+            ylim <- c((amounty[[i]]-1000), (amounty[[i]]+1000))
+          } else {
+            ylim <- extendrange(range(amounty[[i]], na.rm=TRUE))
+            }
+
+          plot(seq_along(unique(keep$fiscal_year)), rep(mean(ylim), length(unique(keep$fiscal_year))), col="white", xlab=" ", ylab= "", xaxt="n",ylim=ylim)
+          lines(yearsx[[i]], unlist(amounty[[i]]), type="o", pch=20, col="black", xlab=" ", ylab=" ", xaxt="n")
+          axis(
+            1,
+            at = seq_along(years),
+            labels = years,
+            #las = 2,
+            cex.axis = 0.7
           )
-          title(paste0(years[i]))
-          DF[[i]] <- mdf
+          if (!(length(amounty[[i]]) == 1)) {
+          m <- lm(unlist(amounty[[i]])~seq_along(yearsx[[i]]))
+          mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=-1, cex=0.5)
+          }
+          title(category[i], cex=0.7)
+          }
         }
-        if (dataframe == TRUE) {
-          return(DF)
-        }
+
+        # par(mar = c(12, 4, 4, 2) + 0.1)
+        # par(mfrow = c(1, length(years)))
+        # DF <- NULL
+        # for (i in seq_along(years)) {
+        #   value <-
+        #     keep[which(keep$fiscal_year == years[i]), ] # Look at one year
+        #   mo <- matrix(0, nrow = 1, ncol = length(unique(value$category_display)))
+        #   mdf <- as.data.frame(mo, col.names = unique(value$category_display))
+        #   names(mdf) <- unique(value$category_display)
+        #   for (j in seq_along(unique(value$category_display))) {
+        #     mdf[j] <-
+        #       sum(value$amount[which(value$category_display == unique(value$category_display)[j])], na.rm =
+        #             TRUE)
+        #   }
+        #   barplot(
+        #     as.matrix(mdf),
+        #     col = 1,
+        #     las = 2,
+        #     ylab = ifelse(i== 1, "Cost ($)", " "),
+        #     xlab = NULL,
+        #     cex.axis = 0.7,
+        #     cex.names=0.8
+        #   )
+        #   title(paste0(years[i]))
+        #   DF[[i]] <- mdf
+        # }
+        # if (dataframe == TRUE) {
+        #   return(DF)
+        # }
       } else if (which == "omAllocationGeneral") {
         par(mfrow = c(1, length(unique(years))))
         DFG <- NULL

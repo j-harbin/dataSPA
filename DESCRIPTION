@@ -7,7 +7,7 @@ Author:
         comment=c(ORCID="https://orcid.org/0000-0003-3774-3732"))
 Maintainer: Jaimie Harbin <jaimie.harbin@dfo-mpo.gc.ca>
 Depends: R (>= 3.5.0)
-Imports: httr2, magrittr, methods, readxl, stringr, stats, graphics, rmarkdown, testthat
+Imports: httr2, magrittr, methods, readxl, stringr, stats, graphics, rmarkdown, testthat, grDevices
 BugReports: https://github.com/j-harbin/dataSPA/issues
 Description: This package is intended to be used by Department
  Of Fisheries and Oceans Canada (DFO) employees to obtain data

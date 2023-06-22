@@ -34,6 +34,7 @@ cat(paste0(unique(index$description)))
 d <- unique(index$deliverables)
 if (length(unique(d)) == 1 && unique(d) == 0) {
   cat(paste0("There are no identified deliverables for this project."))
+  #print(paste0(unlist(strsplit(unique(index$milestones)[1], "|-----|", fixed=TRUE))))
 } else {
     deliverables <- NULL
     if (!(length(unique(d))) == 1) {
@@ -46,7 +47,9 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
       if (deliverables[i] == 0) {
         deliverables[i] <- "No identified deliverables for this year."
       }
-      cat(paste0(years[i], " : ", deliverables[i]))
+      cat(paste0(years[i], ": \n"))
+      cat(paste0(unlist(strsplit(deliverables[i], "|-----|", fixed=TRUE)), "\n\n"))
+      #cat(paste0(years[i], " : ", deliverables[i]))
       cat("  \n")
       cat("  \n") 
 
@@ -85,7 +88,9 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
       if (milestones[i] == 0) {
         milestones[i] <- "No identified milestones for this year."
       }
-      cat(paste0(years[i], " : ", milestones[i]))
+      cat(paste0(years[i], ": \n"))
+      cat(paste0(unlist(strsplit(milestones[i], "|-----|", fixed=TRUE)), "\n\n"))
+      #cat(paste0(years[i], " : ", milestones[i]))
       cat("  \n")
       cat("  \n") 
 
@@ -149,7 +154,7 @@ ID <- unique(index$project_id)
 plotSPA(om=index, id=ID, which="omBar")
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 2: Bar chat showing the O&M money allocation for each year of the project"}
+```{r, echo=FALSE, fig.cap="Figure 2: Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
 plotSPA(om=index, id=ID, which="omAllocation")
 ```
 
