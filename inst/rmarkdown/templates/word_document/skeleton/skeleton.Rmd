@@ -62,7 +62,7 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
           d <- sub("[\t]+","", d)
         }
       }
-      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same deliverables:"))
+      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same deliverable(s):"))
       cat("  \n")
       cat("  \n")
       cat(paste0(d))
@@ -84,26 +84,63 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
         milestones[[i]] <- unique(ii$milestones)
       }
       milestones <- unlist(milestones)
+      if (length(m) == length(milestones)) {
       for (i in seq_along(years)) {
       if (milestones[i] == 0) {
         milestones[i] <- "No identified milestones for this year."
       }
       cat(paste0(years[i], ": \n"))
       cat(paste0(unlist(strsplit(milestones[i], "|-----|", fixed=TRUE)), "\n\n"))
-      #cat(paste0(years[i], " : ", milestones[i]))
       cat("  \n")
       cat("  \n") 
-
       }
-    } else {
+      } else {
+        # At least one year has the same milestone, but not all
+        for (i in seq_along(m)) {
+          mm <- which(milestones == m[i])
+          
+          if (length(mm) == 1) {
+            years <- unique(index$fiscal_year[which(index$milestones == milestones[mm])])
+            
+            cat(paste0(years, ": \n"))
+            cat(paste0(unlist(
+              strsplit(milestones[mm], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            cat("  \n")
+            cat("  \n")
+          } else {
+            # This is where the change occurs
+            years <-
+              unique(index$fiscal_year[which(index$milestones == milestones[mm[1]])])
+            
+            cat(paste0(paste0(years, collapse = " and "), " have the same milestone(s): \n")
+            )
+             cat(paste0(unlist(
+              strsplit(milestones[mm[1]], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            cat("  \n")
+            cat("  \n")
+
+          }
+        }
+        
+       
+        
+        
+        
+        
+        
+      }
       
+    } else {
+      # Right now, this only does this for 1 milestone
       if (grepl("\t\t\t\t", m)) {
         m <- sub("\t\t\t\t", "", m) # Remove first tab
         if (grepl("\t\t\t\t\t\t",m)) {
           m <- sub("[\t]+","", m)
         }
       }
-      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same milestones:"))
+      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same milestone(s):"))
       cat("  \n")
       cat("  \n")
       cat(paste0(m))
