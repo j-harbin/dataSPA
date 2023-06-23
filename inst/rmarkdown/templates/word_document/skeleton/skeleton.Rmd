@@ -101,11 +101,14 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
           
           if (length(mm) == 1) {
             years <- unique(index$fiscal_year[which(index$milestones == milestones[mm])])
-            
             cat(paste0(years, ": \n"))
+            if (!(milestones[mm] == 0)) {
             cat(paste0(unlist(
               strsplit(milestones[mm], "|-----|", fixed = TRUE)
             ), "\n\n"))
+            } else {
+              cat(paste0("There are no milestones identified for this year."))
+            }
             cat("  \n")
             cat("  \n")
           } else {
@@ -123,13 +126,7 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
 
           }
         }
-        
-       
-        
-        
-        
-        
-        
+
       }
       
     } else {
