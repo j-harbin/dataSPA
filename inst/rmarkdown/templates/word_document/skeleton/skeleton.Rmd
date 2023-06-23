@@ -43,6 +43,7 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
         deliverables[[i]] <- unique(ii$deliverables)
       }
       deliverables <- unlist(deliverables)
+      if (length(d) == length(deliverables)) {
       for (i in seq_along(years)) {
       if (deliverables[i] == 0) {
         deliverables[i] <- "No identified deliverables for this year."
@@ -54,6 +55,49 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
       cat("  \n") 
 
       }
+      
+      } else {
+       # Some are identified to be the same
+        
+        for (i in seq_along(d)) {
+          dd <- which(deliverables == d[i])
+          
+          if (length(dd) == 1) {
+            years <- unique(index$fiscal_year[which(index$deliverables == deliverables[dd])])
+            cat(paste0(years, ": \n"))
+            if (!(deliverables[dd] == 0)) {
+            cat(paste0(unlist(
+              strsplit(deliverables[dd], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            } else {
+              cat(paste0("There are no milestones identified for this year."))
+            }
+            cat("  \n")
+            cat("  \n")
+          } else {
+            # This is where the change occurs
+            YEARS <-
+              unique(index$fiscal_year[which(index$deliverables == deliverables[dd[1]])])
+            
+            if (!(deliverables[dd[1]] == 0)) {
+
+            cat(paste0(paste0(YEARS, collapse = " and "), " have the same deliverables(s): \n"))
+            
+             cat(paste0(unlist(
+              strsplit(deliverables[dd[1]], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            } else {
+              # More than one year has no deliverables
+               cat(paste0(paste0(YEARS, collapse = " and "), " have no identified deliverables(s) \n"))
+              
+            }
+            cat("  \n")
+            cat("  \n")
+
+          }
+        }
+        
+    }
     } else {
       
       if (grepl("\t\t\t\t", d)) {
@@ -73,6 +117,7 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
 **Milestones**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
+years <- unique(index$fiscal_year)
 m <- unique(index$milestones)
 if (length(unique(m)) == 1 && unique(m) == 0) {
   cat(paste0("There are no identified milestones for this project."))
@@ -113,19 +158,19 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
             cat("  \n")
           } else {
             # This is where the change occurs
-            years <-
+            YEARSM <-
               unique(index$fiscal_year[which(index$milestones == milestones[mm[1]])])
             
             if (!(milestones[mm[1]] == 0)) {
 
-            cat(paste0(paste0(years, collapse = " and "), " have the same milestone(s): \n"))
+            cat(paste0(paste0(YEARSM, collapse = " and "), " have the same milestone(s): \n"))
             
              cat(paste0(unlist(
               strsplit(milestones[mm[1]], "|-----|", fixed = TRUE)
             ), "\n\n"))
             } else {
               # More than one year has no milestones
-               cat(paste0(paste0(years, collapse = " and "), " have no identified milestone(s) \n"))
+               cat(paste0(paste0(YEARSM, collapse = " and "), " have no identified milestone(s) \n"))
               
             }
             cat("  \n")
