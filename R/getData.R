@@ -82,6 +82,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
       # Load file if more recent than `keep` days old
       if(Sys.Date()-as.Date(substr(fn,12,21))<keep){
         om <- readRDS(file = file.path(path,fn))
+        message(paste0("loading file from disk(",file.path(path,fn),")"))
       }
 
       return(om)
@@ -411,7 +412,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
     om$deliverables[which(om$deliverables == "")] <- 0
 
     if(keep){
-      browser()
       date <- Sys.Date()
       saveRDS(om,file = file.path(path,paste0("dataSPA_om_",date,".rds")))
     }
