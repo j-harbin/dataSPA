@@ -54,7 +54,8 @@
 #' @param which indicates which plot to plot (See Details). The
 #' options to use include: `omBar`, `omPie`, `omAllocation`,
 #' `omAllocationGeneral`, `salaryBar`, `salaryAllocation`,
-#' `weekAllocation`,`indeterminate`, `predictSummary`, or `predict`
+#' `weekAllocation`,`indeterminate`, `predictSummary`,`predict`,
+#' or `predictSalary`
 #' @param id the project_id from the Project Planning Tool
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
@@ -405,7 +406,12 @@ plotSPA <-
           m <- lm(unlist(amounty[[i]])~seq_along(yearsx[[i]]))
           mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=-1, cex=0.5)
           }
-          title(category[i], cex=0.7)
+          if (category[i] == "International travel for meetings, science collaboration and conferences") {
+            title("International travel", cex.main=0.85)
+
+          } else {
+          title(category[i], cex.main=0.85)
+          }
           }
         }
 

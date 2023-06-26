@@ -22,10 +22,25 @@ cat(paste0(unique(index$project_title)))
 cat(paste0(unique(index$project_id)))
 ```
 
-**Description**
+**Overview**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
-cat(paste0(unique(index$description)))
+pillar <- FALSE
+if (pillar == TRUE) {
+cat(highlightOverview(om=om,id=id))
+if (output == "html") {
+  cat("\n")
+  cat("\n")
+
+  cat(paste0("Note: certain words highlighted according to Ecological Pillar objectives. See Figure 7 for further explanation."))
+}
+} else {
+  cat(paste0(unique(index$overview)))
+}
+```
+
+```{r, echo=FALSE, comment=NA, results='asis'}
+
 ```
 
 **Deliverables**

@@ -26,7 +26,8 @@ plotSPA(
 \item{which}{indicates which plot to plot (See Details). The
 options to use include: \code{omBar}, \code{omPie}, \code{omAllocation},
 \code{omAllocationGeneral}, \code{salaryBar}, \code{salaryAllocation},
-\code{weekAllocation},\code{indeterminate}, \code{predictSummary}, or \code{predict}}
+\code{weekAllocation},\code{indeterminate}, \code{predictSummary},\code{predict},
+or \code{predictSalary}}
 
 \item{id}{the project_id from the Project Planning Tool}
 
