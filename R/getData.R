@@ -85,10 +85,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
         if(Sys.Date()-as.Date(substr(fn,12,21))<age){
           om <- readRDS(file = file.path(path,fn))
           message(paste0("loading file from disk(",file.path(path,fn),")"))
+          return(om)
         }
       }
-
-      return(om)
     }
     # Obtaining OM data from the API
     req <- httr2::request("http://dmapps/api/ppt/om-costs")
