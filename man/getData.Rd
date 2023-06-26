@@ -4,7 +4,15 @@
 \alias{getData}
 \title{Get required data from the PPT API}
 \usage{
-getData(type = NULL, cookie = NULL, debug = 0, salaries = NULL)
+getData(
+  type = NULL,
+  cookie = NULL,
+  debug = 0,
+  salaries = NULL,
+  keep = FALSE,
+  age = 7,
+  path = getwd()
+)
 }
 \arguments{
 \item{type}{the type of data that is wished to be extracted
@@ -21,6 +29,12 @@ some functions will print debugging information.}
 \item{salaries}{a built in data frame obtained from the \code{dataSPA}
 package that contains information about pay levels for
 different DFO positions}
+
+\item{keep}{logical value to optionally keep \code{om} data on the hard disk. Default is FALSE to no save data. Value of TRUE will save \code{om} to disk in \code{path} if the file was created more recently than \code{age} (number of days)}
+
+\item{age}{maximum age in number of days that a file may be loaded.}
+
+\item{path}{path to save file}
 }
 \value{
 A) If \code{type} is \code{om}: a data frame containing the following

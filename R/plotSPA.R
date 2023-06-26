@@ -404,7 +404,7 @@ plotSPA <-
           )
           if (!(length(amounty[[i]]) == 1)) {
           m <- lm(unlist(amounty[[i]])~seq_along(yearsx[[i]]))
-          mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=-1, cex=0.5)
+          mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=0, cex=0.5, at=par("usr")[1]+0.9*diff(par("usr")[1:2]))
           }
           if (category[i] == "International travel for meetings, science collaboration and conferences") {
             title("International travel", cex.main=0.85)
