@@ -75,12 +75,13 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
   }
 
   if (type == "om") {
-    if(keep>1){
+
+    if(keep){
       # Look for files in path, only return the most recent file the matches pattern
       fn <- rev(list.files(path,"dataSPA_om_.*\\.rds"))[1]
 
       # Load file if more recent than `keep` days old
-      if(Sys.Date()-as.Date(substr(fn,12,21))<keep){
+      if(Sys.Date()-as.Date(substr(fn,12,21))<age){
         om <- readRDS(file = file.path(path,fn))
         message(paste0("loading file from disk(",file.path(path,fn),")"))
       }
