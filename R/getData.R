@@ -22,7 +22,7 @@
 #'
 #' @param age maximum age in number of days that a file may be loaded.
 #'
-#' @param path path to save file
+#' @param path path to save file. Default is in the shared IN folder
 #'
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
@@ -58,7 +58,7 @@
 #' }
 #' @export
 
-getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, age = 7, path=getwd()) {
+getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, age = 7, path=//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/) {
   if (is.null(type)) {
     stop("Must provide a type argument of either 'om' or 'salary'")
   }
