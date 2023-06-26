@@ -18,6 +18,12 @@
 #' package that contains information about pay levels for
 #' different DFO positions
 #'
+#' @param keep logical value to optionally keep `om` data on the hard disk. Default is FALSE to no save data. Value of TRUE will save `om` to disk in `path` if the file was created more recently than `age` (number of days)
+#'
+#' @param age maximum age in number of days that a file may be loaded.
+#'
+#' @param path path to save file
+#'
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
 #'  some functions will print debugging information.
@@ -52,7 +58,7 @@
 #' }
 #' @export
 
-getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
+getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, age = 7, path=getwd()) {
   if (is.null(type)) {
     stop("Must provide a type argument of either 'om' or 'salary'")
   }
@@ -69,6 +75,17 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
   }
 
   if (type == "om") {
+    if(keep>1){
+      # Look for files in path, only return the most recent file the matches pattern
+      fn <- rev(list.files(path,"dataSPA_om_.*\\.rds"))[1]
+
+      # Load file if more recent than `keep` days old
+      if(Sys.Date()-as.Date(substr(fn,12,21))<keep){
+        om <- readRDS(file = file.path(path,fn))
+      }
+
+      return(om)
+    }
     # Obtaining OM data from the API
     req <- httr2::request("http://dmapps/api/ppt/om-costs")
 
@@ -392,6 +409,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL) {
     }
     om$milestones[which(om$milestones == "")] <- 0 # This means there was no milestones
     om$deliverables[which(om$deliverables == "")] <- 0
+
+    if(keep){
+      browser()
+      date <- Sys.Date()
+      saveRDS(om,file = file.path(path,paste0("dataSPA_om_",date,".rds")))
+    }
 
     return(om)
   } else if (type == "salary") {
