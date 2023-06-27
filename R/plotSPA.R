@@ -621,35 +621,130 @@ plotSPA <-
           return(saldf)
         }
       } else if (which %in% "salaryAllocation") {
-        par(mfrow = c(1, length(salyears)))
-        DFL <- NULL
-        for (i in seq_along(salyears)) {
-          value <-
-            salaryKeep[which(salaryKeep$fiscal_year == salyears[i]), ] # Look at one year
-          ml <- matrix(0, nrow = 1, ncol = length(unique(value$level_display)))
-          dfl <- as.data.frame(ml, col.names = unique(value$level_display))
-          names(dfl) <- unique(value$level_display)
+        category <- unique(salaryKeep$level_display)
+        salyears <- salyears[order(as.numeric(gsub(".*-","",salyears)))]
+        yearsx <- vector(mode="list", length(category))
+        amounty <- vector(mode="list", length(category))
+        for (i in seq_along(category)) {
+          for (j in seq_along(salyears)) {
+            value <- salaryKeep[which(salaryKeep$level_display == category[i]),] # Look at one category
+            value2 <- value[which(value$fiscal_year == salyears[j]),] # Look at specific year
+            if (!(sum(value2$amount_total, na.rm=TRUE) == 0)) {
+              yearsx[[i]][[j]] <- unique(value2$fiscal_year)
+              amounty[[i]][[j]] <-sum(value2$amount_total, na.rm=TRUE)
+            } else {
+              amounty[[i]][[j]] <- 1 # This is a placeholder
+              yearsx[[i]][[j]] <- 1 # This is a placeholder
 
-          for (j in seq_along(unique(value$level_display))) {
-            dfl[j] <-
-              sum(value$amount_total[which(value$level_display == unique(value$level_display)[j])], na.rm =
-                    TRUE)
+            }
           }
-          # Fill in values
-          barplot(
-            as.matrix(dfl),
-            col = 1,
-            ylab = ifelse(i==1, "Salary Cost ($)"," "),
-            xlab = " ",
-            las=2,
-            cex.names=0.9
-          )
-          title(paste0(salyears[i]))
-          DFL[[i]] <- dfl
         }
-        if (dataframe == TRUE) {
-          return(DFL)
+        # unlisting
+        for (i in seq_along(amounty)){
+          amounty[[i]] <- unlist(amounty[[i]])
         }
+
+        for (i in seq_along(yearsx)){
+          yearsx[[i]] <- unlist(yearsx[[i]])
+        }
+        names(yearsx) <- category
+        names(amounty) <- category
+        bad <- NULL
+        for (i in seq_along(amounty)) {
+          yearsx[[i]] <- yearsx[[i]][which(!(amounty[[i]] == 1))]
+          amounty[[i]] <- amounty[[i]][which(!(amounty[[i]] == 1))]
+          if (length(amounty[[i]]) == 0) {
+            bad[[i]] <- i
+          }
+        }
+        if (!(is.null(unlist(bad)))) {
+          amounty <- amounty[-(unlist(bad))]
+          yearsx <- yearsx[-(unlist(bad))]
+          category <- category[-(unlist(bad))]
+        }
+
+        max <- NULL
+        for (i in seq_along(amounty)) {
+          if (!(identical(amounty[[i]],numeric(0)))) {
+            max[[i]] <- max(amounty[[i]])
+          } else {
+            max[[i]] <- numeric(0)
+          }
+        }
+
+        max <- max(unlist(unname(max))) # Find ylim
+        for (i in seq_along(yearsx)) {
+          for (j in seq_along(yearsx[[i]])) {
+            yearsx[[i]][[j]] <- which(salyears == yearsx[[i]][[j]])
+          }
+        }
+
+
+        # Setting layout
+        if (length(amounty) == 1) {
+          par(mfrow = c(1, 1), mar = c(2, 4, 2, 0.5))
+        } else {
+          par(mfrow = c(round((length(amounty) / 2)), 2), mar = c(2, 4, 2, 0.5))
+        }
+        for (i in seq_along(category)) {
+          if (!(identical(amounty[[i]], numeric(0)))) {
+            if (length(amounty[[i]]) == 1) {
+              ylim <- c((amounty[[i]]-1000), (amounty[[i]]+1000))
+            } else {
+              ylim <- extendrange(range(amounty[[i]], na.rm=TRUE))
+            }
+
+            plot(seq_along(unique(salaryKeep$fiscal_year)), rep(mean(ylim), length(unique(salaryKeep$fiscal_year))), col="white", xlab=" ", ylab= "", xaxt="n",ylim=ylim)
+            lines(yearsx[[i]], unlist(amounty[[i]]), type="o", pch=20, col="black", xlab=" ", ylab=" ", xaxt="n")
+            axis(
+              1,
+              at = seq_along(salyears),
+              labels = salyears,
+              #las = 2,
+              cex.axis = 0.7
+            )
+            if (!(length(amounty[[i]]) == 1)) {
+              m <- lm(unlist(amounty[[i]])~seq_along(yearsx[[i]]))
+              mtext(paste0(round(coef(m)[2],0), " $/year"), col="red", line=0, cex=0.5, at=par("usr")[1]+0.9*diff(par("usr")[1:2]))
+            }
+            if (category[i] == "International travel for meetings, science collaboration and conferences") {
+              title("International travel", cex.main=0.85)
+
+            } else {
+              title(category[i], cex.main=0.85)
+            }
+          }
+        }
+
+        # par(mfrow = c(1, length(salyears)))
+        # DFL <- NULL
+        # for (i in seq_along(salyears)) {
+        #   value <-
+        #     salaryKeep[which(salaryKeep$fiscal_year == salyears[i]), ] # Look at one year
+        #   ml <- matrix(0, nrow = 1, ncol = length(unique(value$level_display)))
+        #   dfl <- as.data.frame(ml, col.names = unique(value$level_display))
+        #   names(dfl) <- unique(value$level_display)
+        #
+        #   for (j in seq_along(unique(value$level_display))) {
+        #     dfl[j] <-
+        #       sum(value$amount_total[which(value$level_display == unique(value$level_display)[j])], na.rm =
+        #             TRUE)
+        #   }
+        #   # Fill in values
+        #   barplot(
+        #     as.matrix(dfl),
+        #     col = 1,
+        #     ylab = ifelse(i==1, "Salary Cost ($)"," "),
+        #     xlab = " ",
+        #     las=2,
+        #     cex.names=0.9
+        #   )
+        #   title(paste0(salyears[i]))
+        #   DFL[[i]] <- dfl
+        # }
+        # if (dataframe == TRUE) {
+        #   return(DFL)
+        # }
 
       } else if (which %in% c("weekAllocation", "predictSalary")) {
         par(mfrow = c(1, length(salyears)))
