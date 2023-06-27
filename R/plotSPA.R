@@ -336,15 +336,20 @@ plotSPA <-
       } else if (which == "omAllocation") {
         category <- unique(keep$category_display)
         years <- unique(keep$fiscal_year)
+        years <- years[order(as.numeric(gsub(".*-","",years)))]
         yearsx <- vector(mode="list", length(category))
         amounty <- vector(mode="list", length(category))
         for (i in seq_along(category)) {
           for (j in seq_along(years)) {
             value <- keep[which(keep$category_display == category[i]),] # Look at one category
             value2 <- value[which(value$fiscal_year == years[j]),] # Look at specific year
-            if (!(sum(value2$amount == 0))) {
+            if (!(sum(value2$amount, na.rm=TRUE) == 0)) {
             yearsx[[i]][[j]] <- unique(value2$fiscal_year)
             amounty[[i]][[j]] <-sum(value2$amount, na.rm=TRUE)
+            } else {
+              amounty[[i]][[j]] <- 1 # This is a placeholder
+              yearsx[[i]][[j]] <- 1 # This is a placeholder
+
             }
           }
         }
@@ -357,11 +362,22 @@ plotSPA <-
           yearsx[[i]] <- unlist(yearsx[[i]])
         }
 
-        for (i in seq_along(amounty)) {
-          amounty[[i]] <- amounty[[i]][which(!(amounty[[i]] == 0))]
-        }
         names(yearsx) <- category
         names(amounty) <- category
+        bad <- NULL
+        for (i in seq_along(amounty)) {
+          yearsx[[i]] <- yearsx[[i]][which(!(amounty[[i]] == 1))]
+          amounty[[i]] <- amounty[[i]][which(!(amounty[[i]] == 1))]
+          if (length(amounty[[i]]) == 0) {
+            bad[[i]] <- i
+          }
+        }
+        if (!(is.null(unlist(bad)))) {
+        amounty <- amounty[-(unlist(bad))]
+        yearsx <- yearsx[-(unlist(bad))]
+        category <- category[-(unlist(bad))]
+        }
+
         max <- NULL
         for (i in seq_along(amounty)) {
           if (!(identical(amounty[[i]],numeric(0)))) {
