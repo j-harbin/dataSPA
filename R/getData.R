@@ -56,9 +56,10 @@
 #' data <- getData(type="salary", cookie=cookie, salaries=salaries)
 #' head(data,2)
 #' }
+#' @author Jaimie Harbin and Remi Daigle
 #' @export
 
-getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, age = 7, path=//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/) {
+getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
   if (is.null(type)) {
     stop("Must provide a type argument of either 'om' or 'salary'")
   }

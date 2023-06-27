@@ -11,7 +11,7 @@ getData(
   salaries = NULL,
   keep = FALSE,
   age = 7,
-  path = getwd()
+  path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
 )
 }
 \arguments{
@@ -34,7 +34,7 @@ different DFO positions}
 
 \item{age}{maximum age in number of days that a file may be loaded.}
 
-\item{path}{path to save file}
+\item{path}{path to save file. Default is in the shared IN folder}
 }
 \value{
 A) If \code{type} is \code{om}: a data frame containing the following
@@ -63,4 +63,7 @@ cookie <- "csrftoken=YOURTOKEN; sessionid=YOURSESSIONID"
 data <- getData(type="salary", cookie=cookie, salaries=salaries)
 head(data,2)
 }
+}
+\author{
+Jaimie Harbin and Remi Daigle
 }
