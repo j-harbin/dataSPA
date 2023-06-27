@@ -424,6 +424,21 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
     if (is.null(salaries)) {
       stop("Must load built in data-set using data(salaries) and set salaries=salaries (see examples))")
     }
+
+    if(keep){
+      # Look for files in path, only return the most recent file the matches pattern
+      fn <- rev(list.files(path,"dataSPA_SAL_.*\\.rds"))[1]
+
+      if(!is.na(fn)){
+        # Load file if more recent than `keep` days old
+        if(Sys.Date()-as.Date(substr(fn,13,22))<age){
+          SAL <- readRDS(file = file.path(path,fn))
+          message(paste0("loading file from disk(",file.path(path,fn),")"))
+          return(SAL)
+        }
+      }
+    }
+
     # Initializing API Call
     req3 <- request("http://dmapps/api/ppt/staff")
 
@@ -606,6 +621,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
     }
     bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
     SAL <- SAL[-bad,]
+    if(keep){
+      date <- Sys.Date()
+      saveRDS(SAL,file = file.path(path,paste0("dataSPA_SAL_",date,".rds")))
+    }
     return(SAL)
 
   }
