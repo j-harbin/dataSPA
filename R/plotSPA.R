@@ -14,8 +14,10 @@
 #  invested in O&M per funding type for project years is plotted. Graph color
 #' coded by funding type
 #'
-#' * For `which="omAllocation"` a bar graph representing amount of money ($)
-#' invested per O&M category for project years is plotted
+#' * For `which="omAllocation"` Line graphs representing changes in O&M
+#' investment for categories over the years for a specific project.
+#' Average rate of change per year for each category, where applicable,
+#' displayed on the graph in red
 #'
 #' * For `which=omAllocationGeneral` a pie chat representing proportion of
 #' funding per category type is plotted for year each of the specified project
@@ -25,9 +27,10 @@
 #' using the median values of a specific job classification. Graph color
 #' coded by funding type indicated by the legend.
 #'
-#' * For `which="salaryAllocation"` a bar graph representing amount of salary money ($)
-# invested per job classification for project years. Salaries are calculated
-#' using the median values of a specific job classification.
+#' * For `which="salaryAllocation"` Line graphs representing changes in Salary
+#' investment for different classifications over the years for a specific project.
+#' Average rate of change per year for each category, where applicable,
+#' displayed on the graph in red
 #'
 #' * For `which="weekAllocation"` a bar graph representing time (weeks)
 # invested per job classification for project years is plotted

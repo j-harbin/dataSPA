@@ -76,15 +76,19 @@ The various plot types are as follows:
 coded by funding type.
 \item For \code{which="omPie"}, a pie chart representing amount of money ($)
 coded by funding type
-\item For \code{which="omAllocation"} a bar graph representing amount of money ($)
-invested per O&M category for project years is plotted
+\item For \code{which="omAllocation"} Line graphs representing changes in O&M
+investment for categories over the years for a specific project.
+Average rate of change per year for each category, where applicable,
+displayed on the graph in red
 \item For \code{which=omAllocationGeneral} a pie chat representing proportion of
 funding per category type is plotted for year each of the specified project
 \item For \code{which="salaryBar"} a bar graph representing amount of salary money ($)
 using the median values of a specific job classification. Graph color
 coded by funding type indicated by the legend.
-\item For \code{which="salaryAllocation"} a bar graph representing amount of salary money ($)
-using the median values of a specific job classification.
+\item For \code{which="salaryAllocation"} Line graphs representing changes in Salary
+investment for different classifications over the years for a specific project.
+Average rate of change per year for each category, where applicable,
+displayed on the graph in red
 \item For \code{which="weekAllocation"} a bar graph representing time (weeks)
 \item For \code{which="indeterminate"} a bar chart representing percentage of indeterminate vs
 non-Indeterminate employees for project years. Number of staff shown on the

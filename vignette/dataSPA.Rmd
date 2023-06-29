@@ -98,14 +98,14 @@ The various plot types are as follows:
 
 * For `which="omPie"`, a pie chart representing amount of money ($) coded by funding type
 
-* For `which="omAllocation"` a bar graph representing amount of money ($)
+* For `which="omAllocation"` Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red
 
 *  For `which=omAllocationGeneral` a pie chat representing proportion of
 #' funding per category type is plotted for year each of the specified project
 
 * For `which="salaryBar"` a bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend.
 
-* For `which="salaryAllocation"` a bar graph representing amount of salary money ($) using the median values of a specific job classification.
+* For `which="salaryAllocation"`Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red
 
 * For `which="weekAllocation"` a bar graph representing time (weeks)
 
