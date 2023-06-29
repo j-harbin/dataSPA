@@ -77,7 +77,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
 
   if (type == "om") {
 
-    if(keep){
+    if(age>0){
       # Look for files in path, only return the most recent file the matches pattern
       fn <- rev(list.files(path,"dataSPA_om_.*\\.rds"))[1]
 
@@ -425,7 +425,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
       stop("Must load built in data-set using data(salaries) and set salaries=salaries (see examples))")
     }
 
-    if(keep){
+    if(age>0){
       # Look for files in path, only return the most recent file the matches pattern
       fn <- rev(list.files(path,"dataSPA_SAL_.*\\.rds"))[1]
 
