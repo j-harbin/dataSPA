@@ -399,7 +399,7 @@ plotSPA <-
         if (length(amounty) == 1) {
           par(mfrow = c(1, 1), mar = c(2, 4, 2, 0.5))
         } else {
-          par(mfrow = c(round((length(amounty) / 2)), 2), mar = c(2, 4, 2, 0.5))
+          par(mfrow = c(ceiling((length(amounty) / 2)), 2), mar = c(2, 4, 2, 0.5))
         }
         for (i in seq_along(category)) {
           if (!(identical(amounty[[i]], numeric(0)))) {
@@ -430,6 +430,7 @@ plotSPA <-
           }
           }
         }
+        mtext(side=2, text="Amount of O&M Funding ($)", line=-1.3, outer=TRUE)
 
         # par(mar = c(12, 4, 4, 2) + 0.1)
         # par(mfrow = c(1, length(years)))
@@ -679,12 +680,12 @@ plotSPA <-
           }
         }
 
-
+        par(mar = c(2, 4, 2, 0.5))
         # Setting layout
         if (length(amounty) == 1) {
-          par(mfrow = c(1, 1), mar = c(2, 4, 2, 0.5))
+          par(mfrow = c(1, 1))
         } else {
-          par(mfrow = c(round((length(amounty) / 2)), 2), mar = c(2, 4, 2, 0.5))
+          par(mfrow = c(ceiling((length(amounty) / 2)), 2))
         }
         for (i in seq_along(category)) {
           if (!(identical(amounty[[i]], numeric(0)))) {
@@ -715,6 +716,8 @@ plotSPA <-
             }
           }
         }
+        mtext(side=2, text="Amount of Salary Funding ($)", line=-1.3, outer=TRUE)
+
 
         # par(mfrow = c(1, length(salyears)))
         # DFL <- NULL
