@@ -1,4 +1,4 @@
-#' Plot an argoFloats Object
+#' Plot an dataSPA information
 #'
 #' This function plots specific graphs (determined by the
 #' `which` argument) using the data frames returned by
@@ -149,7 +149,7 @@ plotSPA <-
       project_year_id <-
       amount <-
       funding_source_display <-
-      fiscal_year <- project_year_id <- category_type <- NULL
+      fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- NULL
 
     if (is.null(which)) {
       stop(
@@ -237,7 +237,9 @@ plotSPA <-
             funding_source_display,
             id,
             fiscal_year,
-            category_type
+            category_type,
+            deliverables,
+            milestones
           )
         )
 
@@ -276,31 +278,100 @@ plotSPA <-
       # omBar
       if (which == "omBar") {
         ylim <- NULL
+        dv <- data.frame(matrix(NA, nrow = 1, ncol = length(years)))
+        names(dv) <- years
+        ms <- data.frame(matrix(NA, nrow = 1, ncol = length(years)))
+        names(ms) <- years
+
         for (i in seq_along(years)) {
           ylim[[i]] <- sum(subset(
             df, select = c(paste0(years[i]))
           ))
-        }
+          value <- keep[which(keep$fiscal_year == years[i]),]
 
-        par(mar = c(5, 5, 4, 4) + 0.3)
+          #Deliverables
+          if (unique(value$deliverables) == 0) {
+            dv[[i]] <- 0
+          } else {
+          dv[[i]] <- length(unlist(strsplit(unique(value$deliverables), "|-----|", fixed=TRUE)))
+          }
+
+          #Milestones
+          if (unique(value$milestones) == 0) {
+            ms[[i]] <- 0
+          } else {
+            ms[[i]] <- length(unlist(strsplit(unique(value$milestones), "|-----|", fixed=TRUE)))
+          }
+
+        }
+        # Creating place for legend
+
+        #DF <- df
+        #DF[length(df)+1] <- rep(0)
+        #names(DF) <- c(years, "")
+        #par(mar=c(5.1, 5.3, 4.1, 8.1), xpd=TRUE)
+        par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
         barplot(
           as.matrix(df),
           col = c(1:length(namesFunding)),
           ylab = " ",
-          ylim = c(0, max(unlist(ylim))*2),
+          ylim = c(0, max(unlist(ylim))*1.5),
           xlab = " ",
-          las=2
+          las=2,
+          legend.text = TRUE,
+          args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7)
 
         )
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
-
-        legend(
-          "topleft",
-          c(namesFunding),
-          col = c(1:length(namesFunding)),
-          pch = rep(20, length(namesFunding)),
-          cex = 0.7
+        combine <- c(unlist(unname(ms)), unlist(unname(dv)))
+        # Add deliverables and milestones
+        par(new=TRUE)
+        plot(
+          1:length(dv),
+          unlist(unname(dv)),
+          type = "o",
+          pch = 20,
+          axes = FALSE,
+          xlab = "",
+          ylab = "",
+          ylim = c(min(combine)-(max(combine)-min(combine))*3, (max(unlist(unname(ms)), unlist(unname(dv))))),
+          col = "blue"
         )
+        # axis(
+        #   side = 4,
+        #   at = pretty(range(min(combine)-(max(combine)-min(combine))*3,(max(unlist(unname(ms)),unlist(unname(dv)))))),
+        #   col = "blue",
+        #   col.ticks = "blue"
+        # )
+        text(
+          x = 1:length(dv),
+          y = unlist(unname(dv)),
+          labels = unlist(unname(dv)),
+          pos = 3,
+          cex = 0.5,
+          col="blue"
+        )
+        par(new=TRUE)
+        plot(
+          1:length(ms),
+          unlist(unname(ms)),
+          type = "o",
+          pch = 20,
+          axes = FALSE,
+          xlab = "",
+          ylab = "",
+          ylim = c(min(combine)-(max(combine)-min(combine))*3, (max(unlist(unname(ms)), unlist(unname(dv))))),
+          col = "red"
+        )
+        text(
+          x = 1:length(ms),
+          y = unlist(unname(ms)),
+          labels = unlist(unname(ms)),
+          pos = 3,
+          cex = 0.5,
+          col="red"
+        )
+
 
         if (dataframe == TRUE) {
           return(df)

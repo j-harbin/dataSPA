@@ -16,7 +16,7 @@ getData(
 }
 \arguments{
 \item{type}{the type of data that is wished to be extracted
-(either \code{om} or \code{salary})}
+(either \code{om}, \code{om_date}, \code{salary}, or \code{salary_date}). The types that end in \verb{_date} will return the date of creation of a locally stored file.}
 
 \item{cookie}{a sessionid and csrftoken from a Department of
 Fisheries and Oceans Canada (DFO) employee in the following
@@ -30,9 +30,9 @@ some functions will print debugging information.}
 package that contains information about pay levels for
 different DFO positions}
 
-\item{keep}{logical value to optionally keep \code{om} data on the hard disk. Default is FALSE to no save data. Value of TRUE will save \code{om} to disk in \code{path} if the file was created more recently than \code{age} (number of days)}
+\item{keep}{logical value to optionally keep \code{om} data on the hard disk. Default is FALSE and will not save data on the hard disk. Value of TRUE will save \code{om} to disk in \code{path} unless there is an \code{om} file already in \code{path} that was created more recently than \code{age} (number of days)}
 
-\item{age}{maximum age in number of days that a file may be loaded.}
+\item{age}{maximum age in number of days that a file may be loaded. Set to 0 to download new data every time.}
 
 \item{path}{path to save file. Default is in the shared IN folder}
 }

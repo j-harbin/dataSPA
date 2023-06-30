@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSPA.R
 \name{plotSPA}
 \alias{plotSPA}
-\title{Plot an argoFloats Object}
+\title{Plot an dataSPA information}
 \usage{
 plotSPA(
   om = NULL,
