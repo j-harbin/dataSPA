@@ -8,7 +8,7 @@
 #' and combines it with information from a Human Resources (HR) spreadsheet.
 #'
 #' @param type the type of data that is wished to be extracted
-#' (either `om` or `salary`)
+#' (either `om`, `om_date`, `salary`, or `salary_date`). The types that end in `_date` will return the date of creation of a locally stored file.
 #'
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
@@ -18,9 +18,9 @@
 #' package that contains information about pay levels for
 #' different DFO positions
 #'
-#' @param keep logical value to optionally keep `om` data on the hard disk. Default is FALSE to no save data. Value of TRUE will save `om` to disk in `path` if the file was created more recently than `age` (number of days)
+#' @param keep logical value to optionally keep `om` data on the hard disk. Default is FALSE and will not save data on the hard disk. Value of TRUE will save `om` to disk in `path` unless there is an `om` file already in `path` that was created more recently than `age` (number of days)
 #'
-#' @param age maximum age in number of days that a file may be loaded.
+#' @param age maximum age in number of days that a file may be loaded. Set to 0 to download new data every time.
 #'
 #' @param path path to save file. Default is in the shared IN folder
 #'
@@ -68,25 +68,34 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
     stop("Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
-  if (!(type %in% c("om", "salary"))) {
-    stop("Must provide a type argument of either 'om' or 'salary'")
+  if (!(type %in% c("om", "salary", "om_date", "salary_date"))) {
+    stop("Must provide a type argument of either 'om', 'salary', 'om_date', or 'salary_date'")
   }
   if (debug > 0) {
     message("type = ", type)
   }
 
-  if (type == "om") {
+  if (type %in% c("om","om_date")) {
 
     if(age>0){
       # Look for files in path, only return the most recent file the matches pattern
-      fn <- rev(list.files(path,"dataSPA_om_.*\\.rds"))[1]
+      fn <- file.path(path,"dataSPA_om.rds")
 
-      if(!is.na(fn)){
+      if(file.exists(fn)){
         # Load file if more recent than `keep` days old
-        if(Sys.Date()-as.Date(substr(fn,12,21))<age){
-          om <- readRDS(file = file.path(path,fn))
-          message(paste0("loading file from disk(",file.path(path,fn),")"))
-          return(om)
+        d <- as.Date(file.info(fn)$mtime)
+        if((Sys.Date()-d)<age){
+          if(type=="om"){
+            om <- readRDS(file = fn)
+            message(paste0("loading file from disk(",fn,")"))
+            return(om)
+          } else if(type=="om_date"){
+            message(paste0("returning date from file on disk(",fn,")"))
+            return(d)
+          }
+
+        } else if(type=="om_date"){
+          stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
         }
       }
     }
@@ -416,25 +425,34 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
 
     if(keep){
       date <- Sys.Date()
-      saveRDS(om,file = file.path(path,paste0("dataSPA_om_",date,".rds")))
+      saveRDS(om,file = file.path(path,"dataSPA_om.rds"))
     }
 
     return(om)
-  } else if (type == "salary") {
+  } else if (type %in% c("salary","salary_date")) {
     if (is.null(salaries)) {
       stop("Must load built in data-set using data(salaries) and set salaries=salaries (see examples))")
     }
 
     if(age>0){
-      # Look for files in path, only return the most recent file the matches pattern
-      fn <- rev(list.files(path,"dataSPA_SAL_.*\\.rds"))[1]
+      # Look for files in path, only return the file the matches pattern
+      fn <- file.path(path,"dataSPA_SAL.rds")
 
-      if(!is.na(fn)){
+      if(file.exists(fn)){
         # Load file if more recent than `keep` days old
-        if(Sys.Date()-as.Date(substr(fn,13,22))<age){
-          SAL <- readRDS(file = file.path(path,fn))
-          message(paste0("loading file from disk(",file.path(path,fn),")"))
-          return(SAL)
+        d <- as.Date(file.info(fn)$mtime)
+        if((Sys.Date()-d)<age){
+          if(type=="salary"){
+            SAL <- readRDS(file = fn)
+            message(paste0("loading file from disk(",fn,")"))
+            return(SAL)
+          } else if(type=="salary_date"){
+            message(paste0("returning date from file on disk(",fn,")"))
+            return(d)
+          }
+
+        } else if(type=="salary_date"){
+          stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
         }
       }
     }
@@ -623,7 +641,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
     SAL <- SAL[-bad,]
     if(keep){
       date <- Sys.Date()
-      saveRDS(SAL,file = file.path(path,paste0("dataSPA_SAL_",date,".rds")))
+      saveRDS(SAL,file = file.path(path,"dataSPA_SAL.rds"))
     }
     return(SAL)
 
