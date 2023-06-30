@@ -94,9 +94,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
             return(d)
           }
 
-        } else if(type=="om_date"){
-          stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
         }
+      }  else if(type=="om_date"){
+        stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
       }
     }
     # Obtaining OM data from the API
@@ -451,9 +451,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
             return(d)
           }
 
-        } else if(type=="salary_date"){
-          stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
         }
+      } else if(type=="salary_date"){
+        stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
       }
     }
 
