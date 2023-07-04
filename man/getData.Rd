@@ -8,7 +8,6 @@ getData(
   type = NULL,
   cookie = NULL,
   debug = 0,
-  salaries = NULL,
   keep = FALSE,
   age = 7,
   path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
@@ -25,10 +24,6 @@ format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 \item{debug}{integer value indicating level of debugging.
 If this is less than 1, no debugging is done. Otherwise,
 some functions will print debugging information.}
-
-\item{salaries}{a built in data frame obtained from the \code{dataSPA}
-package that contains information about pay levels for
-different DFO positions}
 
 \item{keep}{logical value to optionally keep \code{om} data on the hard disk. Default is FALSE and will not save data on the hard disk. Value of TRUE will save \code{om} to disk in \code{path} unless there is an \code{om} file already in \code{path} that was created more recently than \code{age} (number of days)}
 
@@ -62,7 +57,7 @@ and combines it with information from a Human Resources (HR) spreadsheet.
 library(dataSPA)
 data(salaries)
 cookie <- "csrftoken=YOURTOKEN; sessionid=YOURSESSIONID"
-data <- getData(type="salary", cookie=cookie, salaries=salaries)
+data <- getData(type="salary", cookie=cookie)
 head(data,2)
 }
 }

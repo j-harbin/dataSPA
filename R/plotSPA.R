@@ -77,9 +77,6 @@
 #' @param endDate the end date in "YYYY-YYYY" format that indicates
 #' when the funding specified by `funding` ends. This is used
 #' when `which='predict'` and can only be an interval of one year.
-#' @param salaries a built in data frame obtained from the `dataSPA`
-#' package that contains information about pay levels for
-#' different DFO positions
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
 #'  some functions will print debugging information.
@@ -111,18 +108,18 @@
 #'
 #' library(dataSPA)
 #' data(salaries)
-#' data <- getData(type='om', cookie=cook
+#' data <- getData(type='om', cookie=cookie)
 #' data2 <- getData(type='salary', cookie=cookie)
 #' plotSPA(om=data, salary=data2, which='predictSummary', id=1093,
 #' funding= rep("NCP (A-base)",4),
-#' fundingChange=c(-25, -5, -75, -100), salaries=salaries)
+#' fundingChange=c(-25, -5, -75, -100))
 #'
 #' # Example 3: Bar plot predicting of the change in
 #' number of stations impact as a result of a certain funding
 #' ending
 #'
 #' plotSPA(om=data, salary=data2, which='predict', id=1093,
-#' funding= "NCP (A-base)", endDate="2026-2027", salaries=salaries)
+#' funding= "NCP (A-base)", endDate="2026-2027")
 #'
 #' }
 #' @export
@@ -142,14 +139,13 @@ plotSPA <-
            dataframe = FALSE,
            year = NULL,
            endDate = NULL,
-           salaries = NULL,
            debug = 0) {
     project_id <-
       category_display <-
       project_year_id <-
       amount <-
       funding_source_display <-
-      fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- NULL
+      fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <- NULL
 
     if (is.null(which)) {
       stop(
@@ -1326,11 +1322,7 @@ plotSPA <-
       # Need to determine rate of increase
       fundingLevel <- salary$level_display
       soi <- vector(mode = "list", length(unique(salary$level_display)))
-      if (is.null(salaries)) {
-        stop(
-          "must load salaries data frame by using data(salaries) and set salaries=salaries in plotSPA() argument"
-        )
-      }
+      load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
       for (i in seq_along(unique(fundingLevel))) {
         s <-
           salaries[which(grepl(unique(fundingLevel)[[i]], salaries$`Level and Step`)), ] # Find which salary spreadsheet to take median

@@ -14,10 +14,6 @@
 #' Fisheries and Oceans Canada (DFO) employee in the following
 #' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
 #'
-#' @param salaries a built in data frame obtained from the `dataSPA`
-#' package that contains information about pay levels for
-#' different DFO positions
-#'
 #' @param keep logical value to optionally keep `om` data on the hard disk. Default is FALSE and will not save data on the hard disk. Value of TRUE will save `om` to disk in `path` unless there is an `om` file already in `path` that was created more recently than `age` (number of days)
 #'
 #' @param age maximum age in number of days that a file may be loaded. Set to 0 to download new data every time.
@@ -55,13 +51,13 @@
 #' library(dataSPA)
 #' data(salaries)
 #' cookie <- "csrftoken=YOURTOKEN; sessionid=YOURSESSIONID"
-#' data <- getData(type="salary", cookie=cookie, salaries=salaries)
+#' data <- getData(type="salary", cookie=cookie)
 #' head(data,2)
 #' }
 #' @author Jaimie Harbin and Remi Daigle
 #' @export
 
-getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
   if (is.null(type)) {
     stop("Must provide a type argument of either 'om' or 'salary'")
   }
@@ -439,9 +435,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
 
     return(om)
   } else if (type %in% c("salary","salary_date")) {
-    if (is.null(salaries)) {
-      stop("Must load built in data-set using data(salaries) and set salaries=salaries (see examples))")
-    }
+    salaries <- NULL
+    load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
 
     if(age>0){
       # Look for files in path, only return the file the matches pattern

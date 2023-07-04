@@ -39,9 +39,8 @@ specified project id.
 \examples{
 \dontrun{
 library(dataSPA)
-data(salaries)
 data <- getData(type="om",cookie=cookie)
-data2 <- getData(type="salary", cookie=cookie, salaries=salaries)
+data2 <- getData(type="salary", cookie=cookie)
 createReport(om=data, salary=data2, id=1234, cookie=cookie)
 }
 }

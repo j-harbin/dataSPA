@@ -14,7 +14,6 @@ plotSPA(
   dataframe = FALSE,
   year = NULL,
   endDate = NULL,
-  salaries = NULL,
   debug = 0
 )
 }
@@ -52,10 +51,6 @@ all years are plotted by default}
 \item{endDate}{the end date in "YYYY-YYYY" format that indicates
 when the funding specified by \code{funding} ends. This is used
 when \code{which='predict'} and can only be an interval of one year.}
-
-\item{salaries}{a built in data frame obtained from the \code{dataSPA}
-package that contains information about pay levels for
-different DFO positions}
 
 \item{debug}{integer value indicating level of debugging.
 If this is less than 1, no debugging is done. Otherwise,
@@ -118,18 +113,18 @@ for the Snow Crab project
 
 library(dataSPA)
 data(salaries)
-data <- getData(type='om', cookie=cook
+data <- getData(type='om', cookie=cookie)
 data2 <- getData(type='salary', cookie=cookie)
 plotSPA(om=data, salary=data2, which='predictSummary', id=1093,
 funding= rep("NCP (A-base)",4),
-fundingChange=c(-25, -5, -75, -100), salaries=salaries)
+fundingChange=c(-25, -5, -75, -100))
 
 # Example 3: Bar plot predicting of the change in
 number of stations impact as a result of a certain funding
 ending
 
 plotSPA(om=data, salary=data2, which='predict', id=1093,
-funding= "NCP (A-base)", endDate="2026-2027", salaries=salaries)
+funding= "NCP (A-base)", endDate="2026-2027")
 
 }
 }
