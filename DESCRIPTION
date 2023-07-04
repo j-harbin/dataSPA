@@ -3,8 +3,9 @@ Type: Package
 Title: Obtain Data for DFO Strategic Planning
 Version: 1.0.5
 Author:
- person(given="Jaimie", family="Harbin", email="jm810136@dal.ca", role=c("aut"),
-        comment=c(ORCID="https://orcid.org/0000-0003-3774-3732"))
+ c(person(given="Jaimie", family="Harbin", email="jaimie.harbin@dfo-mpo.gc.ca", role=c("aut"),
+        comment=c(ORCID="https://orcid.org/0000-0003-3774-3732")),person(given="Remi", family="Diagle", email="remi.diagle@dfo-mpo.gc.ca", role=c("aut"),
+        comment=c(ORCID="https://orcid.org/0000-0001-8832-4189"))) 
 Maintainer: Jaimie Harbin <jaimie.harbin@dfo-mpo.gc.ca>
 Depends: R (>= 3.5.0)
 Imports: httr2, magrittr, methods, readxl, stringr, stats, graphics, rmarkdown, testthat, grDevices
