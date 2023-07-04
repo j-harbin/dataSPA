@@ -7,6 +7,7 @@
 createReport(
   om = NULL,
   salary = NULL,
+  cookie = NULL,
   id = NULL,
   destdir = ".",
   output = "html"
@@ -16,6 +17,10 @@ createReport(
 \item{om}{a data frame created by \code{getData(type='om')}}
 
 \item{salary}{a data frame created by \code{getData(type='salary')}}
+
+\item{cookie}{a sessionid and csrftoken from a Department of
+Fisheries and Oceans Canada (DFO) employee in the following
+format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 
 \item{id}{the project_id from the Project Planning Tool (PPT)}
 
@@ -37,6 +42,6 @@ library(dataSPA)
 data(salaries)
 data <- getData(type="om",cookie=cookie)
 data2 <- getData(type="salary", cookie=cookie, salaries=salaries)
-createReport(om=data, salary=data2, id=1234)
+createReport(om=data, salary=data2, id=1234, cookie=cookie)
 }
 }

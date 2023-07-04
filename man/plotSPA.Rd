@@ -73,7 +73,7 @@ This function plots specific graphs (determined by the
 The various plot types are as follows:
 \itemize{
 \item For \code{which="omBar"}, a bar graph representing amount of money ($)
-coded by funding type.
+coded by funding type and show the number of deliverables and milestones per year in blue and red respectively
 \item For \code{which="omPie"}, a pie chart representing amount of money ($)
 coded by funding type
 \item For \code{which="omAllocation"} Line graphs representing changes in O&M

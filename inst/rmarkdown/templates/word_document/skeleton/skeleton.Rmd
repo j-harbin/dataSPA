@@ -10,6 +10,11 @@ data(salaries)
 years <- unique(index$fiscal_year)
 ```
 
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date", age=30, cookie=cookie)))
+
+```
+
 **Title**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
@@ -260,7 +265,7 @@ A number of assumptions exist for plots 3,4, and 6 including:
 ID <- unique(index$project_id)
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chat showing the amount of O&M money ($) invested into the project. Graph color coded by funding type"}
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 plotSPA(om=index, id=ID, which="omBar")
 ```
 

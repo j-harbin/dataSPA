@@ -45,7 +45,9 @@ a data frame containing the following information: id, overtime_hours,
 smart_name, duration_weeks, level_display, funding_source_display,
 employee_type_display, project_year_id, project_id, fiscal_year,
 project_title, median_salary, salary_per_week, amount_week,
-amount_overtime, amount_total.
+amount_overtime, amount_total. C) If \code{type} is \code{om_date} or
+\code{salary_date} a string indicating the date in which the relevant
+data was stored locally
 }
 \description{
 If \code{type} is \code{om}, this function extracts data from the

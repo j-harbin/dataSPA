@@ -8,7 +8,7 @@
 #'
 #' * For `which="omBar"`, a bar graph representing amount of money ($)
 #  invested in O&M per funding type for project years is plotted. Graph color
-#' coded by funding type.
+#' coded by funding type and show the number of deliverables and milestones per year in blue and red respectively
 #'
 #' * For `which="omPie"`, a pie chart representing amount of money ($)
 #  invested in O&M per funding type for project years is plotted. Graph color

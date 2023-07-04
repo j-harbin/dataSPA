@@ -35,7 +35,9 @@
 #'  smart_name, duration_weeks, level_display, funding_source_display,
 #'  employee_type_display, project_year_id, project_id, fiscal_year,
 #'  project_title, median_salary, salary_per_week, amount_week,
-#'  amount_overtime, amount_total.
+#'  amount_overtime, amount_total. C) If `type` is `om_date` or
+#'  `salary_date` a string indicating the date in which the relevant
+#'  data was stored locally
 #'
 #'
 #' @importFrom httr2 request
@@ -90,7 +92,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
             message(paste0("loading file from disk(",fn,")"))
             return(om)
           } else if(type=="om_date"){
-            message(paste0("returning date from file on disk(",fn,")"))
+            #message(paste0("returning date from file on disk(",fn,")"))
             return(d)
           }
 

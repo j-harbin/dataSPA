@@ -6,6 +6,9 @@
 #' @param om a data frame created by `getData(type='om')`
 #' @param salary a data frame created by `getData(type='salary')`
 #' @param id the project_id from the Project Planning Tool (PPT)
+#' @param cookie a sessionid and csrftoken from a Department of
+#' Fisheries and Oceans Canada (DFO) employee in the following
+#' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
 #' @param destdir parameter indicating where to save the html report
 #' @param output a character string of either `html`, `pdf`, or `word`
 #' indicating which type of file output to create.
@@ -17,22 +20,25 @@
 #' data(salaries)
 #' data <- getData(type="om",cookie=cookie)
 #' data2 <- getData(type="salary", cookie=cookie, salaries=salaries)
-#' createReport(om=data, salary=data2, id=1234)
+#' createReport(om=data, salary=data2, id=1234, cookie=cookie)
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, id=NULL, destdir=".", output='html') {
+createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, destdir=".", output='html') {
 
   if (is.null(id)) {
-    stop("In documentInformation() must provide an id argument pertaining to the project_id")
+    stop("In createReport() must provide an id argument pertaining to the project_id")
   }
 
   if (is.null(om)) {
-    stop("In documentInformation() must provide an om argument")
+    stop("In createReport() must provide an om argument")
+  }
+  if (is.null(cookie)) {
+    stop("In createReport() Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
   if (is.null(salary)) {
-    stop("In documentInformation() must provide an salary argument")
+    stop("In createReport() must provide an salary argument")
   }
 
   if (!(identical(c("project_id","category_display","project_year_id","amount","funding_source_display", "id", "category_type", "description",
