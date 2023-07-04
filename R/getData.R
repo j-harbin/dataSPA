@@ -426,8 +426,15 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
     om$deliverables[which(om$deliverables == "")] <- 0
 
     if(keep){
-      date <- Sys.Date()
-      saveRDS(om,file = file.path(path,"dataSPA_om.rds"))
+      fn <- file.path(path,"dataSPA_om.rds")
+      if(file.exists(fn)){
+        date <- as.Date(file.info(fn)$mtime)
+        file.rename(fn,
+                    file.path(path,paste0("dataSPA_om_",date,".rds")))
+        message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
+      }
+
+      saveRDS(om,file = fn)
     }
 
     return(om)
@@ -642,8 +649,15 @@ getData <- function(type=NULL, cookie=NULL, debug=0, salaries=NULL, keep=FALSE, 
     bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
     SAL <- SAL[-bad,]
     if(keep){
-      date <- Sys.Date()
-      saveRDS(SAL,file = file.path(path,"dataSPA_SAL.rds"))
+      fn <- file.path(path,"dataSPA_SAL.rds")
+      if(file.exists(fn)){
+        date <- as.Date(file.info(fn)$mtime)
+        file.rename(fn,
+                    file.path(path,paste0("dataSPA_SAL_",date,".rds")))
+        message(paste0("Renaming the pre-existing dataSPA_SAL.rds to: ",paste0("dataSPA_SAL_",date,".rds")))
+      }
+
+      saveRDS(SAL,file = fn)
     }
     return(SAL)
 
