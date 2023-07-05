@@ -241,6 +241,7 @@ plotSPA <-
 
       if (is.null(year)) {
         years <- unique(keep$fiscal_year)
+        years <- years[order(as.numeric(gsub(".*-","",years)))]
       } else {
         years <- year
       }
@@ -626,6 +627,8 @@ plotSPA <-
 
       if (is.null(year)) {
         salyears <- unique(salaryKeep$fiscal_year)
+        salyears <- salyears[order(as.numeric(gsub(".*-","",salyears)))]
+
       } else {
         salyears <- year
       }
@@ -733,7 +736,6 @@ plotSPA <-
           yearsx <- yearsx[-(unlist(bad))]
           category <- category[-(unlist(bad))]
         }
-
         max <- NULL
         for (i in seq_along(amounty)) {
           if (!(identical(amounty[[i]],numeric(0)))) {
