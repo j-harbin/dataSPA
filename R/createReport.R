@@ -10,8 +10,6 @@
 #' Fisheries and Oceans Canada (DFO) employee in the following
 #' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
 #' @param destdir parameter indicating where to save the html report
-#' @param output a character string of either `html`, `pdf`, or `word`
-#' indicating which type of file output to create.
 #' @return A fact sheet about the specified project id.
 #' @importFrom rmarkdown render
 #' @examples
@@ -23,7 +21,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, destdir=".", output='html') {
+createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, destdir=".") {
 
   if (is.null(id)) {
     stop("In createReport() must provide an id argument pertaining to the project_id")
@@ -71,14 +69,6 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, destdir="."
   index2 <- salary[which(salary$project_id == id[i]),]
 
   ## Move into Rmd
-  if (output == "html") {
     rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_file=id[i])
-  } else if (output == "pdf") {
-  rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "pdf_document",output_file=id[i])
-  } else if (output == "word") {
-    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_format = "word_document",output_file=id[i])
-  } else {
-  stop("output must either be html, word, or pdf, not ", output)
-  }
   }
 }

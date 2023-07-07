@@ -4,14 +4,7 @@
 \alias{createReport}
 \title{Create a fact sheet for a specific project}
 \usage{
-createReport(
-  om = NULL,
-  salary = NULL,
-  cookie = NULL,
-  id = NULL,
-  destdir = ".",
-  output = "html"
-)
+createReport(om = NULL, salary = NULL, cookie = NULL, id = NULL, destdir = ".")
 }
 \arguments{
 \item{om}{a data frame created by \code{getData(type='om')}}
@@ -25,9 +18,6 @@ format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 \item{id}{the project_id from the Project Planning Tool (PPT)}
 
 \item{destdir}{parameter indicating where to save the html report}
-
-\item{output}{a character string of either \code{html}, \code{pdf}, or \code{word}
-indicating which type of file output to create.}
 }
 \value{
 A fact sheet about the specified project id.
