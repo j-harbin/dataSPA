@@ -471,6 +471,7 @@ plotSPA <-
         } else {
           par(mfrow = c(ceiling((length(amounty) / 2)), 2), mar = c(2, 4, 2, 0.5))
         }
+
         for (i in seq_along(category)) {
           if (!(identical(amounty[[i]], numeric(0)))) {
           if (length(amounty[[i]]) == 1) {
@@ -502,6 +503,9 @@ plotSPA <-
         }
         mtext(side=2, text="Amount of O&M Funding ($)", line=-1.3, outer=TRUE)
 
+        if (dataframe == TRUE) {
+          return(amounty)
+        }
         # par(mar = c(12, 4, 4, 2) + 0.1)
         # par(mfrow = c(1, length(years)))
         # DF <- NULL
@@ -789,6 +793,9 @@ plotSPA <-
         }
         mtext(side=2, text="Amount of Salary Funding ($)", line=-1.3, outer=TRUE)
 
+        if (dataframe == TRUE) {
+          return(amounty)
+        }
 
         # par(mfrow = c(1, length(salyears)))
         # DFL <- NULL

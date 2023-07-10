@@ -13,17 +13,12 @@ test_that("salaryBar",
           }
 )
 
-# test_that("salaryAllocation",
-#           {
-#             df2 <- plotSPA(salary=salary, id=1234, which="salaryAllocation", dataframe = TRUE)
-#             expect_equal(round(df2[[1]]$`BI-03`,0), 18660)
-#             expect_equal(round(df2[[1]]$`EG-04`,0), 88772)
-#             expect_equal(round(df2[[1]]$`EG-05`,0), 66418)
-#             expect_equal(round(df2[[1]]$`SE-RES-02`,0), 184)
-#             expect_equal(round(df2[[1]]$`PC-02`,0), 1576)
-#             expect_equal(round(df2[[1]]$`EG-03`,0), 1229)
-#           }
-# )
+test_that("salaryAllocation",
+          {
+            df2 <- plotSPA(salary=salary, id=1234, which="salaryAllocation", dataframe = TRUE)
+            expect_equal(round(df2[[1]],0), 18660)
+          }
+)
 
 test_that("weekAllocation",
           {
@@ -38,7 +33,6 @@ test_that("weekAllocation",
 
           }
 )
-
 test_that("indeterminate",
           {
             df4 <- plotSPA(salary=salary, id=1234, which="indeterminate", dataframe = TRUE)

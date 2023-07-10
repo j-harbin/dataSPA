@@ -13,19 +13,13 @@ test_that("omBar + omPie",
           }
 )
 
-# test_that("omAllocation",
-#           {
-#             df2 <- plotSPA(om=om, id=1234, which="omAllocation", dataframe = TRUE)
-#             expect_equal(df2[[1]]$`Field Travel`, 15000)
-#             expect_equal(df2[[1]]$`Training, domestic conferences`, 1000)
-#             expect_equal(df2[[1]]$`Field Equipment`, 4000)
-#             expect_equal(df2[[1]]$`IM/IT - computers, hardware, software`, 1000)
-#             expect_equal(df2[[1]]$Field, 18000)
-#             expect_equal(df2[[1]]$Contracts, 65000)
-#             expect_equal(df2[[1]]$Translation, 1000)
-#             expect_equal(df2[[1]]$`Vessels, Boats`, 500000)
-#           }
-# )
+test_that("omAllocation",
+          {
+            df2 <- plotSPA(om=om, id=1234, which="omAllocation", dataframe = TRUE)
+            expect_equal(df2[[1]], 15000)
+            expect_equal(df2[[2]], 1000)
+          }
+)
 
 test_that("omAllocationGeneral",
           {
