@@ -149,7 +149,7 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary",'predict','predictSalary'
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', or 'predictSalary'"
       )
     }
 
@@ -169,8 +169,7 @@ plotSPA <-
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate'"
-      )
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict', or 'predictSalary'")
     }
 
     if (is.null(id)) {
