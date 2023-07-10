@@ -69,6 +69,6 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, destdir="."
   index2 <- salary[which(salary$project_id == id[i]),]
 
   ## Move into Rmd
-    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_file=id[i])
+    rmarkdown::render(file.path(Rmdpath, "skeleton.Rmd"), output_dir=destdir, output_file=id[i], output_format = "html_document")
   }
 }

@@ -29,15 +29,12 @@ cat(paste0(unique(index$project_id)))
 **Overview**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
-pillar <- FALSE
-if (pillar == TRUE) {
+file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+if (file.exists(file)) {
 cat(highlightOverview(om=om,id=id))
-if (output == "html") {
-  cat("\n")
-  cat("\n")
-
-  cat(paste0("Note: certain words highlighted according to Ecological Pillar objectives. See Figure 7 for further explanation."))
-}
+cat("\n")
+cat("\n")
+cat(paste0("Note: certain words highlighted according to Ecological Pillar objectives. See Figure 7 for further explanation."))
 } else {
   cat(paste0(unique(index$overview)))
 }
