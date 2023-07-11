@@ -828,6 +828,7 @@ plotSPA <-
         # }
 
       } else if (which %in% c("weekAllocation", "predictSalary")) {
+        # STEP ONE (PREDICTSALARY): LOOP ALL YEARS TO OBTAIN WEEKS FOR LEVEL CLASSIFICATION
         par(mfrow = c(1, length(salyears)))
         DFL2 <- NULL
         for (i in seq_along(salyears)) {
@@ -854,7 +855,8 @@ plotSPA <-
           }
 
         }
-        if (dataframe == TRUE) {
+
+        if (dataframe == TRUE && which == "weekAllocation") {
           return(DFL2)
         }
 
@@ -1327,7 +1329,7 @@ plotSPA <-
       names(DFSAL) <- labels
       DFSAL[1:length(salyears)] <- saldf
 
-      # Need to determine rate of increase
+      # STEP 2: DETERMINE MEDIAN SALARIES FOR EACH YEAR
       fundingLevel <- salary$level_display
       soi <- vector(mode = "list", length(unique(salary$level_display)))
       load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
@@ -1343,6 +1345,7 @@ plotSPA <-
         }
       }
       names(soi) <- unique(fundingLevel) # This is the medians over the years
+      # STEP 3: DETERMINE RATE OF INCREASE
       roi <- NULL
       for (i in seq_along(soi)) {
         x <- 1:length(soi[[i]])
@@ -1357,7 +1360,7 @@ plotSPA <-
           nrow = length(salnamesFunding),
           ncol = length(salyears) + 3
         ))
-      # Removing overtime hours (they\re hard to predict)
+      # STEP 4: REMOVE OVERTIME HOURS (THEY'RE HARD TO PREDICT)
       # Find total amount spent on the project per funding type (need this for bar chart)
       for (i in seq_along(salyears)) {
         for (j in seq_along(salnamesFunding)) {
@@ -1378,7 +1381,7 @@ plotSPA <-
       value <-
         salaryKeep[which(salaryKeep$fiscal_year == salyears[length(salyears)]), ] # Look at last
       new <- value
-      # Change the median salary by adding roi
+      # STEP 5: CHANGE MEDIAN SALARIES BY ADDING ROI
       extraYears <- length(salyears)+1:3
       for (j in seq_along(extraYears)) {
         for (k in seq_along(unique(value$funding_source_display))) {
@@ -1407,7 +1410,7 @@ plotSPA <-
         dfROI[keep][i][which(dfROI[keep][[i]] == " "), ] <- 0
       }
 
-# Determine how much gap there is (red)
+# STEP 6: DETERMINE THE GAP
 dfROI2 <- data.frame(matrix(0, ncol=length(labels), nrow=length(salnamesFunding)+length(salnamesFunding)))
 names(dfROI2) <- labels
 rownames(dfROI2) <- c(salnamesFunding, paste0(salnamesFunding, "GAP"))

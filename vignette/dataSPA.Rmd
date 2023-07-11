@@ -15,7 +15,7 @@ Some disclaimers/ assumptions with this package include:
 1. For this package to work, you must be on the DFO VPN
 2. This code assumes some employees have not changed positions over the course of their career
 3. As of 2023/05/23, in some cases when a employment classification is not provided, it us assumed the employee was a PC-2.
-4. The salary calculations are based off of medians of federal employee pay scales for the year of the projects fiscal year, not the exact salary of individuals. If the pay information for a specific year is not available, the closest year is found.
+4. The salary calculations are based off of medians of federal employee pay scales for the year of the projects fiscal year, not the exact salary of individuals. If the pay information for a specific year is not available, the closest year is found. As negotiations continue to happen, the `data(salaries)` built in dataset will need to be updated.
 5. Calculated over time salary does not consider the fact
 sometimes overtime may be 1.5X or 2X regular salary
 6. When a person with job classification EX is associated with a
