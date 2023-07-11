@@ -1455,6 +1455,7 @@ sums2 <- NULL
 for (i in seq_along(dfROI[(length(salyears)+1):length(labels)])) {
   sums2[[i]] <- round(sum(as.numeric(unlist(unname(dfROI[(length(salyears)+1):length(labels)][i])))),0)
 }
+
 bp <-
   barplot(
     as.matrix(dfROI2),
@@ -1483,6 +1484,10 @@ text(
   cex = 0.65,
   col="red"
 )
+
+if (dataframe == TRUE) {
+  return(dfROI2)
+}
 
 }
 }
