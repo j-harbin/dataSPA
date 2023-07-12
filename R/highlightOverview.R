@@ -108,12 +108,35 @@ highlightOverview <- function(om=NULL, id=NULL) {
     right_join(data.frame(objective=as.factor(unique(objectives$objective)),
                           color=pal),
                by="objective")%>%
+    group_by(word) %>%
+    summarise(hl_word=if_else(n()==1,
+                              paste0("<span style='background-color: ",color, "'>", word, "</span>",collapse = ""),
+                              lapply(seq(length(color)),function(c){
+                                seg <- length(word)
+                                len <- nchar(unique(word))
+                                len %/% seg
+                                if(c==1){
+                                  paste0("<span style='background-color: ",color[c], "'>",
+                                         substr(unique(word),1,len %/% seg + len %% seg),
+                                         "</span>",collapse = "")
+                                } else {
+                                  paste0("<span style='background-color: ",color[c], "'>",
+                                         substr(unique(word),
+                                                (len %/% seg)*(c-1) + len %% seg +1,
+                                                (len %/% seg)*(c-1) + len %% seg + len %/% seg),
+                                         "</span>",collapse = "")
+                                }
+                              }) %>%
+                                unlist() %>%
+                                paste0(collapse = "")
+    )
+    )
+
+
 
 keep <- unlist(unique(om$overview[which(om$project_id == id)]))
-highlightedtext <-  stri_replace_all_regex(keep, pattern=subpillars_col$word,
-                                           replacement=paste0("<span style='background-color: ",
-                                                              subpillars_col$color, "'>",
-                                                              subpillars_col$word, "</span>"),
+highlightedtext <-  stri_replace_all_regex(keep, pattern=objectives_col$word,
+                                           replacement=objectives_col$hl_word,
                                            vectorize_all=FALSE)
 highlightedtext
 
