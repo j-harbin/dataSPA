@@ -23,6 +23,7 @@
 #' @importFrom colorspace lighten
 #' @importFrom colorspace darken
 #' @importFrom dplyr n
+#' @importFrom dplyr if_else
 #' @export
 #' @author Remi Daigle and Jaimie Harbin
 
