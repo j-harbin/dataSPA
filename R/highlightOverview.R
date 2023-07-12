@@ -35,7 +35,7 @@ highlightOverview <- function(om=NULL, id=NULL) {
     stop("Must provide an id argument in highlightOverview")
   }
 
-  subpoint <- words <-  NULL
+  subpoint <- words <-  color <- NULL
 
   file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
   if (file.exists(file)) {

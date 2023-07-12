@@ -210,6 +210,7 @@ plotSPA <-
           "status",
           "overview",
           "objectives",
+          "section_display",
           "lead_staff",
           "deliverables",
           "milestones"

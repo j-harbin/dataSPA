@@ -30,8 +30,9 @@ cat(paste0(unique(index$project_id)))
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
 file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+ID <- unique(index$project_id)
 if (file.exists(file)) {
-cat(highlightOverview(om=om,id=id))
+cat(highlightOverview(om=index,id=ID))
 cat("\n")
 cat("\n")
 cat(paste0("Note: certain words highlighted according to Ecological Pillar objectives. See Figure 7 for further explanation."))

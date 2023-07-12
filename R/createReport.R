@@ -39,7 +39,7 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, destdir="."
   }
 
   if (!(identical(c("project_id","category_display","project_year_id","amount","funding_source_display", "id", "category_type", "description",
-                    "fiscal_year", "project_title", "status", "overview", "objectives","lead_staff", "deliverables", "milestones"), names(om)))) {
+                    "fiscal_year", "project_title", "status", "overview", "objectives","section_display", "lead_staff", "deliverables", "milestones"), names(om)))) {
     stop("Must obtain data for om using getData(type='om')")
   }
   Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
@@ -58,7 +58,6 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, destdir="."
   if (!(class(salary) == "data.frame")) {
     stop("salary must be a data frame created from getData(type='salary')")
   }
-
 
   # Dealing with om
   for (i in seq_along(id)) {

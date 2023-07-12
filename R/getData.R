@@ -317,7 +317,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     names(DELIVERABLES) <- unique(DDF$title)
     names(MILESTONES) <- unique(DDF$title)
-
     t <- lapply(api_data2, function(x) x$project$years)
 
     # Add objectives and overview
@@ -338,6 +337,13 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         p[[i]]$objectives <- as.numeric(0)
       }
 
+    #  if (length(p[[i]]$section_display == 0)) {
+    #    p[[i]]$section_display <- as.numeric(0)
+    #  } else if (is.na(p[[i]]$section_display)) {
+    #    p[[i]]$section_display <- as.numeric(0)
+    #  }
+
+
     }
 
     lov <- list()
@@ -356,7 +362,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
 
 
-    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview")]))
+    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display")]))
 
     for (i in seq_along(pp)) {
       pp[[i]]$lead_staff <- j[[i]]
@@ -379,7 +385,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     # CONCLUSION: id from ttt is equal to project_year_id in om
     # All om$project_year_id are in ttt$id
-
     # Adding fiscal year to om data
     for (i in seq_along(om$project_year_id)) {
       replace <- ttt$display_name[which(ttt$id == om$project_year_id[i])][1]
@@ -388,11 +393,13 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       replace4 <- ppp$overview[which(ppp$id == om$project_id[i])][1]
       replace5 <- ppp$objectives[which(ppp$id == om$project_id[i])][1]
       replace7 <- ppp$lead_staff[which(ppp$id == om$project_id[i])][1]
+      replace8 <- ppp$section_display[which(ppp$id == om$project_id[i])][1]
       om$fiscal_year[i] <- replace
       om$project_title[i] <- replace2
       om$status[i] <- replace3
       om$overview[i] <- replace4
       om$objectives[i] <- replace5
+      om$section_display[i] <- replace8
       #om$deliverables[i] <- replace6
       om$lead_staff[i] <- replace7
 

@@ -3,7 +3,7 @@ if (!FALSE) {
   #library(dataSPA)
   namesOM <- c("project_id","category_display","project_year_id",
                "amount","funding_source_display", "id", "category_type", "description","fiscal_year",
-               "project_title","status", "overview", "objectives", "lead_staff", "deliverables", "milestones")
+               "project_title","status", "overview", "objectives", "section_display", "lead_staff", "deliverables", "milestones")
 
   om <- data.frame(matrix(NA, nrow = 10, ncol = length(namesOM)))
   names(om) <- namesOM
@@ -12,6 +12,7 @@ if (!FALSE) {
   "Field Equipment", "IM/IT - computers, hardware, software",
   "Field","Field", "Contracts", "Translation","Vessels, Boats", "Vessels, Boats")
   om$project_year_id <- 111
+  om$section_display <- rep("Maritimes - Science - Ocean and Ecosystem Science Division - Test Section")
   om$amount <- c(15000, 1000, 4000, 1000, 15000, 3000, 65000, 1000, 430000, 70000)
   om$funding_source_display <- c("Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)",
                                  "Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)", "Unspecified (C-base)",
