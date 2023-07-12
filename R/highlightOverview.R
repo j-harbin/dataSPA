@@ -50,13 +50,13 @@ highlightOverview <- function(om=NULL, id=NULL) {
     if(is.na(docx$level[i])) {
       pillar <- docx$text[i]
     }else if(docx$level[i]==1){
-      subpillar <- docx$text[i]
+      objective <- docx$text[i]
     }else if(docx$level[i]==2){
       point <- docx$text[i]
       if(docx$level[i]>=docx$level[i+1]){
         pillars <- rbind(pillars,
                          data.frame(pillar=pillar,
-                                    subpillar=subpillar,
+                                    objective=objective,
                                     point=point,
                                     subpoint="",
                                     level=docx$level[i]))
@@ -65,7 +65,7 @@ highlightOverview <- function(om=NULL, id=NULL) {
       # browser()
       pillars <- rbind(pillars,
                        data.frame(pillar=pillar,
-                                  subpillar=subpillar,
+                                  objective=objective,
                                   point=point,
                                   subpoint=docx$text[i],
                                   level=docx$level[i]))
@@ -78,16 +78,16 @@ highlightOverview <- function(om=NULL, id=NULL) {
     mutate(pillar=gsub(".. ","",pillar))
 
 
-  subpillars <- pillars %>%
-    mutate(subpillar=paste0(pillar,": ",subpillar)) %>%
-    group_by(pillar,description,subpillar) %>%
+  objectives <- pillars %>%
+    mutate(objective=paste0(pillar,": ",objective)) %>%
+    group_by(pillar,description,objective) %>%
     summarise(words=paste(point,subpoint,collapse=" "),
               .groups = 'drop') %>%
-    group_by(pillar,description,subpillar) %>%
+    group_by(pillar,description,objective) %>%
     unnest_tokens(word,words) %>%
     anti_join(get_stopwords(),by="word") %>%
     filter(!nchar(word)<=3) %>%
-    group_by(pillar,description,subpillar,word) %>%
+    group_by(pillar,description,objective,word) %>%
     summarise(n=n(),
               .groups = 'drop') %>%
     ungroup()
@@ -104,10 +104,10 @@ highlightOverview <- function(om=NULL, id=NULL) {
            darken("#d95f02",0.2))
 
 
-  subpillars_col <- subpillars %>%
-    right_join(data.frame(subpillar=as.factor(unique(subpillars$subpillar)),
+  objectives_col <- objectives %>%
+    right_join(data.frame(objective=as.factor(unique(objectives$objective)),
                           color=pal),
-               by="subpillar")
+               by="objective")%>%
 
 keep <- unlist(unique(om$overview[which(om$project_id == id)]))
 highlightedtext <-  stri_replace_all_regex(keep, pattern=subpillars_col$word,
