@@ -212,6 +212,7 @@ plotSPA <-
           "objectives",
           "section_display",
           "lead_staff",
+          "functional_group",
           "deliverables",
           "milestones"
         ),

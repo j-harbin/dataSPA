@@ -361,8 +361,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     }
 
-
-    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display")]))
+    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group")]))
 
     for (i in seq_along(pp)) {
       pp[[i]]$lead_staff <- j[[i]]
@@ -394,6 +393,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       replace5 <- ppp$objectives[which(ppp$id == om$project_id[i])][1]
       replace7 <- ppp$lead_staff[which(ppp$id == om$project_id[i])][1]
       replace8 <- ppp$section_display[which(ppp$id == om$project_id[i])][1]
+      replace9 <- ppp$functional_group[which(ppp$id == om$project_id[i])][1]
       om$fiscal_year[i] <- replace
       om$project_title[i] <- replace2
       om$status[i] <- replace3
@@ -402,6 +402,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       om$section_display[i] <- replace8
       #om$deliverables[i] <- replace6
       om$lead_staff[i] <- replace7
+      om$functional_group[i] <- replace9
 
     }
 

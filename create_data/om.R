@@ -3,7 +3,7 @@ if (!FALSE) {
   #library(dataSPA)
   namesOM <- c("project_id","category_display","project_year_id",
                "amount","funding_source_display", "id", "category_type", "description","fiscal_year",
-               "project_title","status", "overview", "objectives", "section_display", "lead_staff", "deliverables", "milestones")
+               "project_title","status", "overview", "objectives", "section_display", "lead_staff","functional_group", "deliverables", "milestones")
 
   om <- data.frame(matrix(NA, nrow = 10, ncol = length(namesOM)))
   names(om) <- namesOM
@@ -22,6 +22,7 @@ if (!FALSE) {
                          "Contracts, Leases, Services", "Contracts, Leases, Services", "Contracts, Leases, Services",
                          "Contracts, Leases, Services")
   om$fiscal_year <- "2014-2015"
+  om$functional_group <- rep("Test functional group", length(om$project_id))
 
   for (i in seq_along(om$id)) {
     om$id[i] <- i
