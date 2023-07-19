@@ -2,7 +2,7 @@ if (!FALSE) {
 namesSal <- c("id","overtime_hours","smart_name","duration_weeks",
 "level_display","funding_source_display","employee_type_display",
 "project_year_id","project_id","fiscal_year","project_title","median_salary",
-"salary_per_week", "amount_week", "amount_overtime", "amount_total")
+"salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme")
 
 
 salary <- data.frame(matrix(NA, nrow = 8, ncol = length(namesSal)))
@@ -16,7 +16,7 @@ salary$level_display <- c("BI-03","EG-04","EG-05","SE-RES-02", "EG-04", "PC-02",
 salary$funding_source_display <- c("Core (A-base)","Snow Crab (C-base)", "Core (A-base)",
 "Core (A-base)",  "Snow Crab (C-base)", "Snow Crab (C-base)",
 "Snow Crab (C-base)", "Snow Crab (C-base)")
-
+salary$theme <- "test theme"
 salary$employee_type_display <- "Indeterminate Employee"
 salary$project_year_id <- 111
 salary$project_id <- 1234

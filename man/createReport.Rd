@@ -4,7 +4,14 @@
 \alias{createReport}
 \title{Create a fact sheet for a specific project}
 \usage{
-createReport(om = NULL, salary = NULL, cookie = NULL, id = NULL, destdir = ".")
+createReport(
+  om = NULL,
+  salary = NULL,
+  cookie = NULL,
+  id = NULL,
+  theme = NULL,
+  destdir = "."
+)
 }
 \arguments{
 \item{om}{a data frame created by \code{getData(type='om')}}
@@ -16,6 +23,11 @@ Fisheries and Oceans Canada (DFO) employee in the following
 format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 
 \item{id}{the project_id from the Project Planning Tool (PPT)}
+
+\item{theme}{theme classification of projects of either \verb{Mitigation of Ecosystem Stressors},
+\verb{Marine Spatial Planning and Conservation}, \verb{Ecosystem Assessment and Climate Change},
+\verb{Population Assessment and Recovery}, \code{Other}, \verb{Technology Development and Application}, and
+\verb{Pacific Salmon}}
 
 \item{destdir}{parameter indicating where to save the html report}
 }

@@ -60,6 +60,10 @@
 #' `weekAllocation`,`indeterminate`, `predictSummary`,`predict`,
 #' or `predictSalary`
 #' @param id the project_id from the Project Planning Tool
+#' @param theme theme classification of projects of either `Mitigation of Ecosystem Stressors`,
+#' `Marine Spatial Planning and Conservation`, `Ecosystem Assessment and Climate Change`,
+#' `Population Assessment and Recovery`, `Other`, `Technology Development and Application`, and
+#'  `Pacific Salmon`
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
 #' experience change in the prediction. If `endDate` is provided,
@@ -134,6 +138,7 @@ plotSPA <-
            salary = NULL,
            which = NULL,
            id = NULL,
+           theme = NULL,
            funding = NULL,
            fundingChange = NULL,
            dataframe = FALSE,
@@ -172,8 +177,8 @@ plotSPA <-
         "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict', or 'predictSalary'")
     }
 
-    if (is.null(id)) {
-      stop("As of 2023/05/10, user must provide an id to plot specific projects")
+    if (is.null(id) && is.null(theme)) {
+      stop("Must provide an id or theme argument")
     }
 
     if (debug > 0) {
@@ -213,6 +218,7 @@ plotSPA <-
           "section_display",
           "lead_staff",
           "functional_group",
+          "theme",
           "deliverables",
           "milestones"
         ),
@@ -221,8 +227,24 @@ plotSPA <-
         stop("Must obtain data for x using getData(type='om')")
       }
 
+        # Dealing with themes
+        if (!(is.null(id)) && (!is.null(theme))) {
+          message("both an id and theme argument are given. The theme argument is used")
+          id <- NULL
+        }
+        if (!(is.null(id))) {
+        crab <- om[which(om$project_id == id),]
+        } else if (!(is.null(theme))) {
+          if (!(theme %in% unique(om$theme))) {
+            stop("No projects have theme ", theme, " try ", paste0(unique(om$theme), collapse=","), " instead.")
+          }
+          crab <- om[which(om$theme == theme),]
+          if (length(crab) == 0) {
+            stop("No projects have theme ", theme, " try ", paste0(unique(om$theme), collapse=","), " instead.")
+          }
+        }
 
-      crab <- om[which(om$project_id == id), ]
+
       keep <-
         subset(
           crab,
@@ -288,6 +310,7 @@ plotSPA <-
           value <- keep[which(keep$fiscal_year == years[i]),]
 
           #Deliverables
+          if (is.null(theme)) {
           if (unique(value$deliverables) == 0) {
             dv[[i]] <- 0
           } else {
@@ -301,6 +324,7 @@ plotSPA <-
             ms[[i]] <- length(unlist(strsplit(unique(value$milestones), "|-----|", fixed=TRUE)))
           }
 
+          }
         }
         # Creating place for legend
 
@@ -323,6 +347,7 @@ plotSPA <-
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
         combine <- c(unlist(unname(ms)), unlist(unname(dv)))
         # Add deliverables and milestones
+        if (is.null(theme)) {
         par(new=TRUE)
         plot(
           1:length(dv),
@@ -369,6 +394,7 @@ plotSPA <-
           cex = 0.5,
           col="red"
         )
+        }
 
 
         if (dataframe == TRUE) {
@@ -621,14 +647,32 @@ plotSPA <-
           "salary_per_week",
           "amount_week",
           "amount_overtime",
-          "amount_total"
+          "amount_total",
+          "theme"
         ),
         names(salary)
       ))) {
         stop("Must obtain data for x using getData(type='salary')")
       }
 
-      salaryKeep <- salary[which(salary$project_id == id), ]
+      # Theme
+      if (!(is.null(id)) && (!is.null(theme))) {
+        message("both an id and theme argument are given. The theme argument is used")
+        id <- NULL
+      }
+      if (!(is.null(id))) {
+        salaryKeep <- salary[which(salary$project_id == id),]
+      } else if (!(is.null(theme))) {
+        if (!(theme %in% unique(salary$theme))) {
+          stop("No projects have theme ", theme, " try ", paste0(unique(salary$theme), collapse=","), " instead.")
+        }
+        salaryKeep <- salary[which(salary$theme == theme),]
+        if (length(salaryKeep) == 0) {
+          stop("No projects have theme ", theme, " try ", paste0(unique(salary$theme), collapse=","), " instead.")
+        }
+      }
+
+      #salaryKeep <- salary[which(salary$project_id == id), ]
 
       if (is.null(year)) {
         salyears <- unique(salaryKeep$fiscal_year)

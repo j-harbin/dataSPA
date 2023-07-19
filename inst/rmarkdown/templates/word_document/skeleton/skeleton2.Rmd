@@ -1,0 +1,52 @@
+---
+title: "Summary Fact Sheet"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date", age=30, cookie=cookie)))
+
+```
+
+# Summary
+
+**Plots**
+
+A number of assumptions exist for plots 3,4, and 6 including:
+
+1. The calculated salaries use the median salaries for the year specific to the project of each given job classification. 
+2. If a classification level is not given in the project planning tool, a level of PC-2 is assumed. 
+3. If the salary for a given year of the project is not available in the public DFO pay scale website, the closest year is used.
+4. When overtime amounts are considered in the total, it does not take into account that overtime can sometimes be 1.5 or 2X the pay.
+5. When a person with job classification EX is associated with a project, they are not included in total salary.
+6. For salary predictions, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
+
+
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
+plotSPA(om=index, theme=theme, which="omBar")
+```
+
+```{r, echo=FALSE, fig.cap="Figure 2: Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
+#plotSPA(om=index, theme=theme, which="omAllocation")
+```
+
+```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+plotSPA(salary=index2, theme=theme, which="salaryBar")
+```
+
+```{r, echo=FALSE, fig.cap="Figure 4: Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
+#plotSPA(salary=index2, theme=theme, which="salaryAllocation")
+```
+
+```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+#plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
+```
+
+
+```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+
+plotSPA(om=index, salary=index2, which="predictSalary", theme=theme)
+
+```

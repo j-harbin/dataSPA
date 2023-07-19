@@ -74,7 +74,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   if (type %in% c("om","om_date")) {
-
+    #JAIM
     if(age>0){
       # Look for files in path, only return the most recent file the matches pattern
       fn <- file.path(path,"dataSPA_om.rds")
@@ -85,7 +85,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         if((Sys.Date()-d)<age){
           if(type=="om"){
             om <- readRDS(file = fn)
-            message(paste0("loading file from disk(",fn,")"))
+            #message(paste0("loading file from disk(",fn,")"))
             return(om)
           } else if(type=="om_date"){
             #message(paste0("returning date from file on disk(",fn,")"))
@@ -98,6 +98,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       }
     }
     # Obtaining OM data from the API
+    # JAIM 2
     req <- httr2::request("http://dmapps/api/ppt/om-costs")
 
     # Add custom headers
@@ -405,6 +406,150 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       om$functional_group[i] <- replace9
 
     }
+    # Theme
+
+    # Obtaining OM data from the API
+    req <- httr2::request("http://dmapps/api/ppt/themes/")
+
+
+
+    # Add custom headers
+    req <- req %>% httr2::req_headers("Cookie" = cookie)
+    req <- req %>% httr2::req_headers("Accept" = "application/json")
+
+
+
+    # Automatically retry if the request fails
+    req <- req %>% httr2::req_retry(max_tries = 5)
+
+
+
+    # Get the requested data by querying the API
+    resp <- httr2::req_perform(req)
+
+
+
+    # Read the returned data as a JSON file
+    page_data <- httr2::resp_body_json(resp)
+
+
+
+    themeNumbers <- unlist(lapply(page_data, function(x) x$id))
+    themeNames <- unlist(lapply(page_data, function(x) x$name))
+
+
+
+    # Now obtain which project_ids have each theme
+
+
+
+
+    # Obtaining OM data from the API
+    project_ids <- NULL
+
+
+
+    for (i in seq_along(themeNumbers)) {
+      req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
+
+
+
+      # Add custom headers
+      req <- req %>% httr2::req_headers("Cookie" = cookie)
+      req <- req %>% httr2::req_headers("Accept" = "application/json")
+
+
+
+      # Automatically retry if the request fails
+      req <- req %>% httr2::req_retry(max_tries = 5)
+
+
+
+      # Get the requested data by querying the API
+      resp <- httr2::req_perform(req)
+
+
+
+      # Read the returned data as a JSON file
+      page_data <- httr2::resp_body_json(resp)
+
+
+
+      # Create a list to hold the list of full API results
+      api_data <- page_data$results
+
+
+
+      # Get the information about the next page in the API results
+      next_page <- page_data$`next`
+      cat(paste0(next_page, '\n'))
+
+
+
+      cat(paste0('Number of API records = ', length(api_data), '\n'))
+
+
+
+      # Check if the next page is not null (end of pages) before extract the data from
+      # next page.
+      while (!is.null(next_page)) {
+
+
+
+        # Modifying API Call
+        req <- httr2::request(next_page)
+
+
+
+        # Add custom headers
+        req <- req %>% httr2::req_headers("Cookie" = cookie)
+        req <- req %>% httr2::req_headers("Accept" = "application/json")
+
+
+
+        # Automatically retry if the request fails
+        req <- req %>% httr2::req_retry(max_tries = 5)
+
+
+
+        # Get the requested data by querying the API
+        resp <- httr2::req_perform(req)
+
+
+
+        # Read the returned data as a JSON file
+        page_data <- httr2::resp_body_json(resp)
+
+
+
+        # Add current page data to full list
+        api_data <- c(api_data, page_data$results)
+
+
+
+        cat(paste0('Number of API records = ', length(api_data), '\n'))
+
+
+
+        # Get the information about the next page in the API results
+        next_page <- page_data$`next`
+        cat(paste0(next_page, '\n'))
+      }
+      project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
+
+
+
+    }
+
+
+
+    names(project_ids) <- themeNames
+    om$theme <- 0
+    for (i in seq_along(project_ids)) {
+      for (j in seq_along(project_ids[[i]])) {
+        om$theme[which(om$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
+      }
+    }
 
     # Adding in milestones and deliverables
     om$deliverables <- rep(0, length(om$project_id))
@@ -651,6 +796,147 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
     SAL <- SAL[-bad,]
+    # Theme
+
+    # Obtaining OM data from the API
+    req <- httr2::request("http://dmapps/api/ppt/themes/")
+
+
+
+    # Add custom headers
+    req <- req %>% httr2::req_headers("Cookie" = cookie)
+    req <- req %>% httr2::req_headers("Accept" = "application/json")
+
+
+
+    # Automatically retry if the request fails
+    req <- req %>% httr2::req_retry(max_tries = 5)
+
+
+
+    # Get the requested data by querying the API
+    resp <- httr2::req_perform(req)
+
+
+
+    # Read the returned data as a JSON file
+    page_data <- httr2::resp_body_json(resp)
+
+
+
+    themeNumbers <- unlist(lapply(page_data, function(x) x$id))
+    themeNames <- unlist(lapply(page_data, function(x) x$name))
+
+
+
+    # Now obtain which project_ids have each theme
+
+
+
+
+    # Obtaining OM data from the API
+    project_ids <- NULL
+
+
+
+    for (i in seq_along(themeNumbers)) {
+      req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
+
+
+
+      # Add custom headers
+      req <- req %>% httr2::req_headers("Cookie" = cookie)
+      req <- req %>% httr2::req_headers("Accept" = "application/json")
+
+
+
+      # Automatically retry if the request fails
+      req <- req %>% httr2::req_retry(max_tries = 5)
+
+
+
+      # Get the requested data by querying the API
+      resp <- httr2::req_perform(req)
+
+
+
+      # Read the returned data as a JSON file
+      page_data <- httr2::resp_body_json(resp)
+
+
+
+      # Create a list to hold the list of full API results
+      api_data <- page_data$results
+
+
+
+      # Get the information about the next page in the API results
+      next_page <- page_data$`next`
+      cat(paste0(next_page, '\n'))
+
+
+
+      cat(paste0('Number of API records = ', length(api_data), '\n'))
+
+
+
+      # Check if the next page is not null (end of pages) before extract the data from
+      # next page.
+      while (!is.null(next_page)) {
+
+
+
+        # Modifying API Call
+        req <- httr2::request(next_page)
+
+
+
+        # Add custom headers
+        req <- req %>% httr2::req_headers("Cookie" = cookie)
+        req <- req %>% httr2::req_headers("Accept" = "application/json")
+
+
+
+        # Automatically retry if the request fails
+        req <- req %>% httr2::req_retry(max_tries = 5)
+
+        # Get the requested data by querying the API
+        resp <- httr2::req_perform(req)
+
+        # Read the returned data as a JSON file
+        page_data <- httr2::resp_body_json(resp)
+
+        # Add current page data to full list
+        api_data <- c(api_data, page_data$results)
+
+        cat(paste0('Number of API records = ', length(api_data), '\n'))
+
+        # Get the information about the next page in the API results
+        next_page <- page_data$`next`
+        cat(paste0(next_page, '\n'))
+      }
+      project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
+
+
+
+    }
+
+
+
+    names(project_ids) <- themeNames
+
+
+
+
+
+
+
+    SAL$theme <- 0
+    for (i in seq_along(project_ids)) {
+      for (j in seq_along(project_ids[[i]])) {
+        SAL$theme[which(SAL$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
+      }
+    }
     if(keep){
       fn <- file.path(path,"dataSPA_SAL.rds")
       if(file.exists(fn)){
