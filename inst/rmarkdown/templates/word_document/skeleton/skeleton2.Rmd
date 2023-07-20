@@ -10,7 +10,14 @@ cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date
 
 ```
 
-# Summary
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat("The project IDs included in this theme include: ", paste0(unique(index$project_id), collapse=","))
+
+```
+
+## Select relevant tab for summaries {.tabset}
+
+### Summary
 
 **Plots**
 
@@ -23,9 +30,8 @@ A number of assumptions exist for plots 3,4, and 6 including:
 5. When a person with job classification EX is associated with a project, they are not included in total salary.
 6. For salary predictions, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
 
-
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
-plotSPA(om=index, theme=theme, which="omBar")
+plotSPA(om=index, theme=theme[i], which="omBar")
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 2: Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
@@ -33,7 +39,7 @@ plotSPA(om=index, theme=theme, which="omBar")
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-plotSPA(salary=index2, theme=theme, which="salaryBar")
+plotSPA(salary=index2, theme=theme[i], which="salaryBar")
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 4: Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
@@ -47,6 +53,25 @@ plotSPA(salary=index2, theme=theme, which="salaryBar")
 
 ```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-plotSPA(om=index, salary=index2, which="predictSalary", theme=theme)
+plotSPA(om=index, salary=index2, which="predictSalary", theme=theme[i])
 
 ```
+
+
+### Research
+
+This is a research placeholder.
+
+### Monitoring
+
+This is a monitoring placeholder.
+
+### Advice
+
+This is a advice placeholder.
+
+### Products and Services
+
+This is a products and services placeholder.
+
+## {-}

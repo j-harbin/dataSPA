@@ -244,7 +244,6 @@ plotSPA <-
           }
         }
 
-
       keep <-
         subset(
           crab,
