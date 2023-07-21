@@ -4,12 +4,14 @@
 \alias{highlightOverview}
 \title{Highlight words in a project overview specific to EBFM framework}
 \usage{
-highlightOverview(om = NULL, id = NULL)
+highlightOverview(om = NULL, id = NULL, legend = FALSE)
 }
 \arguments{
 \item{om}{a data frame likely from \code{getData(type='om')}}
 
 \item{id}{the project_id from the Project Planning Tool}
+
+\item{legend}{a boolean indicating if a legend should be returned}
 }
 \description{
 This function highlights text based on the 2023 Ecological Pillar Objectives.

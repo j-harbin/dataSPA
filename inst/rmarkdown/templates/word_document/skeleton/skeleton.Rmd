@@ -35,14 +35,10 @@ if (file.exists(file)) {
 cat(highlightOverview(om=index,id=ID))
 cat("\n")
 cat("\n")
-cat(paste0("Note: certain words highlighted according to Ecological Pillar objectives. See Figure 7 for further explanation."))
+#highlightOverview(om=om, id=ID, legend=TRUE)
 } else {
   cat(paste0(unique(index$overview)))
 }
-```
-
-```{r, echo=FALSE, comment=NA, results='asis'}
-
 ```
 
 **Deliverables**
@@ -223,6 +219,8 @@ if (unique(index$objectives) == 0) {
 } else {
 cat(paste0(unique(index$objectives)))
 }
+
+
 ```
 
 **Status**

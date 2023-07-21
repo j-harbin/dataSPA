@@ -4,6 +4,7 @@
 #'
 #' @param om a data frame likely from `getData(type='om')`
 #' @param id the project_id from the Project Planning Tool
+#' @param legend a boolean indicating if a legend should be returned
 #' @importFrom officer read_docx
 #' @importFrom officer docx_summary
 #' @importFrom tidyr separate_wider_delim
@@ -27,7 +28,7 @@
 #' @export
 #' @author Remi Daigle and Jaimie Harbin
 
-highlightOverview <- function(om=NULL, id=NULL) {
+highlightOverview <- function(om=NULL, id=NULL, legend=FALSE) {
   if (is.null(om)) {
     stop("In highlightOverview must provide an om argument, likely from getData(type='om')")
   }
@@ -139,6 +140,13 @@ keep <- unlist(unique(om$overview[which(om$project_id == id)]))
 highlightedtext <-  stri_replace_all_regex(keep, pattern=objectives_col$word,
                                            replacement=objectives_col$hl_word,
                                            vectorize_all=FALSE)
+if (!(legend)) {
 highlightedtext
+} else {
+  # Create legend
+  par(mar=c(1, 1, 1, 1) + 0.1)
+  plot(1,1, axes=FALSE, xlab=" ", ylab=" ", col="white")
+  legend("center", unique(objectives$objective), col=pal, pch=20, cex=0.7)
+}
 
 }
