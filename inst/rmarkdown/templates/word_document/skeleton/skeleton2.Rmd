@@ -11,13 +11,22 @@ cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat("The project IDs included in this theme include: ", paste0(unique(index$project_id), collapse=","))
+IDs <- unique(index$project_id)
+path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
+links <- paste0(path, IDs, ".html")
+ 
+cat("The project IDs included in this theme include: ", paste0('<a href="',links,'">',IDs,'</a>', collapse=","))
 
 ```
 
 ## Select relevant tab for summaries {.tabset}
 
 ### Summary
+ <font size="4">
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("Theme: ", paste0(theme[i])))
+```
+</font>
 
 **Plots**
 
