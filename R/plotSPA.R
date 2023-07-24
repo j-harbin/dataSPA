@@ -493,10 +493,14 @@ plotSPA <-
 
 
         # Setting layout
+        if (is.null(theme)) {
         if (length(amounty) == 1) {
           par(mfrow = c(1, 1), mar = c(2, 4, 2, 0.5))
         } else {
           par(mfrow = c(ceiling((length(amounty) / 2)), 2), mar = c(2, 4, 2, 0.5))
+        }
+        } else {
+          par(mfrow=c(1,1))
         }
 
         for (i in seq_along(category)) {
@@ -505,8 +509,8 @@ plotSPA <-
             ylim <- c((amounty[[i]]-1000), (amounty[[i]]+1000))
           } else {
             ylim <- extendrange(range(amounty[[i]], na.rm=TRUE))
-            }
-
+          }
+            if (!(dataframe)) {
           plot(seq_along(unique(keep$fiscal_year)), rep(mean(ylim), length(unique(keep$fiscal_year))), col="white", xlab=" ", ylab= "", xaxt="n",ylim=ylim)
           lines(yearsx[[i]], unlist(amounty[[i]]), type="o", pch=20, col="black", xlab=" ", ylab=" ", xaxt="n")
           axis(
@@ -526,42 +530,17 @@ plotSPA <-
           } else {
           title(category[i], cex.main=0.85)
           }
+            }
           }
         }
+        if (!(dataframe)) {
         mtext(side=2, text="Amount of O&M Funding ($)", line=-1.3, outer=TRUE)
+        }
 
         if (dataframe == TRUE) {
           return(amounty)
         }
-        # par(mar = c(12, 4, 4, 2) + 0.1)
-        # par(mfrow = c(1, length(years)))
-        # DF <- NULL
-        # for (i in seq_along(years)) {
-        #   value <-
-        #     keep[which(keep$fiscal_year == years[i]), ] # Look at one year
-        #   mo <- matrix(0, nrow = 1, ncol = length(unique(value$category_display)))
-        #   mdf <- as.data.frame(mo, col.names = unique(value$category_display))
-        #   names(mdf) <- unique(value$category_display)
-        #   for (j in seq_along(unique(value$category_display))) {
-        #     mdf[j] <-
-        #       sum(value$amount[which(value$category_display == unique(value$category_display)[j])], na.rm =
-        #             TRUE)
-        #   }
-        #   barplot(
-        #     as.matrix(mdf),
-        #     col = 1,
-        #     las = 2,
-        #     ylab = ifelse(i== 1, "Cost ($)", " "),
-        #     xlab = NULL,
-        #     cex.axis = 0.7,
-        #     cex.names=0.8
-        #   )
-        #   title(paste0(years[i]))
-        #   DF[[i]] <- mdf
-        # }
-        # if (dataframe == TRUE) {
-        #   return(DF)
-        # }
+
       } else if (which == "omAllocationGeneral") {
         par(mfrow = c(1, length(unique(years))))
         DFG <- NULL
@@ -802,10 +781,14 @@ plotSPA <-
 
         par(mar = c(2, 4, 2, 0.5))
         # Setting layout
+        if (is.null(theme)) {
         if (length(amounty) == 1) {
           par(mfrow = c(1, 1))
         } else {
           par(mfrow = c(ceiling((length(amounty) / 2)), 2))
+        }
+        } else {
+          par(mfrow=c(1,1))
         }
         for (i in seq_along(category)) {
           if (!(identical(amounty[[i]], numeric(0)))) {
@@ -814,7 +797,7 @@ plotSPA <-
             } else {
               ylim <- extendrange(range(amounty[[i]], na.rm=TRUE))
             }
-
+            if (!(dataframe)) {
             plot(seq_along(unique(salaryKeep$fiscal_year)), rep(mean(ylim), length(unique(salaryKeep$fiscal_year))), col="white", xlab=" ", ylab= "", xaxt="n",ylim=ylim)
             lines(yearsx[[i]], unlist(amounty[[i]]), type="o", pch=20, col="black", xlab=" ", ylab=" ", xaxt="n")
             axis(
@@ -834,9 +817,12 @@ plotSPA <-
             } else {
               title(category[i], cex.main=0.85)
             }
+            }
           }
         }
+        if (!(dataframe)) {
         mtext(side=2, text="Amount of Salary Funding ($)", line=-1.3, outer=TRUE)
+        }
 
         if (dataframe == TRUE) {
           return(amounty)

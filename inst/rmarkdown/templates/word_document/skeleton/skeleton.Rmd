@@ -5,6 +5,9 @@ output:
   pdf_document: default
 ---
 
+<a href ="file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/hub/dataSPA.html"><img src="home.png" width="2%"></a>
+
+
 ```{r, echo=FALSE}
 years <- unique(index$fiscal_year)
 ```
@@ -255,6 +258,7 @@ A number of assumptions exist for plots 3,4, and 6 including:
 4. When overtime amounts are considered in the total, it does not take into account that overtime can sometimes be 1.5 or 2X the pay.
 5. When a person with job classification EX is associated with a project, they are not included in total salary.
 6. For salary predictions, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
+7. The PPT was only mandated in the Maritimes region 2 years ago
 
 ```{r, echo=FALSE}
 ID <- unique(index$project_id)

@@ -5,6 +5,8 @@ output:
   pdf_document: default
 ---
 
+<a href ="file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/hub/dataSPA.html"><img src="home.png" width="2%"></a>
+
 ```{r, echo=FALSE, comment=NA, results="asis"}
 cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date", age=30, cookie=cookie)))
 
@@ -30,7 +32,7 @@ cat(paste0("Theme: ", paste0(theme[i])))
 
 **Plots**
 
-A number of assumptions exist for plots 3,4, and 6 including:
+A number of assumptions exist for the following
 
 1. The calculated salaries use the median salaries for the year specific to the project of each given job classification. 
 2. If a classification level is not given in the project planning tool, a level of PC-2 is assumed. 
@@ -38,6 +40,7 @@ A number of assumptions exist for plots 3,4, and 6 including:
 4. When overtime amounts are considered in the total, it does not take into account that overtime can sometimes be 1.5 or 2X the pay.
 5. When a person with job classification EX is associated with a project, they are not included in total salary.
 6. For salary predictions, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
+7. The PPT was only mandated in the Maritimes region 2 years ago
 
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 plotSPA(om=index, theme=theme[i], which="omBar")
