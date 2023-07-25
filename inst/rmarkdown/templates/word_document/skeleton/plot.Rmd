@@ -1,0 +1,9 @@
+---
+title: "plot"
+output: html_document
+---
+
+```{r, echo=FALSE}
+df <- plotSPA(om=index, which="omAllocation", theme=theme[i], dataframe = TRUE)
+plotSPA(index, which="omAllocation", theme=unique(index$theme), item=names(df)[j])
+```

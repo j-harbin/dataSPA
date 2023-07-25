@@ -12,21 +12,20 @@ cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date
 
 ```
 
+<p style="text-align:left;width: 60%">
 ```{r, echo=FALSE, comment=NA, results="asis"}
 IDs <- unique(index$project_id)
 path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
 links <- paste0(path, IDs, ".html")
  
 cat("The project IDs included in this theme include: ", paste0('<a href="',links,'">',IDs,'</a>', collapse=","))
-
 ```
-
-## Select relevant tab for summaries {.tabset}
+</p>
 
 ### Summary
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Theme: ", paste0(theme[i])))
+cat(paste0("Theme: ", paste0(unique(index$theme))))
 ```
 </font>
 
@@ -43,20 +42,36 @@ A number of assumptions exist for the following
 7. The PPT was only mandated in the Maritimes region 2 years ago
 
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
-plotSPA(om=index, theme=theme[i], which="omBar")
+plotSPA(om=index, theme=unique(index$theme), which="omBar")
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 2: Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
-#plotSPA(om=index, theme=theme, which="omAllocation")
+# Select relevant om allocation figure {.tabset .tabset-dropdown}
+```{r, results="asis", echo=FALSE}
+df <- plotSPA(om=index, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+headers <- names(df)
+for (j in seq_along(headers)) {
+      cat("## ", headers[j], "\n\n",
+          knitr::knit_child("plot.Rmd", quiet = TRUE), "\n\n")
+}
+
 ```
+# {-}
 
 ```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-plotSPA(salary=index2, theme=theme[i], which="salaryBar")
+plotSPA(salary=index2, theme=unique(index2$theme), which="salaryBar")
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 4: Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
-#plotSPA(salary=index2, theme=theme, which="salaryAllocation")
+# Select relevant salary allocation figure {.tabset .tabset-dropdown}
+```{r, results="asis", echo=FALSE}
+df <- plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), dataframe = TRUE)
+headers <- names(df)
+for (j in seq_along(headers)) {
+      cat("## ", headers[j], "\n\n",
+          knitr::knit_child("plot2.Rmd", quiet = TRUE), "\n\n")
+}
+
 ```
+# {-}
 
 ```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
@@ -86,4 +101,4 @@ This is a advice placeholder.
 
 This is a products and services placeholder.
 
-## {-}
+#### {-}

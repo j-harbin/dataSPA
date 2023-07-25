@@ -10,6 +10,7 @@ plotSPA(
   which = NULL,
   id = NULL,
   theme = NULL,
+  item = NULL,
   funding = NULL,
   fundingChange = NULL,
   dataframe = FALSE,
@@ -35,6 +36,10 @@ or \code{predictSalary}}
 \verb{Marine Spatial Planning and Conservation}, \verb{Ecosystem Assessment and Climate Change},
 \verb{Population Assessment and Recovery}, \code{Other}, \verb{Technology Development and Application}, and
 \verb{Pacific Salmon}}
+
+\item{item}{if\code{which='omAllocation'} an argument
+specifying which category display to plot. If \code{which=salaryAllocation},
+the argument specifys whichs level to plot. By default all are plotted}
 
 \item{funding}{a variable used when \code{which='predictSummary'} or
 \code{which='predict'} used to indicate which funding source will

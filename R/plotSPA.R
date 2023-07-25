@@ -81,7 +81,7 @@
 #' @param endDate the end date in "YYYY-YYYY" format that indicates
 #' when the funding specified by `funding` ends. This is used
 #' when `which='predict'` and can only be an interval of one year.
-#' @item if`which='omAllocation'` an argument
+#' @param item if`which='omAllocation'` an argument
 #' specifying which category display to plot. If `which=salaryAllocation`,
 #' the argument specifys whichs level to plot. By default all are plotted
 #' @param debug integer value indicating level of debugging.
@@ -142,6 +142,7 @@ plotSPA <-
            which = NULL,
            id = NULL,
            theme = NULL,
+           item = NULL,
            funding = NULL,
            fundingChange = NULL,
            dataframe = FALSE,
@@ -506,6 +507,15 @@ plotSPA <-
           par(mfrow=c(1,1))
         }
 
+        if (!(is.null(item))) {
+          if (!(any(item %in% category)) | (!(length(unique(item %in% category)) == 1))) {
+            stop("Item : ", paste0(item, collapse=","), " is not funded. Try one of the following instead ", paste0(category, collapse=","))
+          }
+          category <- category[which(category %in% item)]
+          amounty <- amounty[which(names(amounty) %in% item)]
+          yearsx <- yearsx[which(names(yearsx) %in% item)]
+        }
+
         for (i in seq_along(category)) {
           if (!(identical(amounty[[i]], numeric(0)))) {
           if (length(amounty[[i]]) == 1) {
@@ -541,10 +551,7 @@ plotSPA <-
         }
 
         if (dataframe == TRUE) {
-          DF <- vector(mode="list", 2)
-          DF[[1]] <- amounty
-          DF[[2]] <- yearsx
-          return(DF)
+          return(amounty)
         }
 
       } else if (which == "omAllocationGeneral") {
@@ -640,6 +647,7 @@ plotSPA <-
       }
 
       # Theme
+      #message("IN PLOTSPA, theme = ", theme)
       if (!(is.null(id)) && (!is.null(theme))) {
         message("both an id and theme argument are given. The theme argument is used")
         id <- NULL
@@ -796,6 +804,18 @@ plotSPA <-
         } else {
           par(mfrow=c(1,1))
         }
+
+
+        if (!(is.null(item))) {
+          if (!(any(item %in% category)) | (!(length(unique(item %in% category)) == 1))) {
+            stop("Item : ", paste0(item, collapse=","), " is not funded. Try one of the following instead ", paste0(category, collapse=","))
+          }
+          category <- category[which(category %in% item)]
+          amounty <- amounty[which(names(amounty) %in% item)]
+          yearsx <- yearsx[which(names(yearsx) %in% item)]
+        }
+
+
         for (i in seq_along(category)) {
           if (!(identical(amounty[[i]], numeric(0)))) {
             if (length(amounty[[i]]) == 1) {
