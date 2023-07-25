@@ -36,13 +36,19 @@ file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecolog
 ID <- unique(index$project_id)
 if (file.exists(file)) {
 cat(highlightOverview(om=index,id=ID))
-cat("\n")
-cat("\n")
-#highlightOverview(om=om, id=ID, legend=TRUE)
 } else {
   cat(paste0(unique(index$overview)))
 }
 ```
+
+<center>
+```{r pressure, echo=FALSE, fig.cap=" ", out.width = '70%'}
+#this is obtained from highlightOverview(om=om, id=id, legend=TRUE)
+if (file.exists(file)) {
+highlightOverview(om=index, id=id, legend=TRUE)
+}
+```
+</img></center>
 
 **Deliverables**
 

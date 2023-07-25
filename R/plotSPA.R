@@ -81,6 +81,9 @@
 #' @param endDate the end date in "YYYY-YYYY" format that indicates
 #' when the funding specified by `funding` ends. This is used
 #' when `which='predict'` and can only be an interval of one year.
+#' @item if`which='omAllocation'` an argument
+#' specifying which category display to plot. If `which=salaryAllocation`,
+#' the argument specifys whichs level to plot. By default all are plotted
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
 #'  some functions will print debugging information.
@@ -538,7 +541,10 @@ plotSPA <-
         }
 
         if (dataframe == TRUE) {
-          return(amounty)
+          DF <- vector(mode="list", 2)
+          DF[[1]] <- amounty
+          DF[[2]] <- yearsx
+          return(DF)
         }
 
       } else if (which == "omAllocationGeneral") {
