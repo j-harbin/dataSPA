@@ -60,6 +60,15 @@ cookie <- "csrftoken=YOURTOKEN; sessionid=YOURSESSIONID"
 data <- getData(type="salary", cookie=cookie)
 head(data,2)
 }
+\dontrun{
+# Fix File ( ./dataSPA_om.rds ) does not exist error
+ # Notice keep = TRUE saves the file, and the path argument says where to save it
+om <- getData(type="om", cookie=cookie, keep=TRUE, path=".")
+# Notice sal and om are saved in the same path
+sal <- getData(type="salary", cookie=cookie, keep=TRUE, path=".")
+ # Notice om_date is saved in the same path and done AFTER type=”om”
+omdate <- getData(type="om_date", cookie=cookie, keep=TRUE, path=".")
+}
 }
 \author{
 Jaimie Harbin and Remi Daigle

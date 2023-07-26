@@ -13,8 +13,10 @@ years <- unique(index$fiscal_year)
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date", age=30, cookie=cookie)))
-
+file2 <- paste0(path,"dataSPA_om.rds")
+if (file.exists(file2)) {
+cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date", age=30, cookie=cookie, path=path)))
+}
 ```
 
 **Title**

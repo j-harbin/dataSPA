@@ -56,6 +56,16 @@
 #' }
 #' @author Jaimie Harbin and Remi Daigle
 #' @export
+#' @examples
+#' \dontrun{
+#' # Fix File ( ./dataSPA_om.rds ) does not exist error
+#'  # Notice keep = TRUE saves the file, and the path argument says where to save it
+#' om <- getData(type="om", cookie=cookie, keep=TRUE, path=".")
+#' # Notice sal and om are saved in the same path
+#' sal <- getData(type="salary", cookie=cookie, keep=TRUE, path=".")
+#'  # Notice om_date is saved in the same path and done AFTER type=”om”
+#' omdate <- getData(type="om_date", cookie=cookie, keep=TRUE, path=".")
+#' }
 
 getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
   if (is.null(type)) {
@@ -74,11 +84,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   if (type %in% c("om","om_date")) {
-    #JAIM
     if(age>0){
       # Look for files in path, only return the most recent file the matches pattern
       fn <- file.path(path,"dataSPA_om.rds")
-
       if(file.exists(fn)){
         # Load file if more recent than `keep` days old
         d <- as.Date(file.info(fn)$mtime)
@@ -94,11 +102,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
         }
       }  else if(type=="om_date"){
-        stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
+        stop(paste("File (",fn,") does not exist. User must first save om type. See examples in ?getData for how to fix this."))
       }
     }
     # Obtaining OM data from the API
-    # JAIM 2
     req <- httr2::request("http://dmapps/api/ppt/om-costs")
 
     # Add custom headers

@@ -21,6 +21,7 @@ sometimes overtime may be 1.5X or 2X regular salary
 6. When a person with job classification EX is associated with a
 project, they are not included in total weeks or salary.
 7. For salary predictions in `plotSPA(which="salaryPredict")`, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
+8. The PPT was only mandated in the Maritimes region 2 years ago
 
 
 To install the package, you must first be a collaborator of the private repository `dataSPA` hosted by `j-harbin` (Jaimie Harbin). Once you have been granted access, run the following code to install the package:
@@ -82,10 +83,10 @@ cookie <- "csrftoken=YOURTOKEN; sessionid=YOURSESSIONID"
 This variable `cookie` will then act as your `cookie` argument in the `getData()` function, e.g.:
 
 ```{r, eval=FALSE}
-data(salaries)
-om <- getData(type="om", cookie=cookie)
-salary <- getData(type="salary", cookie=cookie, salaries=salaries)
 
+om <- getData(type="om", cookie=cookie, keep=TRUE, path=".") # Notice keep = TRUE saves the file, and the path argument says where to save it
+sal <- getData(type="salary", cookie=cookie, keep=TRUE, path=".") # Notice these are saved in the same path 
+omdate <- getData(type="om_date", cookie=cookie, keep=TRUE, path=".") # Notice this is saved in the same path and done AFTER type=”om”
 ```
 
 ## plotSPA()
@@ -128,10 +129,12 @@ plotSPA(om, which="omBar", id=1093)
 
 # createReport()
 
-This function creates a fact sheet report for a specified project id. Example code is shown below:
+This function creates a fact sheet report for a specified project id or theme. Example code is shown below:
 
 ```{r, eval=FALSE}
-createReport(om=om, salary=salary, id=1093)
+createReport(om=om, salary=salary, id=1093, cookie=cookie, path=".", destdir="../reports") 
+
+# Notice the path is set to the same place as the saved data. This allows the report to print out what date the data was pulled
 ```
 
 

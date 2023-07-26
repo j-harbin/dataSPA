@@ -10,6 +10,9 @@
 #' `Marine Spatial Planning and Conservation`, `Ecosystem Assessment and Climate Change`,
 #' `Population Assessment and Recovery`, `Other`, `Technology Development and Application`, and
 #'  `Pacific Salmon`
+#' @param path path to look for saved om_date. This must be the save as the path given when doing
+#'  `getData(type='om_date', keep=TRUE)`. This allows the report to print when the data was obtained
+#'   from the PPT. See Examples for more information.
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
 #' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
@@ -18,14 +21,14 @@
 #' @importFrom rmarkdown render
 #' @examples
 #' \dontrun{
-#' library(dataSPA)
-#' data <- getData(type="om",cookie=cookie)
-#' data2 <- getData(type="salary", cookie=cookie)
-#' createReport(om=data, salary=data2, id=1234, cookie=cookie)
+#' om <- getData(type="om", cookie=cookie, keep=TRUE, path=".")
+#' sal <- getData(type="salary", cookie=cookie, keep=TRUE, path=".")
+#' omdate <- getData(type="om_date", cookie=cookie, keep=TRUE, path=".")
+#' createReport(om=om, salary=sal, cookie=cookie, id=1093, path=".")
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL, destdir=".") {
+createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(om)) {
     stop("In createReport() must provide an om argument")

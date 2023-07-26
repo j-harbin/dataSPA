@@ -182,6 +182,7 @@ pre code {
 <li>Calculated over time salary does not consider the fact sometimes overtime may be 1.5X or 2X regular salary</li>
 <li>When a person with job classification EX is associated with a project, they are not included in total weeks or salary.</li>
 <li>For salary predictions in <code>plotSPA(which=&quot;salaryPredict&quot;)</code>, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year</li>
+<li>The PPT was only mandated in the Maritimes region 2 years ago</li>
 </ol>
 <p>To install the package, you must first be a collaborator of the private repository <code>dataSPA</code> hosted by <code>j-harbin</code> (Jaimie Harbin). Once you have been granted access, run the following code to install the package:</p>
 <pre class="r"><code># configure github and generate token
@@ -196,8 +197,8 @@ devtools::install_github(&quot;j-harbin/dataSPA&quot;)
 library(dataSPA)</code></pre>
 <p>Once the package is installed, the user should follow the following workflow to successfully use the package:</p>
 <div class="figure">
-<div class="grViz html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-212b8cb76ad4b366563c" style="width:816px;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-212b8cb76ad4b366563c">{"x":{"diagram":"digraph flowchart {\n      node [fontname = Helvetica, shape = rectangle]\n      tab1 [label = \"getData()\"]\n      tab2 [label = \"createReport()\"]\n\n      # edge definitions with the node IDs\n      tab1 -> tab2;\n      }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-92531c5478a62f1d63fe" style="width:816px;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-92531c5478a62f1d63fe">{"x":{"diagram":"digraph flowchart {\n      node [fontname = Helvetica, shape = rectangle]\n      tab1 [label = \"getData()\"]\n      tab2 [label = \"createReport()\"]\n\n      # edge definitions with the node IDs\n      tab1 -> tab2;\n      }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p class="caption">
 Figure 1: Work flow for the <code>dataSPA</code> package
 </p>
@@ -222,9 +223,9 @@ Figure 1: Work flow for the <code>dataSPA</code> package
 <p><strong>5. Assign a variable in R with the following format:</strong></p>
 <pre><code>cookie &lt;- &quot;csrftoken=YOURTOKEN; sessionid=YOURSESSIONID&quot;</code></pre>
 <p>This variable <code>cookie</code> will then act as your <code>cookie</code> argument in the <code>getData()</code> function, e.g.:</p>
-<pre class="r"><code>data(salaries)
-om &lt;- getData(type=&quot;om&quot;, cookie=cookie)
-salary &lt;- getData(type=&quot;salary&quot;, cookie=cookie, salaries=salaries)</code></pre>
+<pre class="r"><code>om &lt;- getData(type=&quot;om&quot;, cookie=cookie, keep=TRUE, path=&quot;.&quot;) # Notice keep = TRUE saves the file, and the path argument says where to save it
+sal &lt;- getData(type=&quot;salary&quot;, cookie=cookie, keep=TRUE, path=&quot;.&quot;) # Notice these are saved in the same path 
+omdate &lt;- getData(type=&quot;om_date&quot;, cookie=cookie, keep=TRUE, path=&quot;.&quot;) # Notice this is saved in the same path and done AFTER type=”om”</code></pre>
 </div>
 <div id="plotspa" class="section level2">
 <h2>plotSPA()</h2>
@@ -253,8 +254,10 @@ salary &lt;- getData(type=&quot;salary&quot;, cookie=cookie, salaries=salaries)<
 </div>
 <div id="createreport" class="section level1">
 <h1>createReport()</h1>
-<p>This function creates a fact sheet report for a specified project id. Example code is shown below:</p>
-<pre class="r"><code>createReport(om=om, salary=salary, id=1093)</code></pre>
+<p>This function creates a fact sheet report for a specified project id or theme. Example code is shown below:</p>
+<pre class="r"><code>createReport(om=om, salary=salary, id=1093, cookie=cookie, path=&quot;.&quot;, destdir=&quot;../reports&quot;) 
+
+# Notice the path is set to the same place as the saved data. This allows the report to print out what date the data was pulled</code></pre>
 </div>
 
 

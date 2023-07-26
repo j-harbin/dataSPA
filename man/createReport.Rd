@@ -10,7 +10,8 @@ createReport(
   cookie = NULL,
   id = NULL,
   theme = NULL,
-  destdir = "."
+  destdir = ".",
+  path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
 )
 }
 \arguments{
@@ -30,19 +31,23 @@ format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 \verb{Pacific Salmon}}
 
 \item{destdir}{parameter indicating where to save the html report}
+
+\item{path}{path to look for saved om_date. This must be the save as the path given when doing
+\code{getData(type='om_date', keep=TRUE)}. This allows the report to print when the data was obtained
+from the PPT. See Examples for more information.}
 }
 \value{
 A fact sheet about the specified project id.
 }
 \description{
 This function creates a fact sheet report for the
-specified project id.
+specified project id or theme.
 }
 \examples{
 \dontrun{
-library(dataSPA)
-data <- getData(type="om",cookie=cookie)
-data2 <- getData(type="salary", cookie=cookie)
-createReport(om=data, salary=data2, id=1234, cookie=cookie)
+om <- getData(type="om", cookie=cookie, keep=TRUE, path=".")
+sal <- getData(type="salary", cookie=cookie, keep=TRUE, path=".")
+omdate <- getData(type="om_date", cookie=cookie, keep=TRUE, path=".")
+createReport(om=om, salary=sal, cookie=cookie, id=1093, path=".")
 }
 }
