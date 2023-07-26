@@ -12,17 +12,19 @@ cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date
 
 ```
 
-<p style="text-align:left;width: 60%">
 ```{r, echo=FALSE, comment=NA, results="asis"}
 IDs <- unique(index$project_id)
 path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
 links <- paste0(path, IDs, ".html")
  
 cat("The project IDs included in this theme include: ", paste0('<a href="',links,'">',IDs,'</a>', collapse=","))
-```
-</p>
 
-### Summary
+```
+
+# Select the appropriate tab {.tabset}
+
+## Summary
+
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
 cat(paste0("Theme: ", paste0(unique(index$theme))))
@@ -45,33 +47,41 @@ A number of assumptions exist for the following
 plotSPA(om=index, theme=unique(index$theme), which="omBar")
 ```
 
-# Select relevant om allocation figure {.tabset .tabset-dropdown}
+### Choose an om allocation plot {.tabset .tabset-dropdown}
+
 ```{r, results="asis", echo=FALSE}
 df <- plotSPA(om=index, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
-      cat("## ", headers[j], "\n\n",
-          knitr::knit_child("plot.Rmd", quiet = TRUE), "\n\n")
+     cat("#### ", headers[j], "\n\n",
+         knitr::knit_child("plot.Rmd", quiet = TRUE), "\n\n")
 }
 
 ```
-# {-}
+
+### {-}
+
 
 ```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 plotSPA(salary=index2, theme=unique(index2$theme), which="salaryBar")
 ```
 
-# Select relevant salary allocation figure {.tabset .tabset-dropdown}
+
+### Choose a salary allocation plot {.tabset .tabset-dropdown}
+
 ```{r, results="asis", echo=FALSE}
 df <- plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
-      cat("## ", headers[j], "\n\n",
+      cat("#### ", headers[j], "\n\n",
           knitr::knit_child("plot2.Rmd", quiet = TRUE), "\n\n")
 }
 
 ```
-# {-}
+
+### {-}
+
+
 
 ```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
@@ -85,20 +95,21 @@ plotSPA(om=index, salary=index2, which="predictSalary", theme=theme[i])
 ```
 
 
-### Research
+## Research
 
 This is a research placeholder.
 
-### Monitoring
+## Monitoring
 
 This is a monitoring placeholder.
 
-### Advice
+## Advice
 
 This is a advice placeholder.
 
-### Products and Services
+## Products and Services
 
 This is a products and services placeholder.
 
-#### {-}
+# {-}
+

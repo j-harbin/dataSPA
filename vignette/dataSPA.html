@@ -178,7 +178,7 @@ pre code {
 <li>For this package to work, you must be on the DFO VPN</li>
 <li>This code assumes some employees have not changed positions over the course of their career</li>
 <li>As of 2023/05/23, in some cases when a employment classification is not provided, it us assumed the employee was a PC-2.</li>
-<li>The salary calculations are based off of medians of federal employee pay scales for the year of the projects fiscal year, not the exact salary of individuals. If the pay information for a specific year is not available, the closest year is found.</li>
+<li>The salary calculations are based off of medians of federal employee pay scales for the year of the projects fiscal year, not the exact salary of individuals. If the pay information for a specific year is not available, the closest year is found. As negotiations continue to happen, the <code>data(salaries)</code> built in dataset will need to be updated.</li>
 <li>Calculated over time salary does not consider the fact sometimes overtime may be 1.5X or 2X regular salary</li>
 <li>When a person with job classification EX is associated with a project, they are not included in total weeks or salary.</li>
 <li>For salary predictions in <code>plotSPA(which=&quot;salaryPredict&quot;)</code>, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year</li>
@@ -196,8 +196,8 @@ devtools::install_github(&quot;j-harbin/dataSPA&quot;)
 library(dataSPA)</code></pre>
 <p>Once the package is installed, the user should follow the following workflow to successfully use the package:</p>
 <div class="figure">
-<div class="grViz html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-85514d9418dedba62bec" style="width:816px;height:288px;"></div>
-<script type="application/json" data-for="htmlwidget-85514d9418dedba62bec">{"x":{"diagram":"digraph flowchart {\n      node [fontname = Helvetica, shape = rectangle]\n      tab1 [label = \"getData()\"]\n      tab2 [label = \"createReport()\"]\n\n      # edge definitions with the node IDs\n      tab1 -> tab2;\n      }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
+<div class="grViz html-widget html-fill-item-overflow-hidden html-fill-item" id="htmlwidget-212b8cb76ad4b366563c" style="width:816px;height:288px;"></div>
+<script type="application/json" data-for="htmlwidget-212b8cb76ad4b366563c">{"x":{"diagram":"digraph flowchart {\n      node [fontname = Helvetica, shape = rectangle]\n      tab1 [label = \"getData()\"]\n      tab2 [label = \"createReport()\"]\n\n      # edge definitions with the node IDs\n      tab1 -> tab2;\n      }","config":{"engine":"dot","options":null}},"evals":[],"jsHooks":[]}</script>
 <p class="caption">
 Figure 1: Work flow for the <code>dataSPA</code> package
 </p>
@@ -231,7 +231,7 @@ salary &lt;- getData(type=&quot;salary&quot;, cookie=cookie, salaries=salaries)<
 <p>This function plots specific graphs (determined by the which argument) using the data frames returned by <code>getData()</code>. It is used in the <code>createReport()</code> function.</p>
 <p>The various plot types are as follows:</p>
 <ul>
-<li><p>For <code>which=&quot;omBar&quot;</code>, a bar graph representing amount of money ($) coded by funding type.</p></li>
+<li><p>For <code>which=&quot;omBar&quot;</code>, a bar graph representing amount of money ($) coded by funding type and show the number of deliverables and milestones per year in blue and red respectively</p></li>
 <li><p>For <code>which=&quot;omPie&quot;</code>, a pie chart representing amount of money ($) coded by funding type</p></li>
 <li><p>For <code>which=&quot;omAllocation&quot;</code> Line graphs representing changes in O&amp;M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red</p></li>
 <li><p>For <code>which=omAllocationGeneral</code> a pie chat representing proportion of #’ funding per category type is plotted for year each of the specified project</p></li>
