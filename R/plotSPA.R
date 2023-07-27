@@ -330,12 +330,8 @@ plotSPA <-
           }
         }
         # Creating place for legend
-
-        #DF <- df
-        #DF[length(df)+1] <- rep(0)
-        #names(DF) <- c(years, "")
-        #par(mar=c(5.1, 5.3, 4.1, 8.1), xpd=TRUE)
         par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
+        if (is.null(theme)) {
         barplot(
           as.matrix(df),
           col = c(1:length(namesFunding)),
@@ -345,12 +341,10 @@ plotSPA <-
           las=2,
           legend.text = TRUE,
           args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7)
-
         )
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
         combine <- c(unlist(unname(ms)), unlist(unname(dv)))
         # Add deliverables and milestones
-        if (is.null(theme)) {
         par(new=TRUE)
         plot(
           1:length(dv),
@@ -397,6 +391,23 @@ plotSPA <-
           cex = 0.5,
           col="red"
         )
+        } else {
+          # Configure margins for theme plot
+          holder <- data.frame(matrix(0, nrow = length(df[,1]), 2))
+          names(holder) <- c("  ", "   ")
+          DF <- cbind(df, holder)
+
+          barplot(
+            as.matrix(DF),
+            col = c(1:length(namesFunding)),
+            ylab = " ",
+            ylim = c(0, max(unlist(ylim))*1.5),
+            xlab = " ",
+            las=2,
+            legend.text = TRUE,
+            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.5)
+          )
+          title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
         }
 
 
@@ -708,30 +719,49 @@ plotSPA <-
 
       if (which == "salaryBar") {
         par(mfrow = c(1, 1))
-        par(mar = c(5, 5, 4, 4) + 0.3)
-
+        par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
         ylim <- NULL
         for (i in seq_along(salyears)) {
           ylim[[i]] <- sum(subset(
             saldf, select = c(paste0(salyears[i]))
           ))
         }
+        if (is.null(theme)) {
         barplot(
           as.matrix(saldf),
           col = c(1:length(salnamesFunding)),
           ylab = " ",
           ylim = c(0, max(unlist(ylim))*2),
           xlab = " ",
-          las=2
-        )
+          las=2,
+          legend.text = TRUE,
+          args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7))
+        } else {
+          holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 2))
+          names(holder) <- c("  ", "   ")
+          DF <- cbind(saldf, holder)
+
+          barplot(
+            as.matrix(DF),
+            col = c(1:length(salnamesFunding)),
+            ylab = " ",
+            ylim = c(0, max(unlist(ylim))*2),
+            legend.text = TRUE,
+            xlab = " ",
+            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.5),
+            las=2
+          )
+
+
+        }
         title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
-        legend(
-          "topleft",
-          c(salnamesFunding),
-          col = c(1:length(salnamesFunding)),
-          pch = rep(20, length(salnamesFunding)),
-          cex = 0.7
-        )
+        # legend(
+        #   "topleft",
+        #   c(salnamesFunding),
+        #   col = c(1:length(salnamesFunding)),
+        #   pch = rep(20, length(salnamesFunding)),
+        #   cex = 0.7
+        # )
         if (dataframe == TRUE) {
           return(saldf)
         }
@@ -1516,7 +1546,6 @@ sums2 <- NULL
 for (i in seq_along(dfROI[(length(salyears)+1):length(labels)])) {
   sums2[[i]] <- round(sum(as.numeric(unlist(unname(dfROI[(length(salyears)+1):length(labels)][i])))),0)
 }
-
 bp <-
   barplot(
     as.matrix(dfROI2),
