@@ -71,6 +71,7 @@ plotSPA(salary=index2, theme=unique(index2$theme), which="salaryBar")
 
 ```{r, results="asis", echo=FALSE}
 df <- plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), dataframe = TRUE)
+
 headers <- names(df)
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n",
@@ -97,19 +98,24 @@ plotSPA(om=index, salary=index2, which="predictSalary", theme=theme[i])
 
 ## Research
 
-This is a research placeholder.
+Systematic investigation and study in order to establish facts and reach new conclusions. 
 
 ## Monitoring
 
-This is a monitoring placeholder.
+Definition: Observe and check the progress or quality of something over a period of time; keep under systematic review. 
 
 ## Advice
 
-This is a advice placeholder.
+Definition: Guidance or recommendations offered with regard to prudent future action.  
 
-## Products and Services
+## Products
 
-This is a products and services placeholder.
+Definition: A product is a tangible items that is put on the marker for acquisition, attention or consumption.
+
+
+## Services
+
+Definition: A service is an “intangible” item that arises from the output/work of one or more individuals. 
 
 # {-}
 

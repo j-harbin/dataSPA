@@ -285,7 +285,8 @@ plotSPA(salary=index2, id=ID, which="salaryBar")
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 4: Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
-plotSPA(salary=index2, id=ID, which="salaryAllocation")
+
+res <- try(plotSPA(salary=index2, id=ID, which="salaryAllocation"), silent=TRUE)
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}

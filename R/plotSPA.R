@@ -777,6 +777,10 @@ plotSPA <-
           yearsx <- yearsx[-(unlist(bad))]
           category <- category[-(unlist(bad))]
         }
+        if (length(amounty) == 0) {
+          stop("No time spent on this project.")
+        }
+
         max <- NULL
         for (i in seq_along(amounty)) {
           if (!(identical(amounty[[i]],numeric(0)))) {
