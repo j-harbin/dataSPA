@@ -392,6 +392,9 @@ plotSPA <-
           col="red"
         )
         } else {
+          color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+          set.seed(124)
+          col <- sample(color, length(namesFunding))
           # Configure margins for theme plot
           holder <- data.frame(matrix(0, nrow = length(df[,1]), 2))
           names(holder) <- c("  ", "   ")
@@ -399,7 +402,7 @@ plotSPA <-
 
           barplot(
             as.matrix(DF),
-            col = c(1:length(namesFunding)),
+            col = col,
             ylab = " ",
             ylim = c(0, max(unlist(ylim))*1.5),
             xlab = " ",
@@ -740,10 +743,14 @@ plotSPA <-
           holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 2))
           names(holder) <- c("  ", "   ")
           DF <- cbind(saldf, holder)
+          color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+          set.seed(124)
+          col <- sample(color, length(salnamesFunding))
+          #col <- seq_along(1:length(rownames(dfROI2)))
 
           barplot(
             as.matrix(DF),
-            col = c(1:length(salnamesFunding)),
+            col = col,
             ylab = " ",
             ylim = c(0, max(unlist(ylim))*2),
             legend.text = TRUE,
@@ -1533,7 +1540,10 @@ for (i in seq_along(keep)) {
 # Structuring data frame so reds aren't together
 dfROI2 <- dfROI2[sort(row.names(dfROI2)),]
 # Show gap + number
-col <- seq_along(1:length(rownames(dfROI2)))
+color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+set.seed(124)
+col <- sample(color, length(rownames(dfROI2)))
+#col <- seq_along(1:length(rownames(dfROI2)))
 col[which(grepl("GAP", rownames(dfROI2)))] <- "red"
 par(mfrow=c(1,1), mar = c(5, 5, 1.5, 4) + 0.1)
 #Print amount of money
@@ -1559,13 +1569,12 @@ bp <-
   )
 legend(
   "topleft",
-  c(salnamesFunding, "Gap in funding"),
-  col = c(which(!(col == "red")), "red"),
+  c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
+  col = c(col[which(!(col == "red"))], "red"),
   pch = rep(20, (length(salnamesFunding)+1)),
   cex = 0.7
 )
 } else {
-
   l <- 10
   if (length(salyears) == 1) {
     l <- 1
@@ -1589,9 +1598,9 @@ legend(
     )
   legend(
     "bottomright",
-    c(salnamesFunding, "Gap in funding"),
-    col = c(which(!(col == "red")), "red"),
-    pch = rep(20, (length(salnamesFunding)+1)),
+    c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
+    col = c(col[which(!(col == "red"))], "red"),
+    pch = rep(15, (length(salnamesFunding)+1)),
     cex = 0.5
   )
 
