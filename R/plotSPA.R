@@ -1543,9 +1543,10 @@ for (i in seq_along(dfROI2[which(grepl("GAP", row.names(dfROI2))),][(length(saly
   sums[[i]] <- round(sum(as.numeric(unlist(unname(dfROI2[which(grepl("GAP", row.names(dfROI2))),][(length(salyears)+1):length(labels)][i])))),0)
 }
 sums2 <- NULL
-for (i in seq_along(dfROI[(length(salyears)+1):length(labels)])) {
-  sums2[[i]] <- round(sum(as.numeric(unlist(unname(dfROI[(length(salyears)+1):length(labels)][i])))),0)
+for (i in seq_along(dfROI)) {
+  sums2[[i]] <- round(sum(as.numeric(unlist(unname(dfROI[i])))),0)
 }
+if (is.null(theme)) {
 bp <-
   barplot(
     as.matrix(dfROI2),
@@ -1556,8 +1557,6 @@ bp <-
     ylab = " ",
     cex.names=0.8
   )
-title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
-abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
 legend(
   "topleft",
   c(salnamesFunding, "Gap in funding"),
@@ -1565,14 +1564,49 @@ legend(
   pch = rep(20, (length(salnamesFunding)+1)),
   cex = 0.7
 )
+} else {
+
+  l <- 10
+  if (length(salyears) == 1) {
+    l <- 1
+  } else if (length(salyears) > 12) {
+    l <- 17
+  }
+
+  holder <- data.frame(matrix(0, nrow = length(dfROI2[,1]), l))
+  names(holder) <- c("  ")
+  DF <- cbind(dfROI2, holder)
+
+  bp <-
+    barplot(
+      as.matrix(DF),
+      col = col,
+      ylim = c(0, max(unlist(sums2))*1.3),
+      xlab = " ",
+      las = 2,
+      ylab = " ",
+      cex.names=0.8,
+    )
+  legend(
+    "bottomright",
+    c(salnamesFunding, "Gap in funding"),
+    col = c(which(!(col == "red")), "red"),
+    pch = rep(20, (length(salnamesFunding)+1)),
+    cex = 0.5
+  )
+
+}
+title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
+abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
 
 text(
   x = bp[(length(salyears)+1):length(labels)],
-  y = max(unlist(sums2)),
+  y = max(unlist(sums2[(length(salyears)+1):(length(sums2))]))*ifelse(is.null(theme), 1.2,1.6),
   labels = paste0("$", sums),
   pos = 3,
   cex = 0.65,
-  col="red"
+  col="red",
+  srt=90
 )
 
 if (dataframe == TRUE) {
