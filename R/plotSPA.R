@@ -721,6 +721,9 @@ plotSPA <-
       }
 
       if (which == "salaryBar") {
+        color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+        set.seed(124)
+        col <- sample(color, length(salnamesFunding))
         par(mfrow = c(1, 1))
         par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
         ylim <- NULL
@@ -732,7 +735,7 @@ plotSPA <-
         if (is.null(theme)) {
         barplot(
           as.matrix(saldf),
-          col = c(1:length(salnamesFunding)),
+          col = col,
           ylab = " ",
           ylim = c(0, max(unlist(ylim))*2),
           xlab = " ",
