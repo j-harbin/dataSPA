@@ -61,18 +61,18 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
 } else {
     deliverables <- NULL
     if (!(length(unique(d))) == 1) {
-      for (i in seq_along(years)) {
-        ii <- index[which(index$fiscal_year == years[i]), ]
-        deliverables[[i]] <- unique(ii$deliverables)
+      for (Y in seq_along(years)) {
+        ii <- index[which(index$fiscal_year == years[Y]), ]
+        deliverables[[Y]] <- unique(ii$deliverables)
       }
       deliverables <- unlist(deliverables)
       if (length(d) == length(deliverables)) {
-      for (i in seq_along(years)) {
-      if (deliverables[i] == 0) {
-        deliverables[i] <- "No identified deliverables for this year."
+      for (Y in seq_along(years)) {
+      if (deliverables[Y] == 0) {
+        deliverables[Y] <- "No identified deliverables for this year."
       }
-      cat(paste0(years[i], ": \n"))
-      cat(paste0(unlist(strsplit(deliverables[i], "|-----|", fixed=TRUE)), "\n\n"))
+      cat(paste0(years[Y], ": \n"))
+      cat(paste0(unlist(strsplit(deliverables[Y], "|-----|", fixed=TRUE)), "\n\n"))
       #cat(paste0(years[i], " : ", deliverables[i]))
       cat("  \n")
       cat("  \n") 
@@ -82,8 +82,8 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
       } else {
        # Some are identified to be the same
         
-        for (i in seq_along(d)) {
-          dd <- which(deliverables == d[i])
+        for (D in seq_along(d)) {
+          dd <- which(deliverables == d[D])
           
           if (length(dd) == 1) {
             years <- unique(index$fiscal_year[which(index$deliverables == deliverables[dd])])
@@ -147,25 +147,25 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
 } else {
     milestones <- NULL
     if (!(length(unique(m))) == 1) {
-      for (i in seq_along(years)) {
-        ii <- index[which(index$fiscal_year == years[i]), ]
-        milestones[[i]] <- unique(ii$milestones)
+      for (Y in seq_along(years)) {
+        ii <- index[which(index$fiscal_year == years[Y]), ]
+        milestones[[Y]] <- unique(ii$milestones)
       }
       milestones <- unlist(milestones)
       if (length(m) == length(milestones)) {
-      for (i in seq_along(years)) {
-      if (milestones[i] == 0) {
-        milestones[i] <- "No identified milestones for this year."
+      for (M in seq_along(years)) {
+      if (milestones[M] == 0) {
+        milestones[M] <- "No identified milestones for this year."
       }
-      cat(paste0(years[i], ": \n"))
-      cat(paste0(unlist(strsplit(milestones[i], "|-----|", fixed=TRUE)), "\n\n"))
+      cat(paste0(years[M], ": \n"))
+      cat(paste0(unlist(strsplit(milestones[M], "|-----|", fixed=TRUE)), "\n\n"))
       cat("  \n")
       cat("  \n") 
       }
       } else {
         # At least one year has the same milestone, but not all
-        for (i in seq_along(m)) {
-          mm <- which(milestones == m[i])
+        for (M in seq_along(m)) {
+          mm <- which(milestones == m[M])
           
           if (length(mm) == 1) {
             years <- unique(index$fiscal_year[which(index$milestones == milestones[mm])])
@@ -236,11 +236,12 @@ cat(paste0(unique(index$objectives)))
 **Status**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
+years <- unique(index$fiscal_year)
 status <- NULL
 if (!(length(unique(index$status)) == 1)) {
-  for (i in seq_along(years)) {
-    ii <- index[which(index$fiscal_year == years[i]),]
-    status[[i]] <- unique(ii$status)
+  for (Y in seq_along(years)) {
+    ii <- index[which(index$fiscal_year == years[Y]),]
+    status[[Y]] <- unique(ii$status)
   }
   status <- unlist(status)
   cat(paste0(years," : ", status, collapse=", "))

@@ -72,6 +72,7 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
   if (!(is.null(id))) {
     for (i in seq_along(id)) {
       index <- om[which(om$project_id == id[i]), ]
+      #browser()
 
       # Dealing with salary
       index2 <- salary[which(salary$project_id == id[i]), ]
