@@ -45,9 +45,8 @@ cat(highlightOverview(om=index,id=ID))
 
 <center>
 ```{r pressure, echo=FALSE, fig.cap=" ", out.width = '70%'}
-#this is obtained from highlightOverview(om=om, id=id, legend=TRUE)
 if (file.exists(file)) {
-highlightOverview(om=index, id=id, legend=TRUE)
+highlightOverview(om=index, id=unique(index$project_id), legend=TRUE)
 }
 ```
 </img></center>
