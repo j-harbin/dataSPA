@@ -1610,10 +1610,16 @@ legend(
 }
 title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
 abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
-
+m <- max(unlist(sums2)[1:length(salyears)])
+pr <- max(unlist(sums2[(length(salyears)+1):(length(sums2))]))
+y <- unname(quantile(c(m,pr), .15))
+#y <- median(c(m,pr))
+if (m-pr < 0) {
+  y <- pr+(max(unlist(sums2))/20)
+}
 text(
   x = bp[(length(salyears)+1):length(labels)],
-  y = max(unlist(sums2[(length(salyears)+1):(length(sums2))]))*ifelse(is.null(theme), 1.2,1.6),
+  y = y,
   labels = paste0("$", sums),
   pos = 3,
   cex = 0.65,
