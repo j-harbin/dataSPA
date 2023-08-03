@@ -3,7 +3,7 @@ if (!FALSE) {
   #library(dataSPA)
   namesOM <- c("project_id","category_display","project_year_id",
                "amount","funding_source_display", "id", "category_type", "description","fiscal_year",
-               "project_title","status", "overview", "objectives", "section_display", "lead_staff","functional_group","theme", "deliverables", "milestones")
+               "project_title","status", "overview", "objectives", "section_display", "lead_staff","functional_group","activity_type", "theme", "deliverables", "milestones")
 
   om <- data.frame(matrix(NA, nrow = 10, ncol = length(namesOM)))
   names(om) <- namesOM
@@ -28,6 +28,7 @@ if (!FALSE) {
   for (i in seq_along(om$id)) {
     om$id[i] <- i
   }
+  om$activity_type <- "Research"
   om$project_title <- "Fake project"
   om$status <- "Approved"
   om$overview <- "This project is an example for dataSPA test case"

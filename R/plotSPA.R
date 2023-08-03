@@ -99,6 +99,7 @@
 #' @importFrom graphics abline
 #' @importFrom graphics mtext
 #' @importFrom graphics text
+#' @importFrom stats quantile
 #' @importFrom stats lm
 #' @importFrom stats coef
 #' @importFrom grDevices extendrange
@@ -222,6 +223,7 @@ plotSPA <-
           "section_display",
           "lead_staff",
           "functional_group",
+          "activity_type",
           "theme",
           "deliverables",
           "milestones"

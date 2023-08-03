@@ -345,11 +345,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         p[[i]]$objectives <- as.numeric(0)
       }
 
-    #  if (length(p[[i]]$section_display == 0)) {
-    #    p[[i]]$section_display <- as.numeric(0)
-    #  } else if (is.na(p[[i]]$section_display)) {
-    #    p[[i]]$section_display <- as.numeric(0)
-    #  }
+      if (length(p[[i]]$activity_type) == 0) {
+        p[[i]]$activity_type <- as.numeric(0)
+      } else if (is.na(p[[i]]$activity_type)) {
+        p[[i]]$activity_type <- as.numeric(0)
+      }
 
 
     }
@@ -369,7 +369,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     }
 
-    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group")]))
+    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group", "activity_type")]))
 
     for (i in seq_along(pp)) {
       pp[[i]]$lead_staff <- j[[i]]
@@ -402,17 +402,28 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       replace7 <- ppp$lead_staff[which(ppp$id == om$project_id[i])][1]
       replace8 <- ppp$section_display[which(ppp$id == om$project_id[i])][1]
       replace9 <- ppp$functional_group[which(ppp$id == om$project_id[i])][1]
+      replace10 <- ppp$activity_type[which(ppp$id == om$project_id[i])][1]
+
       om$fiscal_year[i] <- replace
       om$project_title[i] <- replace2
       om$status[i] <- replace3
       om$overview[i] <- replace4
       om$objectives[i] <- replace5
       om$section_display[i] <- replace8
-      #om$deliverables[i] <- replace6
       om$lead_staff[i] <- replace7
       om$functional_group[i] <- replace9
-
+      om$activity_type[i] <- replace10
     }
+
+    om$activity_type[which(om$activity_type == 1)] <- "Monitoring"
+    om$activity_type[which(om$activity_type == 2)] <- "Research"
+    om$activity_type[which(om$activity_type == 3)] <- "Other"
+    om$activity_type[which(om$activity_type == 4)] <- "Data Management"
+    om$activity_type[which(om$activity_type == 5)] <- "Assessment"
+
+
+
+
     # Theme
 
     # Obtaining OM data from the API

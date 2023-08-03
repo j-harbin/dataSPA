@@ -98,7 +98,7 @@ plotSPA(om=index, salary=index2, which="predictSalary", theme=theme[i])
 
 ## Research
 
-Definition: Systematic investigation and study in order to establish facts and reach new conclusions. 
+Definition: Systematic investigation and study in order to establish facts and reach new conclusions.
 
 ## Monitoring
 
