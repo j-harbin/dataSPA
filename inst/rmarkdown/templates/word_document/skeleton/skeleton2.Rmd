@@ -100,6 +100,11 @@ plotSPA(om=index, salary=index2, which="predictSalary", theme=theme[i])
 
 Definition: Systematic investigation and study in order to establish facts and reach new conclusions.
 
+ <font size="4">
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("Theme: ", paste0(unique(index$theme))))
+```
+</font>
 
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 research1 <- index[which(index$activity_type == "Research"),]
@@ -164,7 +169,15 @@ plotSPA(om=research1, salary=research2, which="predictSalary", theme=unique(inde
 
 ## Monitoring
 
-Definition: Observe and check the progress or quality of something over a period of time; keep under systematic review. 
+Definition: Observe and check the progress or quality of something over a period of time; keep under systematic review.
+
+ <font size="4">
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("\n"))
+cat(paste0("Theme: ", paste0(unique(index$theme))))
+```
+</font>
+
 
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
@@ -221,21 +234,38 @@ plotSPA(om=monitor2, salary=monitor2, which="predictSalary", theme=unique(index2
 ```
 
 
-
-
-
 ## Advice
 
-Definition: Guidance or recommendations offered with regard to prudent future action.  
+Definition: Guidance or recommendations offered with regard to prudent future action.
+
+ <font size="4">
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("Theme: ", paste0(unique(index$theme))))
+```
+</font>
+
 
 ## Products
 
 Definition: A product is a tangible items that is put on the marker for acquisition, attention or consumption.
 
+ <font size="4">
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("Theme: ", paste0(unique(index$theme))))
+```
+</font>
+
+
 
 ## Services
 
-Definition: A service is an “intangible” item that arises from the output/work of one or more individuals. 
+Definition: A service is an “intangible” item that arises from the output/work of one or more individuals.
+
+ <font size="4">
+```{r, echo=FALSE, comment=NA, results="asis"}
+cat(paste0("Theme: ", paste0(unique(index$theme))))
+```
+</font>
 
 # {-}
 
