@@ -50,7 +50,7 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
   if (!(identical(c("id","overtime_hours","smart_name","duration_weeks",
                     "level_display","funding_source_display","employee_type_display",  "project_year_id",
                     "project_id","fiscal_year", "project_title","median_salary",
-                    "salary_per_week","amount_week","amount_overtime", "amount_total", "theme"), names(salary)))) {
+                    "salary_per_week","amount_week","amount_overtime", "amount_total", "theme", "activity_type"), names(salary)))) {
     stop("Must obtain data for salary using getData(type='salary')")
   }
 

@@ -100,9 +100,129 @@ plotSPA(om=index, salary=index2, which="predictSalary", theme=theme[i])
 
 Definition: Systematic investigation and study in order to establish facts and reach new conclusions.
 
+
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
+research1 <- index[which(index$activity_type == "Research"),]
+plotSPA(om=research1, theme=unique(index$theme), which="omBar")
+```
+
+### Choose an om allocation plot {.tabset .tabset-dropdown}
+
+```{r, results="asis", echo=FALSE}
+df <- plotSPA(om=research1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+headers <- names(df)
+for (j in seq_along(headers)) {
+     cat("#### ", headers[j], "\n\n",
+         knitr::knit_child("plot.Rmd", quiet = TRUE), "\n\n")
+}
+
+```
+
+### {-}
+
+
+```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+
+research2 <- index2[which(index2$activity_type == "Research"),]
+plotSPA(salary=research2, theme=unique(index2$theme), which="salaryBar")
+```
+
+
+### Choose a salary allocation plot {.tabset .tabset-dropdown}
+
+```{r, results="asis", echo=FALSE}
+df <- plotSPA(salary=research2, which="salaryAllocation", theme=unique(research2$theme), dataframe = TRUE)
+
+headers <- names(df)
+for (j in seq_along(headers)) {
+      cat("#### ", headers[j], "\n\n",
+          knitr::knit_child("plot2.Rmd", quiet = TRUE), "\n\n")
+}
+
+```
+
+### {-}
+
+
+
+```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+#plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
+```
+
+
+```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+
+plotSPA(om=research1, salary=research2, which="predictSalary", theme=unique(index2$theme))
+```
+
+
+
+
+
+
+
+
 ## Monitoring
 
 Definition: Observe and check the progress or quality of something over a period of time; keep under systematic review. 
+
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
+monitor1 <- index[which(index$activity_type == "Monitoring"),]
+plotSPA(om=monitor1, theme=unique(index$theme), which="omBar")
+```
+
+### Choose an om allocation plot {.tabset .tabset-dropdown}
+
+```{r, results="asis", echo=FALSE}
+df <- plotSPA(om=monitor1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+headers <- names(df)
+for (j in seq_along(headers)) {
+     cat("#### ", headers[j], "\n\n",
+         knitr::knit_child("plot.Rmd", quiet = TRUE), "\n\n")
+}
+
+```
+
+### {-}
+
+
+```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+
+monitor2 <- index2[which(index2$activity_type == "Monitoring"),]
+plotSPA(salary=monitor2, theme=unique(index2$theme), which="salaryBar")
+```
+
+
+### Choose a salary allocation plot {.tabset .tabset-dropdown}
+
+```{r, results="asis", echo=FALSE}
+df <- plotSPA(salary=monitor2, which="salaryAllocation", theme=unique(monitor2$theme), dataframe = TRUE)
+
+headers <- names(df)
+for (j in seq_along(headers)) {
+      cat("#### ", headers[j], "\n\n",
+          knitr::knit_child("plot2.Rmd", quiet = TRUE), "\n\n")
+}
+
+```
+
+### {-}
+
+
+
+```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+#plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
+```
+
+
+```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+
+plotSPA(om=monitor2, salary=monitor2, which="predictSalary", theme=unique(index2$theme))
+```
+
+
+
+
 
 ## Advice
 

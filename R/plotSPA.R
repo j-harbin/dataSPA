@@ -655,7 +655,8 @@ plotSPA <-
           "amount_week",
           "amount_overtime",
           "amount_total",
-          "theme"
+          "theme",
+          "activity_type"
         ),
         names(salary)
       ))) {

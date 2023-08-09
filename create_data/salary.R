@@ -2,7 +2,7 @@ if (!FALSE) {
 namesSal <- c("id","overtime_hours","smart_name","duration_weeks",
 "level_display","funding_source_display","employee_type_display",
 "project_year_id","project_id","fiscal_year","project_title","median_salary",
-"salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme")
+"salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme", "activity_type")
 
 
 salary <- data.frame(matrix(NA, nrow = 8, ncol = length(namesSal)))
@@ -29,6 +29,7 @@ salary$amount_week <- c(18659.5192, 40555.9615, 44609.1346, 184.4288, 20277.9808
 salary$amount_overtime <- c(0.000, 19827.359, 21808.910,0.000,  8111.192, 0.000,0.000, 0.000)
 salary$amount_total <- c(18659.5192, 60383.3205, 66418.0449,184.4288, 28389.1731, 1576.1635, 0.0000,
                          1228.9038)
+salary$activity_type <- "Other"
 
 save(salary, file="salary.rda")
 tools::resaveRdaFiles('salary.rda')

@@ -945,16 +945,116 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
 
 
-
-
-
-
     SAL$theme <- 0
     for (i in seq_along(project_ids)) {
       for (j in seq_along(project_ids[[i]])) {
         SAL$theme[which(SAL$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
       }
     }
+
+    # Adding activity_type
+    # Initializing API Call
+    req2 <- httr2::request("http://dmapps/api/ppt/project-years")
+
+    # Add custom headers
+    req2 <- req2 %>% httr2::req_headers("Cookie" = cookie)
+    req2 <- req2 %>% httr2::req_headers("Accept" = "application/json")
+
+    # Automatically retry if the request fails
+    req2 <- req2 %>% httr2::req_retry(max_tries = 5)
+
+    # Get the requested data by querying the API
+    resp2 <- httr2::req_perform(req2)
+
+    # Read the returned data as a JSON file
+    page_data2 <- httr2::resp_body_json(resp2)
+
+    # Create a list to hold the list of full API results
+    api_data2 <- page_data2$results
+
+    # Get the information about the next page in the API results
+    next_page2 <- page_data2$`next`
+    cat(paste0(next_page2, '\n'))
+
+    cat(paste0('Number of API records = ', length(api_data2), '\n'))
+
+    # Check if the next page is not null (end of pages) before extract the data from
+    # next page.
+    while (!is.null(next_page2)) {
+
+      # Modifying API Call
+      req2 <- httr2::request(next_page2)
+
+      # Add custom headers
+      req2 <- req2 %>% httr2::req_headers("Cookie" = cookie)
+      req2 <- req2 %>% httr2::req_headers("Accept" = "application/json")
+
+      # Automatically retry if the request fails
+      req2 <- req2 %>% httr2::req_retry(max_tries = 5)
+
+      # Get the requested data by querying the API
+      resp2 <- httr2::req_perform(req2)
+
+      # Read the returned data as a JSON file
+      page_data2 <- httr2::resp_body_json(resp2)
+
+      # Add current page data to full list
+      api_data2 <- c(api_data2, page_data2$results)
+
+      cat(paste0('Number of API records = ', length(api_data2), '\n'))
+
+      # Get the information about the next page in the API results
+      next_page2 <- page_data2$`next`
+      cat(paste0(next_page2, '\n'))
+
+    }
+    p <- lapply(api_data2, function(x) x$project)
+
+
+  for (i in seq_along(p)) {
+    if (length(p[[i]]$activity_type) == 0) {
+      p[[i]]$activity_type <- as.numeric(0)
+    } else if (is.na(p[[i]]$activity_type)) {
+      p[[i]]$activity_type <- as.numeric(0)
+    }
+
+    if (length(p[[i]]$title) == 0) {
+      p[[i]]$title <- as.numeric(0)
+    } else if (is.na(p[[i]]$title)) {
+      p[[i]]$title <- as.numeric(0)
+    }
+}
+    pp <- lapply(p, function(x) as.data.frame(x[c("title", "activity_type")]))
+    ppp <- do.call(rbind, pp)
+
+    SAL$activity_type <- 0
+
+    for (i in seq_along(ppp$title)) {
+      if (any(SAL$project_title == ppp$title[i])) {
+      SAL$activity_type[which(SAL$project_title == ppp$title[i])] <- ppp$activity_type[i]
+      }
+    }
+
+    SAL$activity_type[which(SAL$activity_type == 1)] <- "Monitoring"
+    SAL$activity_type[which(SAL$activity_type == 2)] <- "Research"
+    SAL$activity_type[which(SAL$activity_type == 3)] <- "Other"
+    SAL$activity_type[which(SAL$activity_type == 4)] <- "Data Management"
+    SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
+    SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
+    SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
+
+
+
+
+
+
+
+
+
+
+
+
+
     if(keep){
       fn <- file.path(path,"dataSPA_SAL.rds")
       if(file.exists(fn)){
