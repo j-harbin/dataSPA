@@ -109,6 +109,9 @@ represent funding as status quo until the end date (See example 3)
 \item For \verb{which="predictSalary} a bar chat showing the trends of salary
 increasing while funding amount remains the same. Note: This plot does
 not include amount of overtime as that is hard to predict.
+\item For \verb{which="predictOM} a bar chart showing the trends of om
+increasing while funding amoutn remains the same. This plot
+assumes an inflation rate of 2\%.
 }
 }
 \examples{

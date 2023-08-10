@@ -52,6 +52,10 @@
 #' increasing while funding amount remains the same. Note: This plot does
 #' not include amount of overtime as that is hard to predict.
 #'
+#' * For `which="predictOM` a bar chart showing the trends of om
+#' increasing while funding amoutn remains the same. This plot
+#' assumes an inflation rate of 2%.
+#'
 #' @param om a data frame likely from `getData(type='om')`
 #' @param salary a data frame likely from `getData(type='salary')`
 #' @param which indicates which plot to plot (See Details). The
@@ -159,7 +163,7 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', or 'predictSalary'"
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', or 'predictOM'"
       )
     }
 
@@ -175,11 +179,12 @@ plotSPA <-
         "indeterminate",
         'predictSummary',
         'predict',
-        'predictSalary'
+        'predictSalary',
+        'predictOM'
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict', or 'predictSalary'")
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', or 'predictOM")
     }
 
     if (is.null(id) && is.null(theme)) {
@@ -196,7 +201,8 @@ plotSPA <-
       "omAllocation",
       "omAllocationGeneral",
       'predictSummary',
-      'predict'
+      'predict',
+      'predictOM'
     )) {
       if (debug > 0) {
         message("om has been identified")
@@ -301,7 +307,7 @@ plotSPA <-
         }
       }
       # omBar
-      if (which == "omBar") {
+      if (which %in% c("omBar", "predictOM")) {
         ylim <- NULL
         dv <- data.frame(matrix(NA, nrow = 1, ncol = length(years)))
         names(dv) <- years
@@ -314,7 +320,7 @@ plotSPA <-
           ))
           value <- keep[which(keep$fiscal_year == years[i]),]
 
-          #Deliverables
+          # Deliverables
           if (is.null(theme)) {
           if (unique(value$deliverables) == 0) {
             dv[[i]] <- 0
@@ -322,16 +328,16 @@ plotSPA <-
           dv[[i]] <- length(unlist(strsplit(unique(value$deliverables), "|-----|", fixed=TRUE)))
           }
 
-          #Milestones
+          # Milestones
           if (unique(value$milestones) == 0) {
             ms[[i]] <- 0
           } else {
             ms[[i]] <- length(unlist(strsplit(unique(value$milestones), "|-----|", fixed=TRUE)))
           }
-
           }
         }
         # Creating place for legend
+        if (which == "omBar") {
         par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
         if (is.null(theme)) {
         barplot(
@@ -359,12 +365,6 @@ plotSPA <-
           ylim = c(min(combine)-(max(combine)-min(combine))*3, (max(unlist(unname(ms)), unlist(unname(dv))))),
           col = "blue"
         )
-        # axis(
-        #   side = 4,
-        #   at = pretty(range(min(combine)-(max(combine)-min(combine))*3,(max(unlist(unname(ms)),unlist(unname(dv)))))),
-        #   col = "blue",
-        #   col.ticks = "blue"
-        # )
         text(
           x = 1:length(dv),
           y = unlist(unname(dv)),
@@ -410,15 +410,150 @@ plotSPA <-
             xlab = " ",
             las=2,
             legend.text = TRUE,
-            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.5)
+            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.4)
           )
           title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
         }
-
-
         if (dataframe == TRUE) {
           return(df)
         }
+
+      } else if (which == "predictOM") {
+        ly <-
+          as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", years[length(years)])) # Getting last number of last year (ie. 2023-2024)
+        lys <- as.numeric(ly) + 1:2
+        lys2 <- c(ly, lys)
+        newyear <- paste0(lys2, "-", as.numeric(lys2) + 1)
+
+        DF <- data.frame(matrix(NA, nrow = length(df[,1]), ncol = length(lys2)))
+        names(DF) <- newyear
+
+        for (i in seq_along(DF)) {
+          m <- 0.02*i
+          DF[,i] <- unlist(unname(df[length(years)]))*(1+m)
+        }
+
+        dfs <- cbind(df, DF)
+
+        # Add in gap
+        gap <- data.frame(matrix(NA, nrow = length(df[,1]), ncol = length(names(dfs))))
+        names(gap) <- names(dfs)
+        gap[1:length(years)] <- 0
+
+        newGap <- data.frame(matrix(NA, nrow = length(df[,1]), ncol = length(newyear)))
+        names(newGap) <- newyear
+
+        for (i in seq_along(newyear)) {
+          for (j in seq_along(namesFunding)) {
+            old <- unname(unlist(dfs[(length(years))]))[j]
+            new <- unname(unlist(dfs[(length(years) + i)]))[j]
+            value <- new-old
+            newGap[,i][j] <- value
+          }
+        }
+        gap[(length(years)+1):length(names(gap))] <- newGap
+
+        DFs <- rbind(dfs, gap)
+        rownames(DFs) <- c(namesFunding, paste0(namesFunding, " GAP"))
+
+
+        # Restructure gap
+        DFs <- DFs[sort(row.names(DFs)),]
+
+        color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+        set.seed(124)
+        col <- sample(color, length(rownames(DFs)))
+        col[which(grepl("GAP", rownames(DFs)))] <- "red"
+        par(mfrow=c(1,1), mar = c(5, 5, 1.5, 4) + 0.1)
+
+        sums <- NULL
+        for (i in seq_along(DFs[which(grepl("GAP", row.names(DFs))),][(length(years)+1):length(names(DFs))])) {
+          sums[[i]] <- round(sum(as.numeric(unlist(unname(DFs[which(grepl("GAP", row.names(DFs))),][(length(years)+1):length(names(DFs))][i])))),0)
+        }
+        sums2 <- NULL
+        for (i in seq_along(DFs)) {
+          sums2[[i]] <- round(sum(as.numeric(unlist(unname(DFs[i])))),0)
+        }
+        if (is.null(theme)) {
+          bp <-
+            barplot(
+              as.matrix(DFs),
+              col = col,
+              ylim = c(0, max(unlist(sums2))*2),
+              xlab = " ",
+              las = 2,
+              ylab = " ",
+              cex.names=0.8
+            )
+          legend(
+            "topleft",
+            c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding"),
+            col = c(col[which(!(col == "red"))], "red"),
+            pch = rep(20, (length(namesFunding)+1)),
+            cex = 0.7
+          )
+        } else {
+          l <- 10
+          if (length(years) == 1) {
+            l <- 1
+          } else if (length(years) > 12) {
+            l <- 17
+          }
+
+          holder <- data.frame(matrix(0, nrow = length(DFs[,1]), l))
+          names(holder) <- c("  ")
+          DF <- cbind(DFs, holder)
+
+          bp <-
+            barplot(
+              as.matrix(DF),
+              col = col,
+              ylim = c(0, max(unlist(sums2))*1.3),
+              xlab = " ",
+              las = 2,
+              ylab = " ",
+              cex.names=0.8,
+            )
+          legend(
+            "bottomright",
+            c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding"),
+            col = c(col[which(!(col == "red"))], "red"),
+            pch = rep(15, (length(namesFunding)+1)),
+            cex = 0.4
+          )
+
+        }
+        title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
+        abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
+        m <- max(unlist(sums2)[1:length(years)])
+        pr <- max(unlist(sums2[(length(years)+1):(length(sums2))]))
+        y <- unname(quantile(c(m,pr), .15))
+        #y <- median(c(m,pr))
+        if (m-pr < 0) {
+          y <- pr+(max(unlist(sums2))/20)
+        }
+        text(
+          x = bp[(length(years)+1):length(names(DFs))],
+          y = y,
+          labels = paste0("$", sums),
+          pos = 3,
+          cex = 0.65,
+          col="red",
+          srt=90
+        )
+
+        if (dataframe == TRUE) {
+          return(DFs)
+        }
+
+
+
+
+
+
+
+
+      }
       } else if (which == "omPie") {
         df2 <- df # Create storage
         for (i in seq_along(years)) {
