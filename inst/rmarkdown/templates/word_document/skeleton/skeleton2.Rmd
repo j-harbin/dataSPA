@@ -12,14 +12,19 @@ cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date
 
 ```
 
+
+<p style="text-align:left;width: 90%">
 ```{r, echo=FALSE, comment=NA, results="asis"}
 IDs <- unique(index$project_id)
 path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
 links <- paste0(path, IDs, ".html")
+LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
  
-cat("The project IDs included in this theme include: ", paste0('<a href="',links,'">',IDs,'</a>', collapse=","))
+cat("The project IDs included in this theme include: ", LINKS)
 
 ```
+</p>
+
 
 # Select the appropriate tab {.tabset}
 
@@ -187,7 +192,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-plotSPA(om=research1, salary=research2, which="predictSalary", theme=unique(index2$theme))
+res <- try(plotSPA(om=research1, salary=research2, which="predictSalary", theme=unique(index2$theme)), silent=TRUE)
 }
 ```
 
@@ -278,7 +283,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=monitor1, salary=monitor2, which="predictSalary", theme=unique(index2$theme))
+res <- try(plotSPA(om=monitor1, salary=monitor2, which="predictSalary", theme=unique(index2$theme)), silent=TRUE)
 }
 ```
 
@@ -367,7 +372,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=assessment1, salary=assessment2, which="predictSalary", theme=unique(index2$theme))
+res <- try(plotSPA(om=assessment1, salary=assessment2, which="predictSalary", theme=unique(index2$theme)))
 }
 ```
 
@@ -455,7 +460,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=management1, salary=management2, which="predictSalary", theme=unique(index2$theme))
+res <- try(plotSPA(om=management1, salary=management2, which="predictSalary", theme=unique(index2$theme)))
 }
 ```
 
@@ -543,7 +548,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=other1, salary=other2, which="predictSalary", theme=unique(index2$theme))
+res <- try(plotSPA(om=other1, salary=other2, which="predictSalary", theme=unique(index2$theme)), silent=TRUE)
 }
 ```
 
