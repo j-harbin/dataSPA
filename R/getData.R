@@ -102,7 +102,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
         }
       }  else if(type=="om_date"){
-        stop(paste("File (",fn,") does not exist. User must first save om type. See examples in ?getData for how to fix this."))
+        stop(paste("File (",fn,") does not exist. User must first save om type AND be on the VPN. See examples in ?getData for how to fix this."))
       }
     }
     # Obtaining OM data from the API
@@ -116,7 +116,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     req <- req %>% httr2::req_retry(max_tries = 5)
 
     # Get the requested data by querying the API
-    resp <- httr2::req_perform(req)
+    # Error occurs here if cookie is out of date
+    resp <- try(httr2::req_perform(req), silent=TRUE)
+
+    if (inherits(resp, "try-error")) {
+      stop("Make sure 1) you are on the VPN, 2) Your cookie is up to date, and 3) your cookie is in the following format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
+    }
 
     # Read the returned data as a JSON file
     page_data <- httr2::resp_body_json(resp)
@@ -643,7 +648,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     req3 <- req3 %>% req_retry(max_tries = 5)
 
     # Get the requested data by querying the API
-    resp3 <- req_perform(req3)
+    resp3 <- try(req_perform(req3), silent=TRUE)
+
+    if (inherits(resp3, "try-error")) {
+      stop("Make sure 1) you are on the VPN, 2) Your cookie is up to date, and 3) your cookie is in the following format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
+    }
 
     # Read the returned data as a JSON file
     page_data3 <- resp_body_json(resp3)
