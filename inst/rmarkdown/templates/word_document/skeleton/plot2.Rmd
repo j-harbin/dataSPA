@@ -1,9 +1,9 @@
 ---
-title: "plotw"
+title: "plot"
 output: html_document
 ---
 
 ```{r, echo=FALSE}
 df <- plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), dataframe = TRUE)
-plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), item=names(df)[j])
+res <- try(plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), item=names(df)[j]), silent=TRUE)
 ```

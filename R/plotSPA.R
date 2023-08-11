@@ -870,6 +870,11 @@ plotSPA <-
             saldf, select = c(paste0(salyears[i]))
           ))
         }
+        if (length(unique(unlist(unname(saldf)))) == 1) {
+          if (unique(unlist(unname(saldf))) == 0) {
+            stop("No time spent on this project")
+          }
+        }
         if (is.null(theme)) {
         barplot(
           as.matrix(saldf),
