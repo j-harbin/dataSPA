@@ -1702,6 +1702,14 @@ sums2 <- NULL
 for (i in seq_along(dfROI)) {
   sums2[[i]] <- round(sum(as.numeric(unlist(unname(dfROI[i])))),0)
 }
+
+if (length(unique(unlist(unname(dfROI2)))) == 1) {
+  if (as.numeric(unique(unlist(unname(dfROI2))) == 0)) {
+    stop("No time spent on this project.")
+  }
+
+}
+
 if (is.null(theme)) {
 bp <-
   barplot(

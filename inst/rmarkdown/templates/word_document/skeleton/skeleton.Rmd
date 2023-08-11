@@ -281,7 +281,7 @@ plotSPA(om=index, id=ID, which="omAllocation")
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-plotSPA(salary=index2, id=ID, which="salaryBar")
+res <- try(plotSPA(salary=index2, id=ID, which="salaryBar"), silent=TRUE)
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 4: Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
@@ -303,6 +303,6 @@ plotSPA(om=index, salary=index2, which="predictOM", id=ID)
 
 ```{r, echo=FALSE, fig.cap="Figure 7: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-plotSPA(om=index, salary=index2, which="predictSalary", id=ID)
+res <- try(plotSPA(om=index, salary=index2, which="predictSalary", id=ID), silent=TRUE)
 
 ```
