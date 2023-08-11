@@ -44,7 +44,7 @@ A number of assumptions exist for the following
 7. The PPT was only mandated in the Maritimes region 2 years ago
 8. The plots in each tab are heavily dependent on which activity type is assigned in the PPT
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 plotSPA(om=index, theme=unique(index$theme), which="omBar")
 ```
 
@@ -63,7 +63,13 @@ for (j in seq_along(headers)) {
 ### {-}
 
 
-```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+plotSPA(om=index,which="predictOM", theme=theme[i])
+```
+
+
+
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 plotSPA(salary=index2, theme=unique(index2$theme), which="salaryBar")
 ```
 
@@ -85,20 +91,12 @@ for (j in seq_along(headers)) {
 
 
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
 
 
-```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-
-plotSPA(om=index, salary=index2, which="predictOM", theme=theme[i])
-
-```
-
-
-
-```{r, echo=FALSE, fig.cap="Figure 7: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 res <- try(plotSPA(om=index, salary=index2, which="predictSalary", theme=theme[i]), silent=TRUE)
 
@@ -115,7 +113,7 @@ cat(paste0("Theme: ", paste0(unique(index$theme))))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively", results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively", results="asis", comment=NA}
 run <- ifelse(("Research" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 research1 <- index[which(index$activity_type == "Research"),]
@@ -145,8 +143,13 @@ for (j in seq_along(headers)) {
 
 ### {-}
 
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+if (run) {
+plotSPA(om=research1,which="predictOM", theme=theme[i])
+}
+```
 
-```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 research2 <- index2[which(index2$activity_type == "Research"),]
 res <- try(plotSPA(salary=research2, theme=unique(index2$theme), which="salaryBar"), silent=TRUE)
@@ -176,12 +179,12 @@ for (j in seq_along(headers)) {
 
 
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
 
 
-```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
 plotSPA(om=research1, salary=research2, which="predictSalary", theme=unique(index2$theme))
@@ -201,7 +204,7 @@ cat(paste0("Theme: ", paste0(unique(index$theme))))
 </font>
 
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
 run <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
@@ -231,8 +234,14 @@ for (j in seq_along(headers)) {
 
 ### {-}
 
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+if (run) {
+plotSPA(om=monitor1,which="predictOM", theme=theme[i])
+}
+```
 
-```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 monitor2 <- index2[which(index2$activity_type == "Monitoring"),]
 res <- try(plotSPA(salary=monitor2, theme=unique(index2$theme), which="salaryBar"), silent=TRUE)
@@ -262,12 +271,12 @@ for (j in seq_along(headers)) {
 
 
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
 
 
-```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
 plotSPA(om=monitor1, salary=monitor2, which="predictSalary", theme=unique(index2$theme))
 }
@@ -285,7 +294,7 @@ cat(paste0("Theme: ", paste0(unique(index$theme))))
 </font>
 
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
 run <- ifelse(("Assessment" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 assessment1 <- index[which(index$activity_type == "Assessment"),]
@@ -314,8 +323,14 @@ for (j in seq_along(headers)) {
 
 ### {-}
 
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+if (run) {
+plotSPA(om=assessment1,which="predictOM", theme=theme[i])
+}
+```
 
-```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 assessment2 <- index2[which(index2$activity_type == "Assessment"),]
 res <- try(plotSPA(salary=assessment2, theme=unique(index2$theme), which="salaryBar"), silent=TRUE)
@@ -345,12 +360,12 @@ for (j in seq_along(headers)) {
 
 
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
 
 
-```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
 plotSPA(om=assessment1, salary=assessment2, which="predictSalary", theme=unique(index2$theme))
 }
@@ -366,7 +381,7 @@ cat(paste0("Theme: ", paste0(unique(index$theme))))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
 run <- ifelse(("Data Management" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 management1 <- index[which(index$activity_type == "Data Management"),]
@@ -395,8 +410,15 @@ for (j in seq_along(headers)) {
 
 ### {-}
 
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+if (run) {
+plotSPA(om=management1,which="predictOM", theme=theme[i])
+}
+```
+
+
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 management2 <- index2[which(index2$activity_type == "Data Management"),]
 res <- try(plotSPA(salary=management2, theme=unique(index2$theme), which="salaryBar"), silent = TRUE)
@@ -426,12 +448,12 @@ for (j in seq_along(headers)) {
 
 
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
 
 
-```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
 plotSPA(om=management1, salary=management2, which="predictSalary", theme=unique(index2$theme))
 }
@@ -448,7 +470,7 @@ cat(paste0("Theme: ", paste0(unique(index$theme))))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
 run <- ifelse(("Other" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 other1 <- index[which(index$activity_type == "Other"),]
@@ -477,8 +499,14 @@ for (j in seq_along(headers)) {
 
 ### {-}
 
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+if (run) {
+plotSPA(om=other1,which="predictOM", theme=theme[i])
+}
+```
 
-```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 other2 <- index2[which(index2$activity_type == "Other"),]
 res <- try(plotSPA(salary=other2, theme=unique(index2$theme), which="salaryBar"), silent=TRUE)
@@ -508,12 +536,12 @@ for (j in seq_along(headers)) {
 
 
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
 
 
-```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
 plotSPA(om=other1, salary=other2, which="predictSalary", theme=unique(index2$theme))
 }

@@ -247,6 +247,9 @@ plotSPA <-
         if (!(is.null(id))) {
         crab <- om[which(om$project_id == id),]
         } else if (!(is.null(theme))) {
+          if (length(theme) > 1) {
+            stop("Can only provide 1 theme at a time, not ", length(theme))
+          }
           if (!(theme %in% unique(om$theme))) {
             stop("No projects have theme ", theme, " try ", paste0(unique(om$theme), collapse=","), " instead.")
           }

@@ -280,24 +280,26 @@ plotSPA(om=index, id=ID, which="omBar")
 plotSPA(om=index, id=ID, which="omAllocation")
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 3: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+
+
+```{r, echo=FALSE, fig.cap="Figure 3: Bar graph showing gap in funding (red) if funding stayed the same and an inflation rate of 2% was applied to O&M costs. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+
+plotSPA(om=index, salary=index2, which="predictOM", id=ID)
+
+```
+
+
+```{r, echo=FALSE, fig.cap="Figure 4: Bar graph representing amount of salary money ($) using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 res <- try(plotSPA(salary=index2, id=ID, which="salaryBar"), silent=TRUE)
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 4: Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
+```{r, echo=FALSE, fig.cap="Figure 5: Line graphs representing changes in Salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
 
 res <- try(plotSPA(salary=index2, id=ID, which="salaryAllocation"), silent=TRUE)
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 5: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+```{r, echo=FALSE, fig.cap="Figure 6: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 plotSPA(om=index, salary=index2, id=ID, which="indeterminate")
-```
-
-
-```{r, echo=FALSE, fig.cap="Figure 6: Bar graph showing gap in funding (red) if funding stayed the same and an inflation rate of 2% was applied to O&M costs. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-
-plotSPA(om=index, salary=index2, which="predictOM", id=ID)
-
 ```
 
 
