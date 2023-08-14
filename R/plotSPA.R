@@ -1144,6 +1144,8 @@ plotSPA <-
       } else if (which == "indeterminate") {
         par(mfrow = c(1, length(salyears)))
         DFI <- NULL
+
+        bad <- ifelse(length(unique(salaryKeep$duration_weeks)) == 1 && unique(salaryKeep$duration_weeks) == 0, TRUE, FALSE)
         for (i in seq_along(salyears)) {
           value <-
             salaryKeep[which(salaryKeep$fiscal_year == salyears[i]), ] # Look at one year
@@ -1178,6 +1180,7 @@ plotSPA <-
           dfi[1] <- int
           dfi[2] <- non
           par(mar = c(12, 4, 4, 2) + 0.1)
+          if (!(bad)) {
           if (i == 1) {
           b <- barplot(as.matrix(dfi), las=2, ylim=c(0,120), ylab= "Percent (%)", cex.names=ifelse(length(salyears) > 4, 0.8,1))
           text(x= b, y=1:2,pos = 3, label = c(INT,NON), cex = 1, col = "red")
@@ -1185,19 +1188,21 @@ plotSPA <-
           b <- barplot(as.matrix(dfi), las=2, ylim=c(0,120), ylab= " ", cex.names=ifelse(length(salyears) > 4, 0.8,1))
           text(x= b, y=c(1,1),pos = 3, label = c(INT,NON), cex = 1, col = "red")
           }
-          #pie(unname(unlist(dfi)),
-          #    col = c(1:2),
-          #    labels <- paste0(c(int, non), "% ; ", c(INT, NON), " staff"))
           title(paste0(salyears[i]))
           DFI[[i]] <- dfi
+          } else {
+            dfi[1,] <- c(INT,NON)
+            if (i == 1) {
+              b <- barplot(as.matrix(dfi), las=2, ylim=c(0,(max(INT,NON)+3)), ylab= "Number of Employees", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+              text(x= b, y=c(1,1),pos = 3, label = c(INT,NON), cex = 1, col = "red")
+            } else {
+              b <- barplot(as.matrix(dfi), las=2, ylim=c(0,(max(INT,NON)+3)), ylab= " ", cex.names=ifelse(length(salyears) > 4, 0.8,1))
+              text(x= b, y=c(1,1),pos = 3, label = c(INT,NON), cex = 1, col = "red")
+            }
+            title(paste0(salyears[i]))
+
+          }
         }
-        #legend(
-        #  "topleft",
-        #  c("Indeterminate", "Non-indeterminate"),
-        #  col = c(1:2),
-        #  pch = rep(20, 2),
-        #  cex = 0.7
-        #)
         if (dataframe == TRUE) {
           return(DFI)
         }
