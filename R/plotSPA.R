@@ -167,6 +167,14 @@ plotSPA <-
       )
     }
 
+    color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+    set.seed(1)
+    if (is.null(salary)) {
+    col <- sample(color, length(unique(om$funding_source_display)))
+    } else {
+    col <- sample(color, length(unique(salary$funding_source_display)))
+    }
+
     if (!(
       which %in% c(
         "omBar",
@@ -194,10 +202,6 @@ plotSPA <-
     if (debug > 0) {
       message("which= ", which, " and id = ", id)
     }
-
-    color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
-    set.seed(1)
-    col <- sample(color, length(unique(om$funding_source_display)))
 
     if (which %in% c(
       "omBar",
@@ -242,6 +246,7 @@ plotSPA <-
       ))) {
         stop("Must obtain data for x using getData(type='om')")
       }
+
         # Dealing with themes
         if (!(is.null(id)) && (!is.null(theme))) {
           message("both an id and theme argument are given. The theme argument is used")
@@ -821,8 +826,11 @@ plotSPA <-
         stop("Must obtain data for x using getData(type='salary')")
       }
 
+      # color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+      # set.seed(1)
+      # col <- sample(color, length(unique(salary$funding_source_display)))
+
       # Theme
-      #message("IN PLOTSPA, theme = ", theme)
       if (!(is.null(id)) && (!is.null(theme))) {
         message("both an id and theme argument are given. The theme argument is used")
         id <- NULL
@@ -882,9 +890,6 @@ plotSPA <-
       }
 
       if (which == "salaryBar") {
-        color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
-        set.seed(124)
-        col <- sample(color, length(salnamesFunding))
         par(mfrow = c(1, 1))
         par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
         ylim <- NULL
@@ -901,7 +906,8 @@ plotSPA <-
         if (is.null(theme)) {
         barplot(
           as.matrix(saldf),
-          col = col,
+          col = col[which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))],
+          #col = col,
           ylab = " ",
           ylim = c(0, max(unlist(ylim))*2),
           xlab = " ",
@@ -909,16 +915,25 @@ plotSPA <-
           legend.text = TRUE,
           args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7))
         } else {
+#JAIM
           holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 2))
           names(holder) <- c("  ", "   ")
           DF <- cbind(saldf, holder)
-          color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
-          set.seed(124)
-          col <- sample(color, length(salnamesFunding))
+
+          if (length(salyears) > 1) {
+            DF <- DF[sort(rownames(DF)), ]
+          } else {
+            d <-
+              data.frame(matrix(NA, nrow = length(salnamesFunding), ncol = length(salyears)))
+            names(d) <- salyears
+            rownames(d) <- sort(salnamesFunding)
+            d[, 1] <- DF[sort(rownames(DF)), ]
+            DF <- d
+          }
 
           barplot(
             as.matrix(DF),
-            col = col,
+            col = col[which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))],
             ylab = " ",
             ylim = c(0, max(unlist(ylim))*2),
             legend.text = TRUE,
@@ -1700,7 +1715,7 @@ for (i in seq_along(keep)) {
   for (k in seq_along(salnamesFunding)) {
     dfROI2[keep][i][(length(salnamesFunding) + k), ] <- gap[[i]][k, ]
     re <- as.numeric(dfROI2[keep][i][k,])-gap[[i]][k,]
-    dfROI2[keep][i][k,] <- re
+    dfROI2[keep][i][k,] <- as.numeric(re)
       }
 
 }
@@ -1708,10 +1723,10 @@ for (i in seq_along(keep)) {
 # Structuring data frame so reds aren't together
 dfROI2 <- dfROI2[sort(row.names(dfROI2)),]
 # Show gap + number
-color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
-set.seed(124)
-col <- sample(color, length(rownames(dfROI2)))
-col[which(grepl("GAP", rownames(dfROI2)))] <- "red"
+cc <- which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))
+j <- sort(rep(cc,2))
+j <- col[as.numeric(j)]
+j[which(!(seq_along(j) %in% seq(from=1, to=length(j), by=2)))] <- "red"
 par(mfrow=c(1,1), mar = c(5, 5, 1.5, 4) + 0.1)
 #Print amount of money
 
@@ -1735,7 +1750,7 @@ if (is.null(theme)) {
 bp <-
   barplot(
     as.matrix(dfROI2),
-    col = col,
+    col = j,
     ylim = c(0, max(unlist(sums2))*2),
     xlab = " ",
     las = 2,
@@ -1745,7 +1760,7 @@ bp <-
 legend(
   "topleft",
   c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
-  col = c(col[which(!(col == "red"))], "red"),
+  col = c(j[which(!(j == "red"))], "red"),
   pch = rep(20, (length(salnamesFunding)+1)),
   cex = 0.7
 )
@@ -1761,10 +1776,15 @@ legend(
   names(holder) <- c("  ")
   DF <- cbind(dfROI2, holder)
 
+  for (i in seq_along(DF[keep])) {
+    DF[keep][,i] <- as.numeric(DF[keep][,i])
+  }
+
+#JAIM
   bp <-
     barplot(
       as.matrix(DF),
-      col = col,
+      col = j,
       ylim = c(0, max(unlist(sums2))*1.3),
       xlab = " ",
       las = 2,
@@ -1774,7 +1794,7 @@ legend(
   legend(
     "bottomright",
     c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
-    col = c(col[which(!(col == "red"))], "red"),
+    col = c(j[which(!(j == "red"))], "red"),
     pch = rep(15, (length(salnamesFunding)+1)),
     cex = 0.5
   )
