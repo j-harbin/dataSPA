@@ -1,0 +1,47 @@
+---
+title: "Science Strategic Planning and Program Integrity (SSPPI) strategic planning assessment (SPA) dataSPA R package"
+author: "Jaimie Harbin, Catalina Gomez, Remi Daigle, Jeff Jackson, & Tana Worcester"
+output:
+ html_document:
+   theme: flatly
+---
+
+Click on a hexagon to go to the desired location. Hover over each hexagon for more information.
+
+```{r setup, include=FALSE}
+source('_setup.R')
+# knitr::clean_cache(TRUE)
+htmltools::tagList(
+  xaringanExtra::use_clipboard(
+    button_text = "<i class=\"fa fa-clipboard\"></i>",
+    success_text = "<i class=\"fa fa-check\" style=\"color: #37abc8\"></i>",
+  ),
+  rmarkdown::html_dependency_font_awesome()
+)
+# xaringanExtra::use_scribble()
+
+cols <- c('#777777','#d66666','#f0f518','#2eb8dd','#6a8868')
+```
+
+
+<span class="br2"></span>
+
+<center>
+<a href ="table.html"><img src="dataSPA2.png" width="30%" title = "Click to see individual project reports."></a>
+<a href ="summary.html"><img src="DATASPA3.png" width="30%" title = "Click to see summary reports by theme, functional group, section, and division."></a>
+</img></center>
+
+<center>
+<a href ="https://github.com/j-harbin/dataSPA/"><img src="DATASPA.png" width="30%" title = "Click to see the source code on GitHub."></a>
+<a href ="https://orcid.org/0000-0003-3774-3732"><img src="DATASPA4.png" width="30%" title = "Click to see individual profiles."></a>
+</img></center>
+
+<span class="br2"></span>
+
+<center><i>Jaimie Harbin, Catalina Gomez, Remi Daigle, Jeff Jackson & Tana Worcester</i></center>
+
+<span class="br2"></span>
+
+<center>
+<img src="dfo.jpg" width="100px"></img>
+</center>

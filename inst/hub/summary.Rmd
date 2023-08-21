@@ -1,0 +1,97 @@
+---
+title: Summary Reports for Sections, Divisions, and Functional Groups
+author: " "
+output:
+  html_document:
+    theme: flatly
+    always_allow_html: true
+  pdf_document: default
+---
+
+<span style="color:red">As a manager,I want a summary reproducible report (PDF or Word) with a link to a related PowerBI dashboard. The report should serve as the authoritative source, providing a quarterly snapshot of MAR Science projects in a newsletter-like format.  The report will be ordered into the five functions of science (Monitoring, Research, Assessment, Data Management, and Other). The report can be created by filtering by theme, functional groups, section, or Division. The Marine Spatial Planning and Conservation Theme will be used for the pilot report. This reproducible reports will facilitate PIs in validating projects and managers recommend and approve proposed projects. </span>
+
+## Select relevant tab for summary reports {.tabset}
+
+### Theme
+```{r, echo=FALSE}
+library(stringr)
+library(dataSPA)
+
+# NOTE: NEED TO DEFINE COOKIE FOR THIS TO WORK
+res <- try(load('../../../../Code (Not for GitHub)/10_landing_page/cookie'), silent=TRUE)
+if (!(exists("cookie"))) {
+      stop("Must add a line of code above that defines your cookie.")
+    }
+om <- getData(type="om", cookie=cookie, age=90)
+theme <- unique(om$theme)
+theme <- theme[-which(theme == "0")]
+d <- data.frame(matrix(NA, ncol = 1, nrow = length(theme)))
+names(d) <- "Theme"
+path <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/summary/"
+links <- paste0("file:",path, gsub(" ", "%20", theme),".html")
+d$Theme <- paste0('<a href="',links,'">',theme,'</a>')
+
+DT::datatable(d,
+              caption = 'Table 1: Table linking each theme to a summary report',
+              filter="top",
+              escape=FALSE)
+```
+
+### Functional Group
+
+```{r, echo=FALSE}
+functional <- unique(om$functional_group)
+functional <- functional[-which(functional == "")]
+df <- data.frame(matrix(NA, ncol = 1, nrow = length(functional)))
+names(df) <- "Functional Group"
+df$`Functional Group` <- functional
+
+ids <- vector(mode="list", length(functional))
+for (i in seq_along(functional)) {
+ids[i] <- paste0(unique(om$project_id[which(om$functional_group == functional[i])]), collapse=",")
+}
+
+DT::datatable(df,
+              caption = 'Table 2: Table linking each functional group to a summary report',
+              filter="top",
+              escape=FALSE)
+```
+
+### Section
+
+```{r, echo=FALSE}
+sections <- unique(gsub(".*- ","",unique(om$section_display)))
+sections <- sections[-which(sections == "")]
+
+df2 <- data.frame(matrix(NA, ncol = 1, nrow = length(sections)))
+names(df2) <- "Section"
+df2$Section <- sections
+
+DT::datatable(df2,
+              caption = 'Table 3: Table linking each Section to a summary report',
+              filter="top",
+              escape=FALSE)
+
+```
+
+### Division
+
+```{r, echo=FALSE}
+divisions <- NULL
+for (i in seq_along(om$section_display)) {
+  divisions[[i]] <- strsplit(om$section_display[i], " - ", fixed=TRUE)[[1]][3]
+}
+divisions <- unique(divisions)
+divisions <- divisions[-(which(is.na(divisions)))]
+
+df3 <- data.frame(matrix(NA, ncol = 1, nrow = length(divisions)))
+names(df3) <- "Division"
+df3$Division <- divisions
+
+DT::datatable(df3,
+              caption = 'Table 4: Table linking each Division to a summary report',
+              filter="top",
+              escape=FALSE)
+```
+
+## {-}

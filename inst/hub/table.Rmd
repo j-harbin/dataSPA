@@ -1,0 +1,51 @@
+---
+title: Specific Project Reports
+author: " "
+output:
+  html_document:
+    theme: flatly
+    always_allow_html: true
+  pdf_document: default
+---
+
+<span style="color:red">User Story: As a Science staff, I want to create a reliable reproducible report for Marine Conservation Targets (MCT) in the St. Ann's Bank. This report will summarize salary and o&m investment as well as milestones and deliverables. The data is obtained from the Project Planning Tool (PPT) and publicly available salary information to facilitate Principle Investigator's  (PI) to validate proposed projects and managers to review them.</span>
+
+Click on a Project ID to be directed to a fact sheet created by the `dataSPA` package or the PPT to be directed to the projects homepage
+on the project planning tool.
+
+
+```{r, echo=FALSE}
+library(stringr)
+library(dataSPA)
+
+path <- "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
+
+ids <- str_extract(list.files(path), "[^.]+")
+# NOTE: NEED TO DEFINE COOKIE FOR THIS TO WORK
+res <- try(load('../../../../Code (Not for GitHub)/10_landing_page/cookie'), silent=TRUE)
+if (!(exists("cookie"))) {
+      stop("Must add a line of code above that defines your cookie.")
+}
+om <- getData(type="om", cookie=cookie, age=90)
+titles <- NULL
+ppt <- NULL
+for (i in seq_along(ids)) {
+    titles[[i]] <- unique(om$project_title[which(om$project_id == ids[i])])
+    ppt[[i]] <- paste0("http://dmapps/en/ppt/projects/",ids[i], "/view/")
+}
+titles <- unlist(titles)
+
+links <- paste0("file:",path, str_extract(list.files(path), "[^.]+"),".html")
+df <- data.frame(matrix(NA, ncol = 3, nrow = length(ids)))
+names(df) <- c("Title", "Project ID", "PPT")
+df$Title <- titles
+
+df$`Project ID` <- paste0('<a href="',links,'">',ids,'</a>')
+df$PPT <- paste0('<a href="', ppt,'">', ids, '</a>')
+
+DT::datatable(df,
+              caption = 'Table 1: Table showing the project title, the link to the report created by the dataSPA package (with the associated project ID number), and the link to the homepage of the project on the PPT.',
+              filter="top",
+              escape=FALSE)
+```
+
