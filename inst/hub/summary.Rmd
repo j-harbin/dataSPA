@@ -8,7 +8,7 @@ output:
   pdf_document: default
 ---
 
-<span style="color:red">As a manager,I want a summary reproducible report (PDF or Word) with a link to a related PowerBI dashboard. The report should serve as the authoritative source, providing a quarterly snapshot of MAR Science projects in a newsletter-like format.  The report will be ordered into the five functions of science (Monitoring, Research, Assessment, Data Management, and Other). The report can be created by filtering by theme, functional groups, section, or Division. The Marine Spatial Planning and Conservation Theme will be used for the pilot report. This reproducible reports will facilitate PIs in validating projects and managers recommend and approve proposed projects. </span>
+<span style="color:#43C6DB">As a manager,I want a summary reproducible report (PDF or Word) with a link to a related PowerBI dashboard. The report should serve as the authoritative source, providing a quarterly snapshot of MAR Science projects in a newsletter-like format.  The report will be ordered into the five functions of science (Monitoring, Research, Assessment, Data Management, and Other). The report can be created by filtering by theme, functional groups, section, or Division. The Marine Spatial Planning and Conservation Theme will be used for the pilot report. This reproducible reports will facilitate PIs in validating projects and managers recommend and approve proposed projects. </span>
 
 ## Select relevant tab for summary reports {.tabset}
 
@@ -62,22 +62,7 @@ DT::datatable(df,
               escape=FALSE)
 ```
 
-### Section
 
-```{r, echo=FALSE}
-sections <- unique(gsub(".*- ","",unique(om$section_display)))
-sections <- sections[-which(sections == "")]
-
-df2 <- data.frame(matrix(NA, ncol = 1, nrow = length(sections)))
-names(df2) <- "Section"
-df2$Section <- sections
-
-DT::datatable(df2,
-              caption = 'Table 3: Table linking each Section to a summary report',
-              filter="top",
-              escape=FALSE)
-
-```
 
 ### Division
 
@@ -98,5 +83,24 @@ DT::datatable(df3,
               filter="top",
               escape=FALSE)
 ```
+
+
+### Section
+
+```{r, echo=FALSE}
+sections <- unique(gsub(".*- ","",unique(om$section_display)))
+sections <- sections[-which(sections == "")]
+
+df2 <- data.frame(matrix(NA, ncol = 1, nrow = length(sections)))
+names(df2) <- "Section"
+df2$Section <- sections
+
+DT::datatable(df2,
+              caption = 'Table 3: Table linking each Section to a summary report',
+              filter="top",
+              escape=FALSE)
+
+```
+
 
 ## {-}
