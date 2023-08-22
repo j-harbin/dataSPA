@@ -68,6 +68,8 @@
 #' `Marine Spatial Planning and Conservation`, `Ecosystem Assessment and Climate Change`,
 #' `Population Assessment and Recovery`, `Other`, `Technology Development and Application`, and
 #'  `Pacific Salmon`
+#' @param functionalGroup classification of projects. Too see options do
+#' `unique(om$function_group)`, where `om`is the output from `getData(type="om")`
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
 #' experience change in the prediction. If `endDate` is provided,
@@ -147,6 +149,7 @@ plotSPA <-
            which = NULL,
            id = NULL,
            theme = NULL,
+           functionalGroup = NULL,
            item = NULL,
            funding = NULL,
            fundingChange = NULL,
@@ -195,8 +198,8 @@ plotSPA <-
         "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', or 'predictOM")
     }
 
-    if (is.null(id) && is.null(theme)) {
-      stop("Must provide an id or theme argument")
+    if (is.null(id) && is.null(theme) && is.null(functionalGroup)) {
+      stop("Must provide an id,theme, or functionalGroup argument")
     }
 
     if (debug > 0) {
@@ -248,9 +251,10 @@ plotSPA <-
       }
 
         # Dealing with themes
-        if (!(is.null(id)) && (!is.null(theme))) {
-          message("both an id and theme argument are given. The theme argument is used")
+        if (!(is.null(id)) && (!is.null(theme)) && (!(is.null(functionalGroup)))) {
+          message("Multiple arguments (id, theme, functionalGroup) are given. The theme argument is used")
           id <- NULL
+          functionalGroup <- NULL
         }
         if (!(is.null(id))) {
         crab <- om[which(om$project_id == id),]
@@ -264,6 +268,20 @@ plotSPA <-
           crab <- om[which(om$theme == theme),]
           if (length(crab) == 0) {
             stop("No projects have theme ", theme, " try ", paste0(unique(om$theme), collapse=","), " instead.")
+          }
+        } else if (!(is.null(functionalGroup))) {
+
+
+
+          if (length(functionalGroup) > 1) {
+            stop("Can only provide 1 functionalGroup at a time, not ", length(theme))
+          }
+          if (!(functionalGroup %in% unique(om$functional_group))) {
+            stop("No projects have functionalGroup ", functionalGroup, " try ", paste0(unique(om$functional_group), collapse=","), " instead.")
+          }
+          crab <- om[which(om$functional_group == functionalGroup),]
+          if (length(crab) == 0) {
+            stop("No projects have functionalGroup ", functionalGroup, " try ", paste0(unique(om$functional_group), collapse=","), " instead.")
           }
         }
 
@@ -332,7 +350,7 @@ plotSPA <-
           value <- keep[which(keep$fiscal_year == years[i]),]
 
           # Deliverables
-          if (is.null(theme)) {
+          if (is.null(theme) && is.null(functionalGroup)) {
           if (unique(value$deliverables) == 0) {
             dv[[i]] <- 0
           } else {
@@ -350,7 +368,7 @@ plotSPA <-
         # Creating place for legend
         if (which == "omBar") {
         par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
-        if (is.null(theme)) {
+        if (is.null(theme) && is.null(functionalGroup)) {
           if (length(years) > 1) {
             df <- df[sort(rownames(df)), ]
           } else {
@@ -499,7 +517,7 @@ plotSPA <-
         j <- col[as.numeric(j)]
         j[which(!(seq_along(j) %in% seq(from=1, to=length(j), by=2)))] <- "red"
         DFs <- DFs[sort(rownames(DFs)),]
-        if (is.null(theme)) {
+        if (is.null(theme) && is.null(functionalGroup)) {
           bp <-
             barplot(
               as.matrix(DFs),
@@ -676,7 +694,7 @@ plotSPA <-
 
 
         # Setting layout
-        if (is.null(theme)) {
+        if (is.null(theme) && is.null(functionalGroup)) {
         if (length(amounty) == 1) {
           par(mfrow = c(1, 1), mar = c(2, 4, 2, 0.5))
         } else {
@@ -819,7 +837,8 @@ plotSPA <-
           "amount_overtime",
           "amount_total",
           "theme",
-          "activity_type"
+          "activity_type",
+          "functional_group"
         ),
         names(salary)
       ))) {
@@ -831,9 +850,10 @@ plotSPA <-
       # col <- sample(color, length(unique(salary$funding_source_display)))
 
       # Theme
-      if (!(is.null(id)) && (!is.null(theme))) {
-        message("both an id and theme argument are given. The theme argument is used")
+      if (!(is.null(id)) && (!is.null(theme)) && (!is.null(functionalGroup))) {
+        message("id, theme, and functionalGroup argument are given. The theme argument is used")
         id <- NULL
+        functionalGroup <- NULL
       }
       if (!(is.null(id))) {
         salaryKeep <- salary[which(salary$project_id == id),]
@@ -845,9 +865,20 @@ plotSPA <-
         if (length(salaryKeep) == 0) {
           stop("No projects have theme ", theme, " try ", paste0(unique(salary$theme), collapse=","), " instead.")
         }
+      } else if (!(is.null(functionalGroup))) {
+
+        if (!(functionalGroup %in% unique(salary$functional_group))) {
+          stop("No projects have functionalGroup ", functionalGroup, " try ", paste0(unique(salary$functional_group), collapse=","), " instead.")
+        }
+        salaryKeep <- salary[which(salary$functional_group == functionalGroup),]
+        if (length(salaryKeep) == 0) {
+          stop("No projects have functionalGroup ", functionalGroup, " try ", paste0(unique(salary$functionalGroup), collapse=","), " instead.")
+        }
+
+
+
       }
 
-      #salaryKeep <- salary[which(salary$project_id == id), ]
 
       if (is.null(year)) {
         salyears <- unique(salaryKeep$fiscal_year)
@@ -903,7 +934,7 @@ plotSPA <-
             stop("No time spent on this project")
           }
         }
-        if (is.null(theme)) {
+        if (is.null(theme) && is.null(functionalGroup)) {
         barplot(
           as.matrix(saldf),
           col = col[which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))],
@@ -1019,7 +1050,7 @@ plotSPA <-
 
         par(mar = c(2, 4, 2, 0.5))
         # Setting layout
-        if (is.null(theme)) {
+        if (is.null(theme) && is.null(functionalGroup)) {
         if (length(amounty) == 1) {
           par(mfrow = c(1, 1))
         } else {
@@ -1751,7 +1782,7 @@ if (length(unique(unlist(unname(dfROI2)))) == 1) {
 
 }
 
-if (is.null(theme)) {
+if (is.null(theme) && is.null(functionalGroup)) {
 bp <-
   barplot(
     as.matrix(dfROI2),

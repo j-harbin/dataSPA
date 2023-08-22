@@ -10,6 +10,7 @@ plotSPA(
   which = NULL,
   id = NULL,
   theme = NULL,
+  functionalGroup = NULL,
   item = NULL,
   funding = NULL,
   fundingChange = NULL,
@@ -36,6 +37,9 @@ or \code{predictSalary}}
 \verb{Marine Spatial Planning and Conservation}, \verb{Ecosystem Assessment and Climate Change},
 \verb{Population Assessment and Recovery}, \code{Other}, \verb{Technology Development and Application}, and
 \verb{Pacific Salmon}}
+
+\item{functionalGroup}{classification of projects. Too see options do
+\code{unique(om$function_group)}, where \code{om}is the output from \code{getData(type="om")}}
 
 \item{item}{if\code{which='omAllocation'} an argument
 specifying which category display to plot. If \code{which=salaryAllocation},

@@ -4,6 +4,11 @@ output: html_document
 ---
 
 ```{r, echo=FALSE}
+if (!(is.null(theme))) {
 df <- plotSPA(om=index, which="omAllocation", theme=theme[i], dataframe = TRUE)
 plotSPA(index, which="omAllocation", theme=unique(index$theme), item=names(df)[j])
+} else if (!(is.null(functionalGroup))) {
+  df <- plotSPA(om=index, which="omAllocation", functionalGroup=functionalGroup[i], dataframe = TRUE)
+plotSPA(index, which="omAllocation", functionalGroup=unique(index$functional_group), item=names(df)[j])
+}
 ```

@@ -10,6 +10,7 @@ createReport(
   cookie = NULL,
   id = NULL,
   theme = NULL,
+  functionalGroup = NULL,
   destdir = ".",
   path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
 )
@@ -29,6 +30,9 @@ format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 \verb{Marine Spatial Planning and Conservation}, \verb{Ecosystem Assessment and Climate Change},
 \verb{Population Assessment and Recovery}, \code{Other}, \verb{Technology Development and Application}, and
 \verb{Pacific Salmon}}
+
+\item{functionalGroup}{classification of projects. Too see options do
+\code{unique(om$function_group)}, where \code{om}is the output from \code{getData(type="om")}}
 
 \item{destdir}{parameter indicating where to save the html report}
 

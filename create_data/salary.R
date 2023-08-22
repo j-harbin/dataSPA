@@ -2,7 +2,7 @@ if (!FALSE) {
 namesSal <- c("id","overtime_hours","smart_name","duration_weeks",
 "level_display","funding_source_display","employee_type_display",
 "project_year_id","project_id","fiscal_year","project_title","median_salary",
-"salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme", "activity_type")
+"salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme", "activity_type", "functional_group")
 
 
 salary <- data.frame(matrix(NA, nrow = 8, ncol = length(namesSal)))
@@ -21,6 +21,7 @@ salary$employee_type_display <- "Indeterminate Employee"
 salary$project_year_id <- 111
 salary$project_id <- 1234
 salary$fiscal_year <- "2014-2015"
+salary$functional_group <- "Test functional group"
 salary$project_title <- "Fake project"
 salary$median_salary <- c(97029.5, 70297.0, 77322.5, 95903.0, 70297.0, 81960.5, 81960.5, 63903.0)
 salary$salary_per_week <- c(1865.952, 1351.865, 1486.971, 1844.288, 1351.865, 1576.163, 1576.163, 1228.904)

@@ -1,0 +1,9 @@
+---
+title: "plot"
+output: html_document
+---
+
+```{r, echo=FALSE}
+df <- plotSPA(salary=index2, which="salaryAllocation", functionalGroup=unique(index2$functional_group), dataframe = TRUE)
+res <- try(plotSPA(salary=index2, which="salaryAllocation", functionalGroup=unique(index2$functional_group), item=names(df)[j]), silent=TRUE)
+```

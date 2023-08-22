@@ -44,7 +44,12 @@ functional <- unique(om$functional_group)
 functional <- functional[-which(functional == "")]
 df <- data.frame(matrix(NA, ncol = 1, nrow = length(functional)))
 names(df) <- "Functional Group"
-df$`Functional Group` <- functional
+#df$`Functional Group` <- functional
+
+
+path <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/functionalGroup/"
+links <- paste0("file:",path, gsub(" ", "%20", functional),".html")
+df$`Functional Group` <- paste0('<a href="',links,'">',functional,'</a>')
 
 ids <- vector(mode="list", length(functional))
 for (i in seq_along(functional)) {

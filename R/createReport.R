@@ -10,6 +10,8 @@
 #' `Marine Spatial Planning and Conservation`, `Ecosystem Assessment and Climate Change`,
 #' `Population Assessment and Recovery`, `Other`, `Technology Development and Application`, and
 #'  `Pacific Salmon`
+#' @param functionalGroup classification of projects. Too see options do
+#' `unique(om$function_group)`, where `om`is the output from `getData(type="om")`
 #' @param path path to look for saved om_date. This must be the save as the path given when doing
 #'  `getData(type='om_date', keep=TRUE)`. This allows the report to print when the data was obtained
 #'   from the PPT. See Examples for more information.
@@ -28,7 +30,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(om)) {
     stop("In createReport() must provide an om argument")
@@ -50,7 +52,7 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
   if (!(identical(c("id","overtime_hours","smart_name","duration_weeks",
                     "level_display","funding_source_display","employee_type_display",  "project_year_id",
                     "project_id","fiscal_year", "project_title","median_salary",
-                    "salary_per_week","amount_week","amount_overtime", "amount_total", "theme", "activity_type"), names(salary)))) {
+                    "salary_per_week","amount_week","amount_overtime", "amount_total", "theme", "activity_type", "functional_group"), names(salary)))) {
     stop("Must obtain data for salary using getData(type='salary')")
   }
 
@@ -62,10 +64,11 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
     stop("salary must be a data frame created from getData(type='salary')")
   }
 
-  if(!(is.null(id)) && (!(is.null(theme)))) {
-    message("Both id and theme given. id argument was ignored.")
+  if(!(is.null(id)) && (!(is.null(theme))) && (!is.null(functionalGroup))) {
+    message("id,theme, and functionalGroup given. theme is used.")
 
     id <- NULL
+    functionalGroup <- NULL
   }
 
   # Dealing with om
@@ -86,6 +89,8 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       )
     }
   } else {
+    # theme or functionalGroup
+    if (!(is.null(theme))) {
     for (i in seq_along(theme)) {
       index <- om[which(om$theme == theme[i]),]
 
@@ -100,6 +105,23 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
         output_format = "html_document"
       )
     }
+    } else if (!(is.null(functionalGroup))) {
+      for (i in seq_along(functionalGroup)) {
+        index <- om[which(om$functional_group == functionalGroup[i]),]
+        # Dealing with salary
+        index2 <- salary[which(salary$functional_group == functionalGroup[i]), ]
+
+        ## Move into Rmd
+        rmarkdown::render(
+          file.path(Rmdpath, "skeleton3.Rmd"),
+          output_dir = destdir,
+          output_file = functionalGroup[i],
+          output_format = "html_document"
+        )
+      }
+
+
+}
 
   }
 }
