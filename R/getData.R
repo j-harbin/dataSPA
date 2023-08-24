@@ -987,16 +987,17 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   }
 
-    # JAIM
-    pp <- lapply(p, function(x) as.data.frame(x[c("title", "activity_type", "functional_group")]))
+    pp <- lapply(p, function(x) as.data.frame(x[c("title", "activity_type", "functional_group", "section_display")]))
     ppp <- do.call(rbind, pp)
 
     SAL$activity_type <- 0
     SAL$functional_group <- 0
+    SAL$section_display <- 0
     for (i in seq_along(ppp$title)) {
       if (any(SAL$project_title == ppp$title[i])) {
       SAL$activity_type[which(SAL$project_title == ppp$title[i])] <- ppp$activity_type[i]
       SAL$functional_group[which(SAL$project_title == ppp$title[i])] <- ppp$functional_group[i]
+      SAL$section_display[which(SAL$project_title == ppp$title[i])] <- ppp$section_display[i]
       }
     }
 

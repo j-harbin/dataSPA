@@ -15,6 +15,12 @@
 #' @param path path to look for saved om_date. This must be the save as the path given when doing
 #'  `getData(type='om_date', keep=TRUE)`. This allows the report to print when the data was obtained
 #'   from the PPT. See Examples for more information.
+#' @param section classification of projects referring to the sections at DFO. For
+#' more details do `unique(om$section_display)`, where `om`is the output from
+#' `getData(type="om")`
+#' @param division classification of projects referring to the divisions at DFO. For
+#' more details do `unique(om$section_display)`, where `om`is the output from
+#' `getData(type="om")`
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
 #' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
@@ -30,7 +36,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(om)) {
     stop("In createReport() must provide an om argument")
@@ -52,7 +58,7 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
   if (!(identical(c("id","overtime_hours","smart_name","duration_weeks",
                     "level_display","funding_source_display","employee_type_display",  "project_year_id",
                     "project_id","fiscal_year", "project_title","median_salary",
-                    "salary_per_week","amount_week","amount_overtime", "amount_total", "theme", "activity_type", "functional_group"), names(salary)))) {
+                    "salary_per_week","amount_week","amount_overtime", "amount_total", "theme", "activity_type", "functional_group","section_display"), names(salary)))) {
     stop("Must obtain data for salary using getData(type='salary')")
   }
 
@@ -119,6 +125,37 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
           output_format = "html_document"
         )
       }
+    } else if (!(is.null(section))) {
+      for (i in seq_along(section)) {
+        index <- om[which(gsub(".*- ","",om$section_display) == section[i]),]
+        index2 <- salary[which(gsub(".*- ","",salary$section_display) == section[i]),]
+        ## Move into Rmd
+        rmarkdown::render(
+          file.path(Rmdpath, "skeleton4.Rmd"),
+          output_dir = destdir,
+          output_file = section[i],
+          output_format = "html_document"
+        )
+      }
+
+    } else if (!(is.null(division))) {
+      for (i in seq_along(division)) {
+        index <- om[which(unlist(lapply(strsplit(om$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
+        index2 <- salary[which(unlist(lapply(strsplit(salary$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
+
+        ## Move into Rmd
+        rmarkdown::render(
+          file.path(Rmdpath, "skeleton5.Rmd"),
+          output_dir = destdir,
+          output_file = division[i],
+          output_format = "html_document"
+        )
+      }
+
+
+
+
+
 
 
 }

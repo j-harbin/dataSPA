@@ -11,6 +11,8 @@ plotSPA(
   id = NULL,
   theme = NULL,
   functionalGroup = NULL,
+  section = NULL,
+  division = NULL,
   item = NULL,
   funding = NULL,
   fundingChange = NULL,
@@ -40,6 +42,14 @@ or \code{predictSalary}}
 
 \item{functionalGroup}{classification of projects. Too see options do
 \code{unique(om$function_group)}, where \code{om}is the output from \code{getData(type="om")}}
+
+\item{section}{classification of projects referring to the sections at DFO. For
+more details do \code{unique(om$section_display)}, where \code{om}is the output from
+\code{getData(type="om")}}
+
+\item{division}{classification of projects referring to the divisions at DFO. For
+more details do \code{unique(om$section_display)}, where \code{om}is the output from
+\code{getData(type="om")}}
 
 \item{item}{if\code{which='omAllocation'} an argument
 specifying which category display to plot. If \code{which=salaryAllocation},

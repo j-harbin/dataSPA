@@ -10,5 +10,11 @@ plotSPA(index, which="omAllocation", theme=unique(index$theme), item=names(df)[j
 } else if (!(is.null(functionalGroup))) {
   df <- plotSPA(om=index, which="omAllocation", functionalGroup=functionalGroup[i], dataframe = TRUE)
 plotSPA(index, which="omAllocation", functionalGroup=unique(index$functional_group), item=names(df)[j])
+} else if (!(is.null(section))) {
+    df <- plotSPA(om=index, which="omAllocation", section=section[i], dataframe = TRUE)
+plotSPA(index, which="omAllocation", section=SEC, item=names(df)[j])
+} else if (!(is.null(division))) {
+      df <- plotSPA(om=index, which="omAllocation", division=division[i], dataframe = TRUE)
+plotSPA(index, which="omAllocation", division=DIV, item=names(df)[j])
 }
 ```

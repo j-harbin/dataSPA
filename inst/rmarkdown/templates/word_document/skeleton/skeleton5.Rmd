@@ -19,7 +19,7 @@ path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
  
-cat("The project IDs included in this functional group include: ", LINKS)
+cat("The project IDs included in this division include: ", LINKS)
 
 ```
 </p>
@@ -31,7 +31,9 @@ cat("The project IDs included in this functional group include: ", LINKS)
 
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
+
+DIV <- unlist(unique(lapply(strsplit(index$section_display, " - ", fixed=TRUE), function(x) x[3])))
+cat(paste0("Division: ", paste0(unique(DIV))))
 ```
 </font>
 
@@ -50,13 +52,14 @@ A number of assumptions exist for the following
 9. The salaries are based on time planned on these projects. The actual time spent may have varied.
 
 ```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
-plotSPA(om=index, functionalGroup=unique(index$functional_group), which="omBar")
+
+plotSPA(om=index, division=DIV, which="omBar")
 ```
 
 ### Choose an om allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- plotSPA(om=index, which="omAllocation", functionalGroup =unique(index$functional_group), dataframe = TRUE)
+df <- plotSPA(om=index, which="omAllocation", division =DIV, dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -69,25 +72,26 @@ for (j in seq_along(headers)) {
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-plotSPA(om=index,which="predictOM", functionalGroup=functionalGroup[i])
+plotSPA(om=index,which="predictOM", division=division[i])
 ```
 
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-res <- try(plotSPA(salary=index2, functionalGroup=unique(index2$functional_group), which="salaryBar"), silent=TRUE)
+cat("HI JAIMIE")
+res <- try(plotSPA(salary=index2, division=DIV, which="salaryBar"), silent=TRUE)
 ```
 
 
 ### Choose a salary allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- try(plotSPA(salary=index2, which="salaryAllocation", functionalGroup=unique(index2$functiona_group), dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=index2, which="salaryAllocation", division=DIV, dataframe = TRUE), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n",
-          knitr::knit_child("plot3.Rmd", quiet = TRUE), "\n\n")
+          knitr::knit_child("plot5.Rmd", quiet = TRUE), "\n\n")
 }
 
 ```
@@ -103,7 +107,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-res <- try(plotSPA(om=index, salary=index2, which="predictSalary", functionalGroup=functionalGroup[i]), silent=TRUE)
+res <- try(plotSPA(om=index, salary=index2, which="predictSalary", division=division[i]), silent=TRUE)
 
 ```
 
@@ -114,7 +118,7 @@ Definition: Systematic investigation and study in order to establish facts and r
 
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
+cat(paste0("division: ", DIV))
 ```
 </font>
 
@@ -122,9 +126,9 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 run <- ifelse(("Research" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 research1 <- index[which(index$activity_type == "Research"),]
-plotSPA(om=research1, functionalGroup=unique(index$functional_group), which="omBar")
+plotSPA(om=research1, division=DIV, which="omBar")
 } else {
-  cat(paste0("There are no Research projects for this functional group"))
+  cat(paste0("There are no Research projects for this division"))
 }
 ```
 
@@ -136,7 +140,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=research1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- plotSPA(om=research1, which="omAllocation", division=DIV, dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -150,14 +154,14 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=research1,which="predictOM", functionalGroup=functionalGroup[i])
+plotSPA(om=research1,which="predictOM", division=division[i])
 }
 ```
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 research2 <- index2[which(index2$activity_type == "Research"),]
-res <- try(plotSPA(salary=research2, functionalGroup=unique(index2$functional_group), which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=research2, division=DIV, which="salaryBar"), silent=TRUE)
 }
 ```
 
@@ -170,12 +174,12 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=research2, which="salaryAllocation", functionalGroup=unique(research2$functional_group), dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=research2, which="salaryAllocation", division=DIV, dataframe = TRUE), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n",
-          knitr::knit_child("plot3.Rmd", quiet = TRUE), "\n\n")
+          knitr::knit_child("plot5.Rmd", quiet = TRUE), "\n\n")
 }
 }
 ```
@@ -192,7 +196,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-res <- try(plotSPA(om=research1, salary=research2, which="predictSalary", functionalGroup=unique(index2$functional_group)), silent=TRUE)
+res <- try(plotSPA(om=research1, salary=research2, which="predictSalary", division=DIV), silent=TRUE)
 }
 ```
 
@@ -204,7 +208,7 @@ Definition: Observe and check the progress or quality of something over a period
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
 cat(paste0("\n"))
-cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
+cat(paste0("division: ", paste0(DIV)))
 ```
 </font>
 
@@ -213,9 +217,9 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 run <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
-plotSPA(om=monitor1, functionalGroup=unique(index$functional_group), which="omBar")
+plotSPA(om=monitor1, division=DIV, which="omBar")
 } else {
-  cat(paste0("There are no Monitoring projects for this functional group"))
+  cat(paste0("There are no Monitoring projects for this division"))
 }
 ```
 
@@ -227,7 +231,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=monitor1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- plotSPA(om=monitor1, which="omAllocation", division=DIV, dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -241,7 +245,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=monitor1,which="predictOM", functionalGroup=functionalGroup[i])
+plotSPA(om=monitor1,which="predictOM", division=division[i])
 }
 ```
 
@@ -249,7 +253,7 @@ plotSPA(om=monitor1,which="predictOM", functionalGroup=functionalGroup[i])
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 monitor2 <- index2[which(index2$activity_type == "Monitoring"),]
-res <- try(plotSPA(salary=monitor2, functionalGroup=unique(index2$functional_group), which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=monitor2, division=DIV, which="salaryBar"), silent=TRUE)
 }
 ```
 
@@ -262,12 +266,12 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=monitor2, which="salaryAllocation", functionalGroup=unique(monitor2$functional_group), dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=monitor2, which="salaryAllocation", division=DIV, dataframe = TRUE), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n",
-          knitr::knit_child("plot3.Rmd", quiet = TRUE), "\n\n")
+          knitr::knit_child("plot5.Rmd", quiet = TRUE), "\n\n")
 }
 }
 ```
@@ -283,7 +287,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=monitor1, salary=monitor2, which="predictSalary", functionalGroup=unique(index2$functional_group)), silent=TRUE)
+res <- try(plotSPA(om=monitor1, salary=monitor2, which="predictSalary", division=DIV), silent=TRUE)
 }
 ```
 
@@ -294,7 +298,7 @@ Definition: Guidance or recommendations offered with regard to prudent future ac
 
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
+cat(paste0("division: ", paste0(unique(DIV))))
 ```
 </font>
 
@@ -303,9 +307,9 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 run <- ifelse(("Assessment" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 assessment1 <- index[which(index$activity_type == "Assessment"),]
-plotSPA(om=assessment1, functionalGroup=unique(index$functional_group), which="omBar")
+plotSPA(om=assessment1, division=DIV, which="omBar")
 } else {
-  cat(paste0("There are no Assessment projects for this functional group"))
+  cat(paste0("There are no Assessment projects for this division"))
 }
 ```
 
@@ -317,7 +321,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=assessment1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- plotSPA(om=assessment1, which="omAllocation", division=DIV, dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -330,7 +334,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=assessment1,which="predictOM", functionalGroup=functionalGroup[i])
+plotSPA(om=assessment1,which="predictOM", division=division[i])
 }
 ```
 
@@ -338,7 +342,7 @@ plotSPA(om=assessment1,which="predictOM", functionalGroup=functionalGroup[i])
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 assessment2 <- index2[which(index2$activity_type == "Assessment"),]
-res <- try(plotSPA(salary=assessment2, functionalGroup=unique(index2$functional_group), which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=assessment2, division=DIV, which="salaryBar"), silent=TRUE)
 }
 ```
 
@@ -351,12 +355,12 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=assessment2, which="salaryAllocation", functionalGroup=unique(assessment2$functional_group), dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=assessment2, which="salaryAllocation", division=DIV, dataframe = TRUE), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n",
-          knitr::knit_child("plot3.Rmd", quiet = TRUE), "\n\n")
+          knitr::knit_child("plot5.Rmd", quiet = TRUE), "\n\n")
 }
 }
 ```
@@ -372,7 +376,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=assessment1, salary=assessment2, which="predictSalary", functionalGroup=unique(index2$functional_group)))
+res <- try(plotSPA(om=assessment1, salary=assessment2, which="predictSalary", division=DIV))
 }
 ```
 
@@ -382,7 +386,7 @@ Definition: A product is a tangible items that is put on the marker for acquisit
 
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
+cat(paste0("division: ", paste0(unique(DIV))))
 ```
 </font>
 
@@ -390,9 +394,9 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 run <- ifelse(("Data Management" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 management1 <- index[which(index$activity_type == "Data Management"),]
-plotSPA(om=management1, functionalGroup=unique(index$functional_group), which="omBar")
+plotSPA(om=management1, division=DIV, which="omBar")
 } else {
-  cat(paste0("There are no Data Management projects for this functional group"))
+  cat(paste0("There are no Data Management projects for this division"))
 }
 ```
 
@@ -404,7 +408,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=management1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- plotSPA(om=management1, which="omAllocation", division=DIV, dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -418,7 +422,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-plotSPA(om=management1,which="predictOM", functionalGroup=functionalGroup[i])
+plotSPA(om=management1,which="predictOM", division=division[i])
 }
 ```
 
@@ -426,7 +430,7 @@ plotSPA(om=management1,which="predictOM", functionalGroup=functionalGroup[i])
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 management2 <- index2[which(index2$activity_type == "Data Management"),]
-res <- try(plotSPA(salary=management2, functionalGroup=unique(index2$functional_group), which="salaryBar"), silent = TRUE)
+res <- try(plotSPA(salary=management2, division=DIV, which="salaryBar"), silent = TRUE)
 }
 ```
 
@@ -439,12 +443,12 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=management2, which="salaryAllocation", functionalGroup=unique(management2$functional_group), dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=management2, which="salaryAllocation", division=DIV, dataframe = TRUE), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n",
-          knitr::knit_child("plot3.Rmd", quiet = TRUE), "\n\n")
+          knitr::knit_child("plot5.Rmd", quiet = TRUE), "\n\n")
 }
 }
 ```
@@ -460,7 +464,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=management1, salary=management2, which="predictSalary", functionalGroup=unique(index2$functional_group)))
+res <- try(plotSPA(om=management1, salary=management2, which="predictSalary", division=DIV))
 }
 ```
 
@@ -471,7 +475,7 @@ Definition: A service is an “intangible” item that arises from the output/wo
 
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
+cat(paste0("division: ", paste0(unique(DIV))))
 ```
 </font>
 
@@ -479,9 +483,9 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 run <- ifelse(("Other" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 other1 <- index[which(index$activity_type == "Other"),]
-plotSPA(om=other1, functionalGroup=unique(index$functional_group), which="omBar")
+plotSPA(om=other1, division=DIV, which="omBar")
 } else {
-  cat(paste0("There are no Other projects for this functional group"))
+  cat(paste0("There are no Other projects for this division"))
 }
 ```
 
@@ -493,7 +497,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=other1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- plotSPA(om=other1, which="omAllocation", division=DIV, dataframe = TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -506,7 +510,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=other1,which="predictOM", functionalGroup=functionalGroup[i])
+plotSPA(om=other1,which="predictOM", division=division[i])
 }
 ```
 
@@ -514,7 +518,7 @@ plotSPA(om=other1,which="predictOM", functionalGroup=functionalGroup[i])
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 other2 <- index2[which(index2$activity_type == "Other"),]
-res <- try(plotSPA(salary=other2, functionalGroup=unique(index2$functional_group), which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=other2, division=DIV, which="salaryBar"), silent=TRUE)
 }
 ```
 
@@ -527,12 +531,12 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=other2, which="salaryAllocation", functionalGroup=unique(other2$functional_group), dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=other2, which="salaryAllocation", division=DIV, dataframe = TRUE), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n",
-          knitr::knit_child("plot3.Rmd", quiet = TRUE), "\n\n")
+          knitr::knit_child("plot5.Rmd", quiet = TRUE), "\n\n")
 }
 }
 ```
@@ -548,7 +552,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=other1, salary=other2, which="predictSalary", functionalGroup=unique(index2$functional_group)), silent=TRUE)
+res <- try(plotSPA(om=other1, salary=other2, which="predictSalary", division=DIV), silent=TRUE)
 }
 ```
 

@@ -11,6 +11,8 @@ createReport(
   id = NULL,
   theme = NULL,
   functionalGroup = NULL,
+  section = NULL,
+  division = NULL,
   destdir = ".",
   path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
 )
@@ -33,6 +35,14 @@ format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 
 \item{functionalGroup}{classification of projects. Too see options do
 \code{unique(om$function_group)}, where \code{om}is the output from \code{getData(type="om")}}
+
+\item{section}{classification of projects referring to the sections at DFO. For
+more details do \code{unique(om$section_display)}, where \code{om}is the output from
+\code{getData(type="om")}}
+
+\item{division}{classification of projects referring to the divisions at DFO. For
+more details do \code{unique(om$section_display)}, where \code{om}is the output from
+\code{getData(type="om")}}
 
 \item{destdir}{parameter indicating where to save the html report}
 
