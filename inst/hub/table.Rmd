@@ -35,7 +35,7 @@ for (i in seq_along(ids)) {
 }
 titles <- unlist(titles)
 
-links <- paste0("file:",path, str_extract(list.files(path), "[^.]+"),".html")
+links <- paste0("http://glf-proxy:8018/mar-spa/reports/", str_extract(list.files(path), "[^.]+"),".html")
 df <- data.frame(matrix(NA, ncol = 3, nrow = length(ids)))
 names(df) <- c("Title", "Fact Sheet", "PPT")
 df$Title <- titles
