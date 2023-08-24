@@ -70,19 +70,21 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
     stop("salary must be a data frame created from getData(type='salary')")
   }
 
-  if(!(is.null(id)) && (!(is.null(theme))) && (!is.null(functionalGroup))) {
-    message("id,theme, and functionalGroup given. theme is used.")
-
+  if(!(is.null(id)) && (!(is.null(theme))) && (!is.null(functionalGroup)) && (!(is.null(section))) && (!(is.null(division)))) {
+    message("id,theme,functionalGroup, section, and division given. theme is used.")
     id <- NULL
     functionalGroup <- NULL
+    division <- NULL
+    section <- NULL
   }
+
+  # SUBSETTING FOR JUST THE MARITIMES REGION HERE
+  #om <- om[which(str_extract(om$section_display, "[^-]+") == "Maritimes "),]
 
   # Dealing with om
   if (!(is.null(id))) {
     for (i in seq_along(id)) {
       index <- om[which(om$project_id == id[i]), ]
-      #browser()
-
       # Dealing with salary
       index2 <- salary[which(salary$project_id == id[i]), ]
 
