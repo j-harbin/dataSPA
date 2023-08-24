@@ -145,7 +145,7 @@ for (i in seq_along(sd)) {
 
 
 sections <- unique(gsub(".*- ","",unique(om$section_display)))
-sections <- sections[-which(sections == "")]
+sections <- sections[-(which(sections == ""))]
 
 df2 <- data.frame(matrix(NA, ncol = 1, nrow = length(sections)))
 names(df2) <- "Section"
