@@ -10,7 +10,7 @@ output:
 
 <span style="color:#43C6DB">As a manager,I want a summary reproducible report (PDF or Word). The report should serve as the authoritative source, providing a quarterly snapshot of MAR Science projects in a newsletter-like format.  The report will be ordered into the five functions of science (Monitoring, Research, Assessment, Data Management, and Other). The report can be created by filtering by theme, functional groups, section, or Division. The Marine Spatial Planning and Conservation Theme will be used for the pilot report. This reproducible reports will facilitate PIs in validating projects and managers recommend and approve proposed projects. </span>
 
-## Select relevant tab for summary reports {.tabset}
+## Select relevant tab for summary reports for the Maritimes Region {.tabset}
 
 ### Theme
 ```{r, echo=FALSE}
