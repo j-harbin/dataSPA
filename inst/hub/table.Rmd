@@ -27,6 +27,7 @@ if (!(exists("cookie"))) {
       stop("Must add a line of code above that defines your cookie.")
 }
 om <- getData(type="om", cookie=cookie, age=90)
+#om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),]
 titles <- NULL
 ppt <- NULL
 for (i in seq_along(ids)) {

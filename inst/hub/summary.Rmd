@@ -23,6 +23,7 @@ if (!(exists("cookie"))) {
       stop("Must add a line of code above that defines your cookie.")
     }
 om <- getData(type="om", cookie=cookie, age=90)
+om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),] # Hard coded in for maritimes
 theme <- unique(om$theme)
 theme <- theme[-which(theme == "0")]
 d <- data.frame(matrix(NA, ncol = 1, nrow = length(theme)))
@@ -72,7 +73,7 @@ for (i in seq_along(om$section_display)) {
   divisions[[i]] <- strsplit(om$section_display[i], " - ", fixed=TRUE)[[1]][3]
 }
 divisions <- unique(divisions)
-divisions <- divisions[-(which(is.na(divisions)))]
+#divisions <- divisions[-(which(is.na(divisions)))]
 
 df3 <- data.frame(matrix(NA, ncol = 1, nrow = length(divisions)))
 names(df3) <- "Division"
@@ -92,32 +93,40 @@ DT::datatable(df3,
 
 # Step 1: IDENTIFY WHICH SECTION_DISPLAY HAS MORE THAN 3 -
 sd <- unique(om$section_display[which(!(str_count(om$section_display,"\\-") == 3))])
-sd <- sd[-(which(sd == ""))]
+#sd <- sd[-(which(sd == ""))]
 SD <- sd
 # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
 # AND REMOVE THE -
 bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
+if (!(length(bad2) == 0)) {
 bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
 sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
+}
 
 
 # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
 # AND REMOVE THE -
 bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
+if (!(length(bad2) == 0)) {
 bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
 sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
+}
 
 # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
 # AND REMOVE THE -
 bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
+if (!(length(bad2) == 0)) {
 bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
 sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
+}
 
 # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
 # AND REMOVE THE -
 bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
+if (!(length(bad2) == 0)) {
 bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
 sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
+}
 
 
 # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
@@ -145,7 +154,7 @@ for (i in seq_along(sd)) {
 
 
 sections <- unique(gsub(".*- ","",unique(om$section_display)))
-sections <- sections[-(which(sections == ""))]
+#sections <- sections[-(which(sections == ""))]
 
 df2 <- data.frame(matrix(NA, ncol = 1, nrow = length(sections)))
 names(df2) <- "Section"

@@ -274,17 +274,18 @@ ID <- unique(index$project_id)
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
-plotSPA(om=index, id=ID, which="omBar")
+res <- try(plotSPA(om=index, id=ID, which="omBar"), silent=TRUE)
+#JAIM
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 2: Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
-plotSPA(om=index, id=ID, which="omAllocation")
+res <- try(plotSPA(om=index, id=ID, which="omAllocation"), silent=TRUE)
 ```
 
 
 ```{r, echo=FALSE, fig.cap="Figure 3: Bar graph showing gap in funding (red) if funding stayed the same and an inflation rate of 2% was applied to O&M costs. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-plotSPA(om=index, salary=index2, which="predictOM", id=ID)
+res <- try(plotSPA(om=index, salary=index2, which="predictOM", id=ID))
 
 ```
 

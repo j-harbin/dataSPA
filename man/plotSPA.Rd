@@ -13,6 +13,7 @@ plotSPA(
   functionalGroup = NULL,
   section = NULL,
   division = NULL,
+  region = NULL,
   item = NULL,
   funding = NULL,
   fundingChange = NULL,
@@ -50,6 +51,10 @@ more details do \code{unique(om$section_display)}, where \code{om}is the output 
 \item{division}{classification of projects referring to the divisions at DFO. For
 more details do \code{unique(om$section_display)}, where \code{om}is the output from
 \code{getData(type="om")}}
+
+\item{region}{parameter to specific specific region of either \code{Gulf}, \code{Maritimes},
+\code{Pacific}, \code{Quebec}, or \verb{Ontario and Prairie}. If no region is given, a summary plot
+of all regions is given.}
 
 \item{item}{if\code{which='omAllocation'} an argument
 specifying which category display to plot. If \code{which=salaryAllocation},

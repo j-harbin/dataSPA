@@ -76,6 +76,9 @@
 #' @param division classification of projects referring to the divisions at DFO. For
 #' more details do `unique(om$section_display)`, where `om`is the output from
 #' `getData(type="om")`
+#' @param region parameter to specific specific region of either `Gulf`, `Maritimes`,
+#' `Pacific`, `Quebec`, or `Ontario and Prairie`. If no region is given, a summary plot
+#' of all regions is given.
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
 #' experience change in the prediction. If `endDate` is provided,
@@ -115,6 +118,7 @@
 #' @importFrom stats lm
 #' @importFrom stats coef
 #' @importFrom stringr str_count
+#' @importFrom stringr str_trim
 #' @importFrom grDevices extendrange
 #' @examples
 #' \dontrun{
@@ -159,6 +163,7 @@ plotSPA <-
            functionalGroup = NULL,
            section=NULL,
            division=NULL,
+           region=NULL,
            item = NULL,
            funding = NULL,
            fundingChange = NULL,
@@ -185,6 +190,21 @@ plotSPA <-
     col <- sample(color, length(unique(om$funding_source_display)))
     } else {
     col <- sample(color, length(unique(salary$funding_source_display)))
+    }
+
+    if (!(is.null(region))) {
+      regions <- unique(str_extract(om$section_display, "[^-]+"))
+      regions <- regions[(-which(is.na(regions)))]
+      regions <- str_trim(regions)
+
+      if (!(region %in% regions)) {
+        stop("No projects in region = ", region, " . Try ", paste0(regions, collapse=","), " instead.")
+      }
+      om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == region),]
+      salary <- salary[which(str_trim(str_extract(salary$section_display, "[^-]+")) == region),]
+      if (length(om) == 0 && length(salary) == 0) {
+        stop("No projects for this subset in this region.")
+      }
     }
 
     if (!(
@@ -215,9 +235,6 @@ plotSPA <-
       message("which= ", which, " and id = ", id)
     }
 
-
-
-
     # DEALING WITH FORMAT OF SECTIONS
     # Step 1: IDENTIFY WHICH SECTION_DISPLAY HAS MORE THAN 3 -
     sd <- unique(om$section_display[which(!(str_count(om$section_display,"\\-") == 3))])
@@ -226,27 +243,35 @@ plotSPA <-
     # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
     # AND REMOVE THE -
     bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
+    if (!(length(bad2) == 0)) {
     bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
     sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
+    }
 
 
     # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
     # AND REMOVE THE -
     bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
     bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
+    if (!(length(bad2) == 0)) {
     sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
+    }
 
     # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
     # AND REMOVE THE -
     bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
+    if (!(length(bad2) == 0)) {
     bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
     sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
+    }
 
     # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
     # AND REMOVE THE -
     bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
+    if (!(length(bad2) == 0)) {
     bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
     sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
+    }
 
 
     # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
@@ -273,7 +298,7 @@ plotSPA <-
     }
 
     sec <- unique(gsub(".*- ","",unique(om$section_display)))
-    sec <- sec[-(which(sec == ""))]
+    #sec <- sec[-(which(sec == ""))]
 
     # END OF DEALING WITH FORMAT SECTIONS
 

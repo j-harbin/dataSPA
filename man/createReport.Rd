@@ -13,6 +13,7 @@ createReport(
   functionalGroup = NULL,
   section = NULL,
   division = NULL,
+  region = NULL,
   destdir = ".",
   path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
 )
@@ -44,6 +45,9 @@ more details do \code{unique(om$section_display)}, where \code{om}is the output 
 more details do \code{unique(om$section_display)}, where \code{om}is the output from
 \code{getData(type="om")}}
 
+\item{region}{parameter to specific specific region of either \code{Gulf}, \code{Maritimes},
+\code{Pacific}, \code{Quebec}, or \verb{Ontario and Prairie}}
+
 \item{destdir}{parameter indicating where to save the html report}
 
 \item{path}{path to look for saved om_date. This must be the save as the path given when doing
@@ -59,6 +63,7 @@ specified project id or theme.
 }
 \examples{
 \dontrun{
+# Example 1
 om <- getData(type="om", cookie=cookie, keep=TRUE, path=".")
 sal <- getData(type="salary", cookie=cookie, keep=TRUE, path=".")
 omdate <- getData(type="om_date", cookie=cookie, keep=TRUE, path=".")

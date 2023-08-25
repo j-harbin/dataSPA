@@ -21,6 +21,8 @@
 #' @param division classification of projects referring to the divisions at DFO. For
 #' more details do `unique(om$section_display)`, where `om`is the output from
 #' `getData(type="om")`
+#' @param region parameter to specific specific region of either `Gulf`, `Maritimes`,
+#' `Pacific`, `Quebec`, or `Ontario and Prairie`
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
 #' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
@@ -29,6 +31,7 @@
 #' @importFrom rmarkdown render
 #' @examples
 #' \dontrun{
+#' # Example 1
 #' om <- getData(type="om", cookie=cookie, keep=TRUE, path=".")
 #' sal <- getData(type="salary", cookie=cookie, keep=TRUE, path=".")
 #' omdate <- getData(type="om_date", cookie=cookie, keep=TRUE, path=".")
@@ -36,7 +39,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(om)) {
     stop("In createReport() must provide an om argument")
@@ -54,6 +57,22 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
     stop("Must obtain data for om using getData(type='om')")
   }
   Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
+
+
+  if (!(is.null(region))) {
+    regions <- unique(str_extract(om$section_display, "[^-]+"))
+    regions <- regions[(-which(is.na(regions)))]
+    regions <- str_trim(regions)
+
+    if (!(region %in% regions)) {
+      stop("No projects in region = ", region, " . Try ", paste0(regions, collapse=","), " instead.")
+    }
+    om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == region),]
+    salary <- salary[which(str_trim(str_extract(salary$section_display, "[^-]+")) == region),]
+    if (length(om) == 0 && length(salary) == 0) {
+      stop("No projects for this subset in this region.")
+    }
+  }
 
   if (!(identical(c("id","overtime_hours","smart_name","duration_weeks",
                     "level_display","funding_source_display","employee_type_display",  "project_year_id",
