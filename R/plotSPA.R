@@ -473,6 +473,9 @@ plotSPA <-
       }
       # omBar
       if (which %in% c("omBar", "predictOM")) {
+        if (unique(keep$amount == 0) == TRUE) {
+          stop("No O&M Cost was associated with this project.")
+        }
         ylim <- NULL
         dv <- data.frame(matrix(NA, nrow = 1, ncol = length(years)))
         names(dv) <- years
@@ -791,6 +794,10 @@ plotSPA <-
 
         names(yearsx) <- category
         names(amounty) <- category
+        if (unique(keep$amount == 0) == TRUE) {
+          stop("No o&m costs have been allocated to this project.")
+        }
+
         bad <- NULL
         for (i in seq_along(amounty)) {
           yearsx[[i]] <- yearsx[[i]][which(!(amounty[[i]] == 1))]

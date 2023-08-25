@@ -53,7 +53,7 @@ A number of assumptions exist for the following
 
 ```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 
-plotSPA(om=index, division=DIV, which="omBar")
+res <- try(plotSPA(om=index, division=DIV, which="omBar"), silent=TRUE)
 ```
 
 ### Choose an om allocation plot {.tabset .tabset-dropdown}
@@ -72,13 +72,12 @@ for (j in seq_along(headers)) {
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-plotSPA(om=index,which="predictOM", division=division[i])
+res <- try(plotSPA(om=index,which="predictOM", division=division[i]), silent=TRUE)
 ```
 
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-cat("HI JAIMIE")
 res <- try(plotSPA(salary=index2, division=DIV, which="salaryBar"), silent=TRUE)
 ```
 
@@ -126,7 +125,7 @@ cat(paste0("division: ", DIV))
 run <- ifelse(("Research" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 research1 <- index[which(index$activity_type == "Research"),]
-plotSPA(om=research1, division=DIV, which="omBar")
+res <- try(plotSPA(om=research1, division=DIV, which="omBar"), silent=TRUE)
 } else {
   cat(paste0("There are no Research projects for this division"))
 }
@@ -154,7 +153,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=research1,which="predictOM", division=division[i])
+res <- try(plotSPA(om=research1,which="predictOM", division=division[i]), silent=TRUE)
 }
 ```
 
@@ -217,7 +216,7 @@ cat(paste0("division: ", paste0(DIV)))
 run <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
-plotSPA(om=monitor1, division=DIV, which="omBar")
+res <- try(plotSPA(om=monitor1, division=DIV, which="omBar"), silent=TRUE)
 } else {
   cat(paste0("There are no Monitoring projects for this division"))
 }
@@ -245,7 +244,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=monitor1,which="predictOM", division=division[i])
+res <- try(plotSPA(om=monitor1,which="predictOM", division=division[i]), silent=TRUE)
 }
 ```
 
@@ -307,7 +306,7 @@ cat(paste0("division: ", paste0(unique(DIV))))
 run <- ifelse(("Assessment" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 assessment1 <- index[which(index$activity_type == "Assessment"),]
-plotSPA(om=assessment1, division=DIV, which="omBar")
+res <- try(plotSPA(om=assessment1, division=DIV, which="omBar"), silent=TRUE)
 } else {
   cat(paste0("There are no Assessment projects for this division"))
 }
@@ -334,7 +333,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=assessment1,which="predictOM", division=division[i])
+res <- try(plotSPA(om=assessment1,which="predictOM", division=division[i]), silent=TRUE)
 }
 ```
 
@@ -394,7 +393,7 @@ cat(paste0("division: ", paste0(unique(DIV))))
 run <- ifelse(("Data Management" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 management1 <- index[which(index$activity_type == "Data Management"),]
-plotSPA(om=management1, division=DIV, which="omBar")
+res <- try(plotSPA(om=management1, division=DIV, which="omBar"), silent=TRUE)
 } else {
   cat(paste0("There are no Data Management projects for this division"))
 }
@@ -422,7 +421,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-plotSPA(om=management1,which="predictOM", division=division[i])
+res <- try(plotSPA(om=management1,which="predictOM", division=division[i]), silent=TRUE)
 }
 ```
 
@@ -483,7 +482,7 @@ cat(paste0("division: ", paste0(unique(DIV))))
 run <- ifelse(("Other" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 other1 <- index[which(index$activity_type == "Other"),]
-plotSPA(om=other1, division=DIV, which="omBar")
+res <- try(plotSPA(om=other1, division=DIV, which="omBar"), silent=TRUE)
 } else {
   cat(paste0("There are no Other projects for this division"))
 }
@@ -510,7 +509,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-plotSPA(om=other1,which="predictOM", division=division[i])
+res <- try(plotSPA(om=other1,which="predictOM", division=division[i]), silent=TRUE)
 }
 ```
 
