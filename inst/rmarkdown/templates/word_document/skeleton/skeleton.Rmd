@@ -5,7 +5,7 @@ output:
   pdf_document: default
 ---
 
-<a href ="file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/hub/dataSPA.html"><img src="home.png" width="2%"></a>
+<a href ="http://glf-proxy:8018/mar-spa/"><img src="home.png" width="2%"></a>
 
 
 ```{r, echo=FALSE}
