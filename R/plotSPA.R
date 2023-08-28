@@ -421,6 +421,10 @@ plotSPA <-
             stop("No projects have division ", division, " try ", paste0(div, collapse=","), " instead.")
           }
         }
+
+      if (length(crab$amount) == 0) {
+        stop("No O&M Cost was associated with this project.")
+      }
       keep <-
         subset(
           crab,
@@ -473,7 +477,7 @@ plotSPA <-
       }
       # omBar
       if (which %in% c("omBar", "predictOM")) {
-        if (unique(keep$amount == 0) == TRUE) {
+        if (length(unique(keep$amount)) == 1 && unique(keep$amount == 0) == TRUE) {
           stop("No O&M Cost was associated with this project.")
         }
         ylim <- NULL
@@ -794,7 +798,7 @@ plotSPA <-
 
         names(yearsx) <- category
         names(amounty) <- category
-        if (unique(keep$amount == 0) == TRUE) {
+        if (length(unique(keep$amount)) == 1 && unique(keep$amount == 0) == TRUE) {
           stop("No o&m costs have been allocated to this project.")
         }
 
@@ -1066,6 +1070,10 @@ plotSPA <-
              year,
              " try ",
              paste0(unique(salaryKeep$fiscal_year), collapse = ","))
+      }
+
+      if (length(salaryKeep$amount_total) == 0) {
+        stop("No salary cost was associated with this project.")
       }
 
       salm <-

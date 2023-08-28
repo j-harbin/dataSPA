@@ -9,7 +9,11 @@ output:
 
 
 ```{r, echo=FALSE}
-years <- unique(index$fiscal_year)
+if (!(length(index$project_id) == 0)) {
+  years <- unique(index$fiscal_year)
+} else if (!(length(index2$fiscal_year)== 0)) {
+    years <- unique(index2$fiscal_year)
+}
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
@@ -22,31 +26,49 @@ cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date
 **Title**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
+if (!(length(index$project_id) == 0)) {
 cat(paste0(unique(index$project_title)))
+} else if (!(length(index2$fiscal_year)== 0)) {
+cat(paste0(unique(index2$project_title)))
+}
+  
 ```
 
 **Project ID**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(index$project_id) == 0)) {
 cat(paste0(unique(index$project_id)))
+} else if (!(length(index2$fiscal_year)== 0)) {
+cat(paste0(unique(index2$project_id)))
+}
 ```
 
 **Overview**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
+if (!(length(index$project_id) == 0)) {
+  ID <- unique(index$project_id)
+} else if (!(length(index2$fiscal_year)== 0)) {
+  ID <- unique(index2$project_id)
+}
+if (!(length(index$project_id) == 0)) {
 file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
-ID <- unique(index$project_id)
+#ID <- unique(index$project_id)
 if (file.exists(file)) {
 cat(highlightOverview(om=index,id=ID))
 } else {
   cat(paste0(unique(index$overview)))
 }
+}
 ```
 
 <center>
 ```{r pressure, echo=FALSE, fig.cap=" ", out.width = '70%'}
+if (!(length(index$project_id) == 0)) {
 if (file.exists(file)) {
 highlightOverview(om=index, id=unique(index$project_id), legend=TRUE)
+}
 }
 ```
 </img></center>
@@ -54,6 +76,7 @@ highlightOverview(om=index, id=unique(index$project_id), legend=TRUE)
 **Deliverables**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(index$project_id) == 0)) {
 d <- unique(index$deliverables)
 if (length(unique(d)) == 1 && unique(d) == 0) {
   cat(paste0("There are no identified deliverables for this project."))
@@ -135,11 +158,13 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
       cat(paste0(d))
     }
 }
+}
 ```
 
 **Milestones**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(index$project_id) == 0)) {
 years <- unique(index$fiscal_year)
 m <- unique(index$milestones)
 if (length(unique(m)) == 1 && unique(m) == 0) {
@@ -218,24 +243,27 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
       cat(paste0(m))
     }
 }
+}
 ```
 
 
 **Objectives**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(index$project_id) == 0)) {
 if (unique(index$objectives) == 0) {
   cat(paste0("There are no identified objectives for this project."))
 } else {
 cat(paste0(unique(index$objectives)))
 }
-
+}
 
 ```
 
 **Status**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
+if (!(length(index$project_id) == 0)) {
 years <- unique(index$fiscal_year)
 status <- NULL
 if (!(length(unique(index$status)) == 1)) {
@@ -248,12 +276,15 @@ if (!(length(unique(index$status)) == 1)) {
 } else {
   cat(paste0(unique(index$status)), " for all project years")
 }
+}
 ```
 
 **Lead Contact (s)**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(index$project_id) == 0)) {
 cat(paste0(unique(index$lead_staff)))
+}
 ```
 
 **Plots**
@@ -268,9 +299,14 @@ A number of assumptions exist for plots 3,4, and 6 including:
 6. For salary predictions, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
 7. The PPT was only mandated in the Maritimes region 2 years ago
 8. The salaries are based on time planned on these projects. The actual time spent may have varied.
+9. Individuals who have level IT--03 use the salary of  "CS-03" due to the name change in level
 
 ```{r, echo=FALSE}
-ID <- unique(index$project_id)
+if (!(length(index$project_id) == 0)) {
+  ID <- unique(index$project_id)
+} else if (!(length(index2$fiscal_year)== 0)) {
+  ID <- unique(index2$project_id)
+}
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
@@ -299,7 +335,7 @@ res <- try(plotSPA(salary=index2, id=ID, which="salaryAllocation"), silent=TRUE)
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 6: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
-plotSPA(om=index, salary=index2, id=ID, which="indeterminate")
+res <- try(plotSPA(om=index, salary=index2, id=ID, which="indeterminate"), silent=TRUE)
 ```
 
 

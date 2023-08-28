@@ -94,6 +94,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           if(type=="om"){
             om <- readRDS(file = fn)
             #message(paste0("loading file from disk(",fn,")"))
+
             return(om)
           } else if(type=="om_date"){
             #message(paste0("returning date from file on disk(",fn,")"))
@@ -782,6 +783,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$amount_week <- rep(NA, length(SAL$id))
     SAL$amount_overtime <- rep(NA, length(SAL$id))
     SAL$amount_total <- rep(NA, length(SAL$id))
+    fundingLevel[which(fundingLevel == "IT--03")] <- "CS--03"
+
     for (i in seq_along(fundingLevel)) {
       j <- salaries[which(grepl(fundingLevel[i], salaries$`Level and Step`)),] # keeping relevant salaries from excel
       excelyear <- sub('.* ', '', j$`Level and Step`) # extract everything after space in excel for year
@@ -805,6 +808,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           jj <- j[which(mins == dw),] # Takes the appropriate year
         }
       }
+      #JAIM
       if (is.na(max(excelyear))) {
         stop("This stopped at ", i, " and fundinglevel =", fundingLevel[i])
       }
@@ -1008,6 +1012,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
     SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
     SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
+
+    # Change IT-03 to CS-03
+    #SAL$level_display[which(grepl("CS--03", SAL$level_display))] <- "IT--03"
 
     if(keep){
       fn <- file.path(path,"dataSPA_SAL.rds")

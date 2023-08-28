@@ -49,6 +49,7 @@ A number of assumptions exist for the following
 7. The PPT was only mandated in the Maritimes region 2 years ago
 8. The plots in each tab are heavily dependent on which activity type is assigned in the PPT
 9. The salaries are based on time planned on these projects. The actual time spent may have varied.
+10. Individuals who have level IT--03 use the salary of  "CS-03" due to the name change in level
 
 ```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 

@@ -97,9 +97,6 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
     section <- NULL
   }
 
-  # SUBSETTING FOR JUST THE MARITIMES REGION HERE
-  #om <- om[which(str_extract(om$section_display, "[^-]+") == "Maritimes "),]
-
   # Dealing with om
   if (!(is.null(id))) {
     for (i in seq_along(id)) {
