@@ -17,12 +17,10 @@ if (!(length(index$project_id) == 0)) {
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
-file2 <- paste0(path,"dataSPA_om.rds")
-if (file.exists(file2)) {
-cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date", age=30, cookie=cookie, path=path)))
-} else exists(filedate) {
-  cat(paste0("Data pulled for this report was obtained on ", filedate))
+if(!exists(filedate)){
+  filedate <- getData(type="om_date", age=30, cookie=cookie)
 }
+cat(paste0("Data pulled for this report was obtained on ", filedate))
 ```
 
 **Title**

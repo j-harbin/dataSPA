@@ -8,10 +8,10 @@ output:
 <a href ="http://glf-proxy:8018/mar-spa/"><img src="home.png" width="2%"></a>
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
-if(exists(filedate)){
-  filedate <- getData(type="om_date", age=30, cookie=cookie))
+if(!exists(filedate)){
+  filedate <- getData(type="om_date", age=30, cookie=cookie)
 }
-cat(paste0("Data pulled for this report was obtained on ", filedate)
+cat(paste0("Data pulled for this report was obtained on ", filedate))
 
 ```
 
