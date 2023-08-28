@@ -17,6 +17,11 @@ cat(paste0("Data pulled for this report was obtained on ", getData(type="om_date
 ```{r, echo=FALSE, comment=NA, results="asis"}
 IDs <- unique(index$project_id)
 path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
+
+if(!dir.exists(path)){
+  path <- "http://glf-proxy:8018/mar-spa/reports/"
+}
+
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
  
