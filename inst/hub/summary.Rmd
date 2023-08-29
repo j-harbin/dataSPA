@@ -18,12 +18,18 @@ library(stringr)
 library(dataSPA)
 
 # NOTE: NEED TO DEFINE COOKIE FOR THIS TO WORK
-res <- try(load('../../../../Code (Not for GitHub)/10_landing_page/cookie'), silent=TRUE)
+if(!exists("cookie")){
+  res <- try(load('../../../../Code (Not for GitHub)/10_landing_page/cookie'), silent=TRUE)
+}
 if (!(exists("cookie"))) {
       stop("Must add a line of code above that defines your cookie.")
-    }
-om <- getData(type="om", cookie=cookie, age=90)
+}
+
+if(!exists("om")){
+  om <- getData(type="om", cookie=cookie, age=90)
 om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),] # Hard coded in for maritimes
+}
+
 theme <- unique(om$theme)
 theme <- theme[-which(theme == "0")]
 d <- data.frame(matrix(NA, ncol = 1, nrow = length(theme)))

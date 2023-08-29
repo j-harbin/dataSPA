@@ -17,17 +17,22 @@ on the project planning tool.
 ```{r, echo=FALSE}
 library(stringr)
 library(dataSPA)
-
-path <- "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
-
-ids <- str_extract(list.files(path), "[^.]+")
-# NOTE: NEED TO DEFINE COOKIE FOR THIS TO WORK
-res <- try(load('../../../../Code (Not for GitHub)/10_landing_page/cookie'), silent=TRUE)
-if (!(exists("cookie"))) {
-      stop("Must add a line of code above that defines your cookie.")
+if(!exists("reportdir")){
+  reportdir <- "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
 }
-om <- getData(type="om", cookie=cookie, age=90)
-#om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),]
+
+ids <- str_extract(list.files(reportdir), "[^.]+")
+
+if(!exists("om")){
+  # NOTE: NEED TO DEFINE COOKIE FOR THIS TO WORK
+  res <- try(load('../../../../Code (Not for GitHub)/10_landing_page/cookie'), silent=TRUE)
+  if (!(exists("cookie"))) {
+    stop("Must add a line of code above that defines your cookie.")
+  }
+  om <- getData(type="om", cookie=cookie, age=90)
+  #om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),]
+}
+
 titles <- NULL
 ppt <- NULL
 for (i in seq_along(ids)) {
@@ -36,7 +41,7 @@ for (i in seq_along(ids)) {
 }
 titles <- unlist(titles)
 
-links <- paste0("http://glf-proxy:8018/mar-spa/reports/", str_extract(list.files(path), "[^.]+"),".html")
+links <- paste0("http://glf-proxy:8018/mar-spa/reports/", str_extract(list.files(reportdir), "[^.]+"),".html")
 df <- data.frame(matrix(NA, ncol = 3, nrow = length(ids)))
 names(df) <- c("Title", "Fact Sheet", "PPT")
 df$Title <- titles
