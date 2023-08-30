@@ -61,7 +61,7 @@ if (!(length(index$project_id) == 0)) {
 
 #ID <- unique(index$project_id)
 if (file.exists(file)) {
-cat(highlightOverview(om=index,id=ID,file=file))
+  cat(highlightOverview(om=index,id=ID, file=file))
 } else {
   cat(paste0(unique(index$overview)))
 }
@@ -71,9 +71,9 @@ cat(highlightOverview(om=index,id=ID,file=file))
 <center>
 ```{r pressure, echo=FALSE, fig.cap=" ", out.width = '70%'}
 if (!(length(index$project_id) == 0)) {
-if (file.exists(file)) {
-highlightOverview(om=index, id=unique(index$project_id), legend=TRUE)
-}
+  if (file.exists(file)) {
+    highlightOverview(om=index, id=unique(index$project_id), legend=TRUE, file=file)
+  }
 }
 ```
 </img></center>
