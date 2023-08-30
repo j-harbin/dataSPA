@@ -34,7 +34,7 @@ theme <- unique(om$theme)
 theme <- theme[-which(theme == "0")]
 d <- data.frame(matrix(NA, ncol = 1, nrow = length(theme)))
 names(d) <- "Theme"
-path <- "theme/"
+path <- "themes/"
 links <- paste0(path, gsub(" ", "%20", theme),".html")
 d$Theme <- paste0('<a href="',links,'">',theme,'</a>')
 
