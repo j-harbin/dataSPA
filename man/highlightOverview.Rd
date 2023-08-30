@@ -4,7 +4,13 @@
 \alias{highlightOverview}
 \title{Highlight words in a project overview specific to EBFM framework}
 \usage{
-highlightOverview(om = NULL, id = NULL, legend = FALSE)
+highlightOverview(
+  om = NULL,
+  id = NULL,
+  legend = FALSE,
+  file =
+    "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+)
 }
 \arguments{
 \item{om}{a data frame likely from \code{getData(type='om')}}
@@ -12,6 +18,8 @@ highlightOverview(om = NULL, id = NULL, legend = FALSE)
 \item{id}{the project_id from the Project Planning Tool}
 
 \item{legend}{a boolean indicating if a legend should be returned}
+
+\item{file}{the word file describing the EBM framwork. Defaults to the IN folder}
 }
 \description{
 This function highlights text based on the 2023 Ecological Pillar Objectives.

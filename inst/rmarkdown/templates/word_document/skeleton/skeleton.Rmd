@@ -53,7 +53,12 @@ if (!(length(index$project_id) == 0)) {
   ID <- unique(index2$project_id)
 }
 if (!(length(index$project_id) == 0)) {
-file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+  if(dir.exists("//dcnsbiona01a")){
+    file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+  } else {
+    file <- "/home/rdaigle/Ecological Pillar Objectives 20 April 2023.docx"
+  }
+
 #ID <- unique(index$project_id)
 if (file.exists(file)) {
 cat(highlightOverview(om=index,id=ID))

@@ -5,6 +5,7 @@
 #' @param om a data frame likely from `getData(type='om')`
 #' @param id the project_id from the Project Planning Tool
 #' @param legend a boolean indicating if a legend should be returned
+#' @param file the word file describing the EBM framwork. Defaults to the IN folder
 #' @importFrom officer read_docx
 #' @importFrom officer docx_summary
 #' @importFrom tidyr separate_wider_delim
@@ -28,7 +29,7 @@
 #' @export
 #' @author Remi Daigle and Jaimie Harbin
 
-highlightOverview <- function(om=NULL, id=NULL, legend=FALSE) {
+highlightOverview <- function(om=NULL, id=NULL, legend=FALSE, file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx") {
   if (is.null(om)) {
     stop("In highlightOverview must provide an om argument, likely from getData(type='om')")
   }
@@ -38,7 +39,6 @@ highlightOverview <- function(om=NULL, id=NULL, legend=FALSE) {
 
   subpoint <- words <-  color <- NULL
 
-  file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
   if (file.exists(file)) {
   docx <- (read_docx(file) %>%
              docx_summary())[-c(1:4,18),]
