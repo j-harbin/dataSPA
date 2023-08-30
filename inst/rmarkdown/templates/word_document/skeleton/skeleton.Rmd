@@ -61,7 +61,7 @@ if (!(length(index$project_id) == 0)) {
 
 #ID <- unique(index$project_id)
 if (file.exists(file)) {
-cat(highlightOverview(om=index,id=ID))
+cat(highlightOverview(om=index,id=ID,file=file))
 } else {
   cat(paste0(unique(index$overview)))
 }
