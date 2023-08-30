@@ -979,7 +979,13 @@ plotSPA <-
           "theme",
           "activity_type",
           "functional_group",
-          "section_display"
+          "section_display",
+          "overview",
+          "objectives",
+          "status",
+          "lead_staff",
+          "deliverables",
+          "milestones"
         ),
         names(salary)
       ))) {

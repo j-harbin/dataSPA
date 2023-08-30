@@ -15,7 +15,9 @@ getData(
 }
 \arguments{
 \item{type}{the type of data that is wished to be extracted
-(either \code{om}, \code{om_date}, \code{salary}, or \code{salary_date}). The types that end in \verb{_date} will return the date of creation of a locally stored file.}
+(either \code{om}, \code{om_date}, \code{salary}, or \code{salary_date}).
+The types that end in \verb{_date} will return the date of creation
+of a locally stored file.}
 
 \item{cookie}{a sessionid and csrftoken from a Department of
 Fisheries and Oceans Canada (DFO) employee in the following
@@ -25,32 +27,26 @@ format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 If this is less than 1, no debugging is done. Otherwise,
 some functions will print debugging information.}
 
-\item{keep}{logical value to optionally keep \code{om} data on the hard disk. Default is FALSE and will not save data on the hard disk. Value of TRUE will save \code{om} to disk in \code{path} unless there is an \code{om} file already in \code{path} that was created more recently than \code{age} (number of days)}
+\item{keep}{logical value to optionally keep \code{om} data on the hard disk.
+Default is FALSE and will not save data on the hard disk. Value of TRUE
+will save \code{om} to disk in \code{path} unless there is an \code{om} file already in
+\code{path} that was created more recently than \code{age} (number of days)}
 
-\item{age}{maximum age in number of days that a file may be loaded. Set to 0 to download new data every time.}
+\item{age}{maximum age in number of days that a file may be loaded.
+Set to \code{0} to download new data every time.}
 
-\item{path}{path to save file. Default is in the shared IN folder}
+\item{path}{path to save file. Default is in the shared IN folder.}
 }
 \value{
-A) If \code{type} is \code{om}: a data frame containing the following
-information: project_id, category_display, project_year_id,        "amount"
-funding_source_display, id, category_type, description, fiscal_year,
-project_title, status,overview, objectives, deliverables. B) If \code{type} is \code{salary}:
-a data frame containing the following information: id, overtime_hours,
-smart_name, duration_weeks, level_display, funding_source_display,
-employee_type_display, project_year_id, project_id, fiscal_year,
-project_title, median_salary, salary_per_week, amount_week,
-amount_overtime, amount_total. C) If \code{type} is \code{om_date} or
-\code{salary_date} a string indicating the date in which the relevant
-data was stored locally
+dataframe
 }
 \description{
-If \code{type} is \code{om}, this function extracts data from the
-om-costs project planning tool (PPT) API (http://dmapps/api/ppt/om-costs/)
-and combines it with the fiscal year from the project_years API
-(http://dmapps/api/ppt/). If \code{type} is \code{salary}, this function
-obtains the data from the staff API (http://dmapps/api/ppt/staff/)
-and combines it with information from a Human Resources (HR) spreadsheet.
+If \code{type} is \code{om}, this function extracts information from the
+Project Planning Tool's (PPT) API to obtain information for
+the O&M investment into projects. If type is \code{salary},
+salary information pertaining to projects is obtained.
+For type is \code{om_date} or \code{salary_date}, information about
+the date the information was pulled is obtained.
 }
 \examples{
 \dontrun{

@@ -1,40 +1,36 @@
 #' Get required data from the PPT API
 #'
-#' If `type` is `om`, this function extracts data from the
-#' om-costs project planning tool (PPT) API (http://dmapps/api/ppt/om-costs/)
-#' and combines it with the fiscal year from the project_years API
-#' (http://dmapps/api/ppt/). If `type` is `salary`, this function
-#' obtains the data from the staff API (http://dmapps/api/ppt/staff/)
-#' and combines it with information from a Human Resources (HR) spreadsheet.
+#' If `type` is `om`, this function extracts information from the
+#' Project Planning Tool's (PPT) API to obtain information for
+#' the O&M investment into projects. If type is `salary`,
+#' salary information pertaining to projects is obtained.
+#' For type is `om_date` or `salary_date`, information about
+#' the date the information was pulled is obtained.
 #'
 #' @param type the type of data that is wished to be extracted
-#' (either `om`, `om_date`, `salary`, or `salary_date`). The types that end in `_date` will return the date of creation of a locally stored file.
+#' (either `om`, `om_date`, `salary`, or `salary_date`).
+#' The types that end in `_date` will return the date of creation
+#' of a locally stored file.
 #'
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
 #' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
 #'
-#' @param keep logical value to optionally keep `om` data on the hard disk. Default is FALSE and will not save data on the hard disk. Value of TRUE will save `om` to disk in `path` unless there is an `om` file already in `path` that was created more recently than `age` (number of days)
+#' @param keep logical value to optionally keep `om` data on the hard disk.
+#' Default is FALSE and will not save data on the hard disk. Value of TRUE
+#' will save `om` to disk in `path` unless there is an `om` file already in
+#' `path` that was created more recently than `age` (number of days)
 #'
-#' @param age maximum age in number of days that a file may be loaded. Set to 0 to download new data every time.
+#' @param age maximum age in number of days that a file may be loaded.
+#' Set to `0` to download new data every time.
 #'
-#' @param path path to save file. Default is in the shared IN folder
+#' @param path path to save file. Default is in the shared IN folder.
 #'
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
 #'  some functions will print debugging information.
-#' @return A) If `type` is `om`: a data frame containing the following
-#'  information: project_id, category_display, project_year_id,        "amount"
-#' funding_source_display, id, category_type, description, fiscal_year,
-#'project_title, status,overview, objectives, deliverables. B) If `type` is `salary`:
-#'  a data frame containing the following information: id, overtime_hours,
-#'  smart_name, duration_weeks, level_display, funding_source_display,
-#'  employee_type_display, project_year_id, project_id, fiscal_year,
-#'  project_title, median_salary, salary_per_week, amount_week,
-#'  amount_overtime, amount_total. C) If `type` is `om_date` or
-#'  `salary_date` a string indicating the date in which the relevant
-#'  data was stored locally
 #'
+#' @return dataframe
 #'
 #' @importFrom httr2 request
 #' @importFrom httr2 req_headers
@@ -68,6 +64,7 @@
 #' }
 
 getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+
   if (is.null(type)) {
     stop("Must provide a type argument of either 'om' or 'salary'")
   }
@@ -83,31 +80,41 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     message("type = ", type)
   }
 
-  if (type %in% c("om","om_date")) {
-    if(age>0){
+  # LOADING CACHED DATA
+  if (type %in% c("om", "om_date")) {
+    if (age > 0) {
       # Look for files in path, only return the most recent file the matches pattern
-      fn <- file.path(path,"dataSPA_om.rds")
-      if(file.exists(fn)){
+      fn <- file.path(path, "dataSPA_om.rds")
+      if (file.exists(fn)) {
         # Load file if more recent than `keep` days old
         d <- as.Date(file.info(fn)$mtime)
-        if((Sys.Date()-d)<age){
-          if(type=="om"){
+        if ((Sys.Date() - d) < age) {
+          if (type == "om") {
             om <- readRDS(file = fn)
-            #message(paste0("loading file from disk(",fn,")"))
-
             return(om)
-          } else if(type=="om_date"){
+          } else if (type == "om_date") {
             #message(paste0("returning date from file on disk(",fn,")"))
             return(d)
           }
 
         }
-      }  else if(type=="om_date"){
-        stop(paste("File (",fn,") does not exist. User must first save om type AND be on the VPN. See examples in ?getData for how to fix this."))
-      }
-    }
-    # Obtaining OM data from the API
-    req <- httr2::request("http://dmapps/api/ppt/om-costs")
+      }  else if (type == "om_date") {
+        stop(
+          paste(
+            "File (",
+            fn,
+            ") does not exist. User must first save om type AND be on the VPN. See examples in ?getData for how to fix this."
+          ))}}}
+
+  # 1. LISTING LINKS
+
+  links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff")
+
+  API_DATA <- NULL
+
+  for (i in seq_along(links)) {
+
+    req <- httr2::request(links[i])
 
     # Add custom headers
     req <- req %>% httr2::req_headers("Cookie" = cookie)
@@ -117,7 +124,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     req <- req %>% httr2::req_retry(max_tries = 5)
 
     # Get the requested data by querying the API
-    # Error occurs here if cookie is out of date
     resp <- try(httr2::req_perform(req), silent=TRUE)
 
     if (inherits(resp, "try-error")) {
@@ -139,266 +145,162 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     # Check if the next page is not null (end of pages) before extract the data from
     # next page.
     while (!is.null(next_page)) {
-
       # Modifying API Call
       req <- httr2::request(next_page)
-
       # Add custom headers
       req <- req %>% httr2::req_headers("Cookie" = cookie)
       req <- req %>% httr2::req_headers("Accept" = "application/json")
-
       # Automatically retry if the request fails
       req <- req %>% httr2::req_retry(max_tries = 5)
-
       # Get the requested data by querying the API
       resp <- httr2::req_perform(req)
-
       # Read the returned data as a JSON file
       page_data <- httr2::resp_body_json(resp)
-
       # Add current page data to full list
       api_data <- c(api_data, page_data$results)
-
       cat(paste0('Number of API records = ', length(api_data), '\n'))
 
       # Get the information about the next page in the API results
       next_page <- page_data$`next`
       cat(paste0(next_page, '\n'))
-
     }
 
-    # Fix NULL descriptions
-    for (i in seq_along(api_data)) {
-      if (length(api_data[[i]]$description) == 0) {
-        api_data[[i]]$description <- 0
-      } else if (is.na(api_data[[i]]$description)) {
-        api_data[[i]]$description <- 0
-      }
+    API_DATA[[i]] <- api_data
+  }
+  names(API_DATA) <- links
+
+  # LINK 1: Dealing with "http://dmapps/api/ppt/om-costs"
+  api_data <- API_DATA[[1]]
+
+  # Fix NULL descriptions
+  for (i in seq_along(api_data)) {
+    if (length(api_data[[i]]$description) == 0) {
+      api_data[[i]]$description <- 0
+    } else if (is.na(api_data[[i]]$description)) {
+      api_data[[i]]$description <- 0
     }
+  }
 
-    p <- NULL
-    for (i in seq_along(api_data)) {
-      #message("This is for ", i)
-      p[[i]] <- as.data.frame(api_data[[i]][c("project_id", "category_display", "project_year_id", "amount", "funding_source_display", "id", "category_type", "description")])
+  p <- NULL
+  for (i in seq_along(api_data)) {
+    p[[i]] <- as.data.frame(api_data[[i]][c("project_id", "category_display", "project_year_id", "amount", "funding_source_display", "id", "category_type", "description")])
+  }
+
+  if (type=="om") {
+    om <- do.call(rbind, p)
+  }
+
+  ## LINK 2: Dealing with "http://dmapps/api/ppt/project-years"
+  api_data2 <- API_DATA[[2]]
+
+
+  ## LINK 3: Dealing with "http://dmapps/api/ppt/activities-full/"
+  api_data3 <- API_DATA[[3]]
+
+
+  ## Putting "http://dmapps/api/ppt/activities-full/" into a data frame
+
+  deliv <- lapply(api_data3, function(x) x[c("type_display", "description")])
+  titles <- lapply(api_data3, function(x) x$project_year_obj)
+  Dyears <- lapply(titles, function(x) x$display_name)
+  titles <- lapply(titles, function(x) x$project_title)
+  names <- lapply(api_data3, function(x) x$name)
+  ddf <- NULL
+  for (i in seq_along(deliv)){
+    if (is.null(deliv[[i]]$description)) {
+      deliv[[i]]$description <- 0
     }
-
-    om <- do.call(rbind, p) # This is the same as om. It does not have fiscal year.
-
-    ## 2. OBTAIN FISCAL YEAR DATA FROM API
-
-    # Initializing API Call
-    req2 <- httr2::request("http://dmapps/api/ppt/project-years")
-
-    # Add custom headers
-    req2 <- req2 %>% httr2::req_headers("Cookie" = cookie)
-    req2 <- req2 %>% httr2::req_headers("Accept" = "application/json")
-
-    # Automatically retry if the request fails
-    req2 <- req2 %>% httr2::req_retry(max_tries = 5)
-
-    # Get the requested data by querying the API
-    resp2 <- httr2::req_perform(req2)
-
-    # Read the returned data as a JSON file
-    page_data2 <- httr2::resp_body_json(resp2)
-
-    # Create a list to hold the list of full API results
-    api_data2 <- page_data2$results
-
-    # Get the information about the next page in the API results
-    next_page2 <- page_data2$`next`
-    cat(paste0(next_page2, '\n'))
-
-    cat(paste0('Number of API records = ', length(api_data2), '\n'))
-
-    # Check if the next page is not null (end of pages) before extract the data from
-    # next page.
-    while (!is.null(next_page2)) {
-
-      # Modifying API Call
-      req2 <- httr2::request(next_page2)
-
-      # Add custom headers
-      req2 <- req2 %>% httr2::req_headers("Cookie" = cookie)
-      req2 <- req2 %>% httr2::req_headers("Accept" = "application/json")
-
-      # Automatically retry if the request fails
-      req2 <- req2 %>% httr2::req_retry(max_tries = 5)
-
-      # Get the requested data by querying the API
-      resp2 <- httr2::req_perform(req2)
-
-      # Read the returned data as a JSON file
-      page_data2 <- httr2::resp_body_json(resp2)
-
-      # Add current page data to full list
-      api_data2 <- c(api_data2, page_data2$results)
-
-      cat(paste0('Number of API records = ', length(api_data2), '\n'))
-
-      # Get the information about the next page in the API results
-      next_page2 <- page_data2$`next`
-      cat(paste0(next_page2, '\n'))
-
-    }
-
-    #  OBTAINING MILESTONE AND DELIVERABLE ACTIVITIES DATA
-    # Initializing API Call
-    req3 <- httr2::request("http://dmapps/api/ppt/activities-full/")
-
-    # Add custom headers
-    req3 <- req3 %>% httr2::req_headers("Cookie" = cookie)
-    req3 <- req3 %>% httr2::req_headers("Accept" = "application/json")
-
-    # Automatically retry if the request fails
-    req3 <- req3 %>% httr2::req_retry(max_tries = 5)
-
-    # Get the requested data by querying the API
-    resp3 <- httr2::req_perform(req3)
-
-    # Read the returned data as a JSON file
-    page_data3 <- httr2::resp_body_json(resp3)
-
-    # Create a list to hold the list of full API results
-    api_data3 <- page_data3$results
-
-    # Get the information about the next page in the API results
-    next_page3 <- page_data3$`next`
-    cat(paste0(next_page3, '\n'))
-
-    cat(paste0('Number of API records = ', length(api_data3), '\n'))
-
-    # Check if the next page is not null (end of pages) before extract the data from
-    # next page.
-    while (!is.null(next_page3)) {
-
-      # Modifying API Call
-      req3 <- httr2::request(next_page3)
-
-      # Add custom headers
-      req3 <- req3 %>% httr2::req_headers("Cookie" = cookie)
-      req3 <- req3 %>% httr2::req_headers("Accept" = "application/json")
-
-      # Automatically retry if the request fails
-      req3 <- req3 %>% httr2::req_retry(max_tries = 5)
-
-      # Get the requested data by querying the API
-      resp3 <- httr2::req_perform(req3)
-
-      # Read the returned data as a JSON file
-      page_data3 <- httr2::resp_body_json(resp3)
-
-      # Add current page data to full list
-      api_data3 <- c(api_data3, page_data3$results)
-
-      cat(paste0('Number of API records = ', length(api_data3), '\n'))
-
-      # Get the information about the next page in the API results
-      next_page3 <- page_data3$`next`
-      cat(paste0(next_page3, '\n'))
-
-    }
-    deliv <- lapply(api_data3, function(x) x[c("type_display", "description")])
-    titles <- lapply(api_data3, function(x) x$project_year_obj)
-    Dyears <- lapply(titles, function(x) x$display_name)
-    titles <- lapply(titles, function(x) x$project_title)
-    names <- lapply(api_data3, function(x) x$name)
-    ddf <- NULL
-    for (i in seq_along(deliv)){
-      if (is.null(deliv[[i]]$description)) {
-        deliv[[i]]$description <- 0
-      }
     DF <- c(deliv[[i]], titles[[i]], Dyears[[i]], names[[i]])
     names(DF) <- c("type", "description", "title", "year", "name")
     ddf[[i]] <- as.data.frame(DF)
-    }
-    DDF <- do.call(rbind, ddf)
-    # If no description, fill in name
-    DDF$description[which(DDF$description == "")] <- DDF$name[which(DDF$description == "")]
-    #1. isolate specific title. #2. isolate year. #3. Combine deliverables. #4. Combine milestones
-    DELIVERABLES <- vector(mode = "list", length(unique(DDF$title)))
-    MILESTONES <- vector(mode = "list", length(unique(DDF$title)))
+  }
+  DDF <- do.call(rbind, ddf)
+  # If no description, fill in name
+  DDF$description[which(DDF$description == "")] <- DDF$name[which(DDF$description == "")]
+  #1. isolate specific title. #2. isolate year. #3. Combine deliverables. #4. Combine milestones
+  DELIVERABLES <- vector(mode = "list", length(unique(DDF$title)))
+  MILESTONES <- vector(mode = "list", length(unique(DDF$title)))
 
-    for (i in seq_along(unique(DDF$title))) {
-      d <- DDF[which(DDF$title == unique(DDF$title)[[i]]),] #1
-      for (j in seq_along(unique(d$year))) {
+  for (i in seq_along(unique(DDF$title))) {
+    d <- DDF[which(DDF$title == unique(DDF$title)[[i]]),] #1
+    for (j in seq_along(unique(d$year))) {
       d2 <- d[which(d$year == unique(d$year)[[j]]),] #2
       DELIV <- d2[which(d2$type == "Deliverable"),] #3
       MS <- d2[which(d2$type == "Milestone"),] #4
       DELIVERABLES[[i]][j] <- paste0(unique(DELIV$description), collapse="|-----|")
       MILESTONES[[i]][j] <- paste0(MS$description, collapse="|-----|")
-      }
     }
-    names(DELIVERABLES) <- unique(DDF$title)
-    names(MILESTONES) <- unique(DDF$title)
-    t <- lapply(api_data2, function(x) x$project$years)
-
-    # Add objectives and overview
-    p <- lapply(api_data2, function(x) x$project)
-    j <- lapply(api_data2, function(x) x$project$lead_staff)
+  }
+  names(DELIVERABLES) <- unique(DDF$title)
+  names(MILESTONES) <- unique(DDF$title)
 
 
-    for (i in seq_along(p)) {
-      if (length(p[[i]]$overview) == 0) {
-        p[[i]]$overview <- 0
-      } else if (is.na(p[[i]]$overview)) {
-        p[[i]]$overview <- 0
-      }
 
-      if (length(p[[i]]$objectives) == 0) {
-        p[[i]]$objectives <- as.numeric(0)
-      } else if (is.na(p[[i]]$objectives)) {
-        p[[i]]$objectives <- as.numeric(0)
-      }
+  ## Putting "http://dmapps/api/ppt/project-years" into a data frame
 
-      if (length(p[[i]]$activity_type) == 0) {
-        p[[i]]$activity_type <- as.numeric(0)
-      } else if (is.na(p[[i]]$activity_type)) {
-        p[[i]]$activity_type <- as.numeric(0)
-      }
+  t <- lapply(api_data2, function(x) x$project$years)
 
+  # Add objectives and overview
+  p <- lapply(api_data2, function(x) x$project)
+  j <- lapply(api_data2, function(x) x$project$lead_staff)
 
+  for (i in seq_along(p)) {
+    if (length(p[[i]]$overview) == 0) {
+      p[[i]]$overview <- 0
+    } else if (is.na(p[[i]]$overview)) {
+      p[[i]]$overview <- 0
     }
 
-    lov <- list()
-    for (i in 1:length(p))  {
-      lov <- c(lov, p[[i]])
+    if (length(p[[i]]$objectives) == 0) {
+      p[[i]]$objectives <- as.numeric(0)
+    } else if (is.na(p[[i]]$objectives)) {
+      p[[i]]$objectives <- as.numeric(0)
     }
 
-
-    for (i in seq_along(p)) {
-      if (length(j[[i]]) == 0) {
-        j[[i]] <- 0
-      } else if (is.na(j[[i]])) {
-        j[[i]]
-      }
-
+    if (length(p[[i]]$activity_type) == 0) {
+      p[[i]]$activity_type <- as.numeric(0)
+    } else if (is.na(p[[i]]$activity_type)) {
+      p[[i]]$activity_type <- as.numeric(0)
     }
+  }
 
-    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group", "activity_type")]))
+  lov <- list()
+  for (i in 1:length(p))  {
+    lov <- c(lov, p[[i]])
+  }
 
-    for (i in seq_along(pp)) {
-      pp[[i]]$lead_staff <- j[[i]]
+  for (i in seq_along(p)) {
+    if (length(j[[i]]) == 0) {
+      j[[i]] <- 0
+    } else if (is.na(j[[i]])) {
+      j[[i]]
     }
-    ppp <- do.call(rbind, pp)
+  }
+  pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group", "activity_type")]))
 
-    lov <- list()
-    for (i in 1:length(p))  {
-      lov <- c(lov, p[[i]])
-    }
+  for (i in seq_along(pp)) {
+    pp[[i]]$lead_staff <- j[[i]]
+  }
+  ppp <- do.call(rbind, pp)
 
-    listofvectors <- list()
-    for (i in 1:length(t))  {
-      listofvectors <- c(listofvectors, t[[i]])
-    }
+  lov <- list()
+  for (i in 1:length(p))  {
+    lov <- c(lov, p[[i]])
+  }
 
-    tt <- lapply(listofvectors, function(x) as.data.frame(x[c("display_name", "id", "project_title", "status_display")]))
+  listofvectors <- list()
+  for (i in 1:length(t))  {
+    listofvectors <- c(listofvectors, t[[i]])
+  }
 
-    ttt <- do.call(rbind, tt)
+  tt <- lapply(listofvectors, function(x) as.data.frame(x[c("display_name", "id", "project_title", "status_display")]))
 
-    # CONCLUSION: id from ttt is equal to project_year_id in om
-    # All om$project_year_id are in ttt$id
-    # Adding fiscal year to om data
+  ttt <- do.call(rbind, tt)
+
+  # CONCLUSION: id from ttt is equal to project_year_id in om
+  # All om$project_year_id are in ttt$id
+  # Adding fiscal year to om data
+  if (type == "om") {
     for (i in seq_along(om$project_year_id)) {
       replace <- ttt$display_name[which(ttt$id == om$project_year_id[i])][1]
       replace2 <- ttt$project_title[which(ttt$id == om$project_year_id[i])][1]
@@ -426,142 +328,76 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     om$activity_type[which(om$activity_type == 3)] <- "Other"
     om$activity_type[which(om$activity_type == 4)] <- "Data Management"
     om$activity_type[which(om$activity_type == 5)] <- "Assessment"
+  }
 
+  ## LINK 4: GETTING THEME DIFFERENTLY
+  # Theme
+  # Obtaining OM data from the API
+  req <- httr2::request("http://dmapps/api/ppt/themes/")
+  # Add custom headers
+  req <- req %>% httr2::req_headers("Cookie" = cookie)
+  req <- req %>% httr2::req_headers("Accept" = "application/json")
 
+  # Automatically retry if the request fails
+  req <- req %>% httr2::req_retry(max_tries = 5)
+  # Get the requested data by querying the API
+  resp <- httr2::req_perform(req)
+  # Read the returned data as a JSON file
+  page_data <- httr2::resp_body_json(resp)
+  themeNumbers <- unlist(lapply(page_data, function(x) x$id))
+  themeNames <- unlist(lapply(page_data, function(x) x$name))
 
-
-    # Theme
-
-    # Obtaining OM data from the API
-    req <- httr2::request("http://dmapps/api/ppt/themes/")
-
-
-
+  # Now obtain which project_ids have each theme
+  # Obtaining OM data from the API
+  project_ids <- NULL
+  for (i in seq_along(themeNumbers)) {
+    req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
     # Add custom headers
     req <- req %>% httr2::req_headers("Cookie" = cookie)
     req <- req %>% httr2::req_headers("Accept" = "application/json")
-
-
-
     # Automatically retry if the request fails
     req <- req %>% httr2::req_retry(max_tries = 5)
-
-
-
     # Get the requested data by querying the API
     resp <- httr2::req_perform(req)
-
-
 
     # Read the returned data as a JSON file
     page_data <- httr2::resp_body_json(resp)
 
+    # Create a list to hold the list of full API results
+    api_data <- page_data$results
 
+    # Get the information about the next page in the API results
+    next_page <- page_data$`next`
+    cat(paste0(next_page, '\n'))
+    cat(paste0('Number of API records = ', length(api_data), '\n'))
 
-    themeNumbers <- unlist(lapply(page_data, function(x) x$id))
-    themeNames <- unlist(lapply(page_data, function(x) x$name))
-
-
-
-    # Now obtain which project_ids have each theme
-
-
-
-
-    # Obtaining OM data from the API
-    project_ids <- NULL
-
-
-
-    for (i in seq_along(themeNumbers)) {
-      req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
-
-
-
+    # Check if the next page is not null (end of pages) before extract the data from
+    # next page.
+    while (!is.null(next_page)) {
+      # Modifying API Call
+      req <- httr2::request(next_page)
       # Add custom headers
       req <- req %>% httr2::req_headers("Cookie" = cookie)
       req <- req %>% httr2::req_headers("Accept" = "application/json")
-
-
-
       # Automatically retry if the request fails
       req <- req %>% httr2::req_retry(max_tries = 5)
-
-
-
       # Get the requested data by querying the API
       resp <- httr2::req_perform(req)
-
-
-
       # Read the returned data as a JSON file
       page_data <- httr2::resp_body_json(resp)
 
-
-
-      # Create a list to hold the list of full API results
-      api_data <- page_data$results
-
-
+      # Add current page data to full list
+      api_data <- c(api_data, page_data$results)
+      cat(paste0('Number of API records = ', length(api_data), '\n'))
 
       # Get the information about the next page in the API results
       next_page <- page_data$`next`
       cat(paste0(next_page, '\n'))
-
-
-
-      cat(paste0('Number of API records = ', length(api_data), '\n'))
-
-
-
-      # Check if the next page is not null (end of pages) before extract the data from
-      # next page.
-      while (!is.null(next_page)) {
-
-
-
-        # Modifying API Call
-        req <- httr2::request(next_page)
-
-
-
-        # Add custom headers
-        req <- req %>% httr2::req_headers("Cookie" = cookie)
-        req <- req %>% httr2::req_headers("Accept" = "application/json")
-
-
-
-        # Automatically retry if the request fails
-        req <- req %>% httr2::req_retry(max_tries = 5)
-
-
-
-        # Get the requested data by querying the API
-        resp <- httr2::req_perform(req)
-
-
-
-        # Read the returned data as a JSON file
-        page_data <- httr2::resp_body_json(resp)
-
-
-
-        # Add current page data to full list
-        api_data <- c(api_data, page_data$results)
-
-
-
-        cat(paste0('Number of API records = ', length(api_data), '\n'))
-
-
-
-        # Get the information about the next page in the API results
-        next_page <- page_data$`next`
-        cat(paste0(next_page, '\n'))
-      }
-      project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
     }
-    names(project_ids) <- themeNames
+    project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
+  }
+  names(project_ids) <- themeNames
+  if (type == "om") {
     om$theme <- 0
     for (i in seq_along(project_ids)) {
       for (j in seq_along(project_ids[[i]])) {
@@ -576,149 +412,94 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       value <-
         om[which(om$project_title == unique(DDF$title)[j]), ] # Look at one project
       d <- DDF[which(DDF$title == unique(DDF$title)[j]),]
-        for (k in seq_along(unique(d$year))) {
-          value2 <-
-            value[which(value$fiscal_year == unique(d$year)[k]), ] # Look at one year
-          om$deliverables[which(
-            om$project_title == unique(value2$project_title) &
-              om$fiscal_year == unique(d$year)[k]
-          )] <- DELIVERABLES[[j]][k]
-          om$milestones[which(
-            om$project_title == unique(value2$project_title) &
-              om$fiscal_year == unique(d$year)[k]
-          )] <- MILESTONES[[j]][k]
+      for (k in seq_along(unique(d$year))) {
+        value2 <-
+          value[which(value$fiscal_year == unique(d$year)[k]), ] # Look at one year
+        om$deliverables[which(
+          om$project_title == unique(value2$project_title) &
+            om$fiscal_year == unique(d$year)[k]
+        )] <- DELIVERABLES[[j]][k]
+        om$milestones[which(
+          om$project_title == unique(value2$project_title) &
+            om$fiscal_year == unique(d$year)[k]
+        )] <- MILESTONES[[j]][k]
       }
     }
     om$milestones[which(om$milestones == "")] <- 0 # This means there was no milestones
     om$deliverables[which(om$deliverables == "")] <- 0
-
-    if(keep){
-      fn <- file.path(path,"dataSPA_om.rds")
-      if(file.exists(fn)){
-        date <- as.Date(file.info(fn)$mtime)
-        file.rename(fn,
-                    file.path(path,paste0("dataSPA_om_",date,".rds")))
-        message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
-      }
-
-      saveRDS(om,file = fn)
-    }
-
     return(om)
-  } else if (type %in% c("salary","salary_date")) {
-    salaries <- NULL
-    load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
+  }
 
-    if(age>0){
-      # Look for files in path, only return the file the matches pattern
-      fn <- file.path(path,"dataSPA_SAL.rds")
+  if(keep){
+    fn <- file.path(path,"dataSPA_om.rds")
+    if(file.exists(fn)){
+      date <- as.Date(file.info(fn)$mtime)
+      file.rename(fn,
+                  file.path(path,paste0("dataSPA_om_",date,".rds")))
+      message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
+    }
 
-      if(file.exists(fn)){
-        # Load file if more recent than `keep` days old
-        d <- as.Date(file.info(fn)$mtime)
-        if((Sys.Date()-d)<age){
-          if(type=="salary"){
-            SAL <- readRDS(file = fn)
-            message(paste0("loading file from disk(",fn,")"))
-            return(SAL)
-          } else if(type=="salary_date"){
-            message(paste0("returning date from file on disk(",fn,")"))
-            return(d)
-          }
+    saveRDS(om,file = fn)
+  }
 
+  ## WORKING WITH SALARY DATA FRAME
+  salaries <- NULL
+  load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
+
+  if(age>0){
+    # Look for files in path, only return the file the matches pattern
+    fn <- file.path(path,"dataSPA_SAL.rds")
+
+    if(file.exists(fn)){
+      # Load file if more recent than `keep` days old
+      d <- as.Date(file.info(fn)$mtime)
+      if((Sys.Date()-d)<age){
+        if(type=="salary"){
+          SAL <- readRDS(file = fn)
+          message(paste0("loading file from disk(",fn,")"))
+          return(SAL)
+        } else if(type=="salary_date"){
+          message(paste0("returning date from file on disk(",fn,")"))
+          return(d)
         }
-      } else if(type=="salary_date"){
-        stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
+
       }
+    } else if(type=="salary_date"){
+      stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
+    }
+  }
+
+  ## DEALING WITH "http://dmapps/api/ppt/staff"
+  api_data3 <- API_DATA[[4]]
+
+  j <- lapply(api_data3, function(x) x[c('id', 'overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
+
+  for (i in seq_along(j)) {
+    if (length(j[[i]]$overtime_hours) == 0) {
+      j[[i]]$overtime_hours <- 0
+    } else if (!(is.finite(j[[i]]$overtime_hours))) {
+      j[[i]]$overtime_hours <- 0
     }
 
-    # Initializing API Call
-    req3 <- request("http://dmapps/api/ppt/staff")
-
-    # Add custom headers
-    req3 <- req3 %>% req_headers("Cookie" = cookie)
-    req3 <- req3 %>% req_headers("Accept" = "application/json")
-
-    # Automatically retry if the request fails
-    req3 <- req3 %>% req_retry(max_tries = 5)
-
-    # Get the requested data by querying the API
-    resp3 <- try(req_perform(req3), silent=TRUE)
-
-    if (inherits(resp3, "try-error")) {
-      stop("Make sure 1) you are on the VPN, 2) Your cookie is up to date, and 3) your cookie is in the following format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
+    if (length(j[[i]]$duration_weeks) == 0) {
+      j[[i]]$duration_weeks <- 0
+    } else if (!(is.finite(j[[i]]$duration_weeks))) {
+      j[[i]]$duration_weeks_weeks <- 0
     }
-
-    # Read the returned data as a JSON file
-    page_data3 <- resp_body_json(resp3)
-
-    # Create a list to hold the list of full API results
-    api_data3 <- page_data3$results
-
-    # Get the information about the next page in the API results
-    next_page3 <- page_data3$`next`
-    cat(paste0(next_page3, '\n'))
-
-    cat(paste0('Number of API records = ', length(api_data3), '\n'))
-
-    # Check if the next page is not null (end of pages) before extract the data from
-    # next page.
-    while (!is.null(next_page3)) {
-
-      # Modifying API Call
-      req3 <- request(next_page3)
-
-      # Add custom headers
-      req3 <- req3 %>% req_headers("Cookie" = cookie)
-      req3 <- req3 %>% req_headers("Accept" = "application/json")
-
-      # Automatically retry if the request fails
-      req3 <- req3 %>% req_retry(max_tries = 5)
-
-      # Get the requested data by querying the API
-      resp3 <- req_perform(req3)
-
-      # Read the returned data as a JSON file
-      page_data3 <- resp_body_json(resp3)
-
-      # Add current page data to full list
-      api_data3 <- c(api_data3, page_data3$results)
-
-      cat(paste0('Number of API records = ', length(api_data3), '\n'))
-
-      # Get the information about the next page in the API results
-      next_page3 <- page_data3$`next`
-      cat(paste0(next_page3, '\n'))
+    if (length(j[[i]]$level_display) == 0) {
+      j[[i]]$level_display <- 0
+    } else if (is.na(j[[i]]$level_display)) {
+      j[[i]]$level_display <- 0
     }
+  }
 
-    j <- lapply(api_data3, function(x) x[c('id', 'overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
+  list <- NULL
+  for (i in seq_along(j)) {
+    #message("This is for ",i)
+    list[[i]] <- as.data.frame(j[[i]])
+  }
 
-
-    for (i in seq_along(j)) {
-      if (length(j[[i]]$overtime_hours) == 0) {
-        j[[i]]$overtime_hours <- 0
-      } else if (!(is.finite(j[[i]]$overtime_hours))) {
-        j[[i]]$overtime_hours <- 0
-      }
-
-      if (length(j[[i]]$duration_weeks) == 0) {
-        j[[i]]$duration_weeks <- 0
-      } else if (!(is.finite(j[[i]]$duration_weeks))) {
-        j[[i]]$duration_weeks_weeks <- 0
-      }
-      if (length(j[[i]]$level_display) == 0) {
-        j[[i]]$level_display <- 0
-      } else if (is.na(j[[i]]$level_display)) {
-        j[[i]]$level_display <- 0
-      }
-    }
-
-    list <- NULL
-    for (i in seq_along(j)) {
-      #message("This is for ",i)
-      list[[i]] <- as.data.frame(j[[i]])
-    }
-
+  if (type == "salary") {
     SAL <- do.call(rbind, list)
 
     ## Obtain information from project_year_obj
@@ -808,7 +589,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           jj <- j[which(mins == dw),] # Takes the appropriate year
         }
       }
-      #JAIM
       if (is.na(max(excelyear))) {
         stop("This stopped at ", i, " and fundinglevel =", fundingLevel[i])
       }
@@ -821,187 +601,23 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
     SAL <- SAL[-bad,]
-    # Theme
-
-    # Obtaining OM data from the API
-    req <- httr2::request("http://dmapps/api/ppt/themes/")
-
-    # Add custom headers
-    req <- req %>% httr2::req_headers("Cookie" = cookie)
-    req <- req %>% httr2::req_headers("Accept" = "application/json")
-
-    # Automatically retry if the request fails
-    req <- req %>% httr2::req_retry(max_tries = 5)
-
-    # Get the requested data by querying the API
-    resp <- httr2::req_perform(req)
-
-    # Read the returned data as a JSON file
-    page_data <- httr2::resp_body_json(resp)
-
-    themeNumbers <- unlist(lapply(page_data, function(x) x$id))
-    themeNames <- unlist(lapply(page_data, function(x) x$name))
-
-    # Now obtain which project_ids have each theme
-
-    # Obtaining OM data from the API
-    project_ids <- NULL
-
-    for (i in seq_along(themeNumbers)) {
-      req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
-
-      # Add custom headers
-      req <- req %>% httr2::req_headers("Cookie" = cookie)
-      req <- req %>% httr2::req_headers("Accept" = "application/json")
-
-      # Automatically retry if the request fails
-      req <- req %>% httr2::req_retry(max_tries = 5)
-
-      # Get the requested data by querying the API
-      resp <- httr2::req_perform(req)
-
-      # Read the returned data as a JSON file
-      page_data <- httr2::resp_body_json(resp)
-
-      # Create a list to hold the list of full API results
-      api_data <- page_data$results
-
-      # Get the information about the next page in the API results
-      next_page <- page_data$`next`
-      cat(paste0(next_page, '\n'))
-
-      cat(paste0('Number of API records = ', length(api_data), '\n'))
-
-      # Check if the next page is not null (end of pages) before extract the data from
-      # next page.
-      while (!is.null(next_page)) {
-
-        # Modifying API Call
-        req <- httr2::request(next_page)
-
-        # Add custom headers
-        req <- req %>% httr2::req_headers("Cookie" = cookie)
-        req <- req %>% httr2::req_headers("Accept" = "application/json")
-
-        # Automatically retry if the request fails
-        req <- req %>% httr2::req_retry(max_tries = 5)
-
-        # Get the requested data by querying the API
-        resp <- httr2::req_perform(req)
-
-        # Read the returned data as a JSON file
-        page_data <- httr2::resp_body_json(resp)
-
-        # Add current page data to full list
-        api_data <- c(api_data, page_data$results)
-
-        cat(paste0('Number of API records = ', length(api_data), '\n'))
-
-        # Get the information about the next page in the API results
-        next_page <- page_data$`next`
-        cat(paste0(next_page, '\n'))
-      }
-      project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
-    }
-    names(project_ids) <- themeNames
-
-    SAL$theme <- 0
-    for (i in seq_along(project_ids)) {
-      for (j in seq_along(project_ids[[i]])) {
-        SAL$theme[which(SAL$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
-      }
-    }
-
-    # Adding activity_type
-    # Initializing API Call
-    req2 <- httr2::request("http://dmapps/api/ppt/project-years")
-
-    # Add custom headers
-    req2 <- req2 %>% httr2::req_headers("Cookie" = cookie)
-    req2 <- req2 %>% httr2::req_headers("Accept" = "application/json")
-
-    # Automatically retry if the request fails
-    req2 <- req2 %>% httr2::req_retry(max_tries = 5)
-
-    # Get the requested data by querying the API
-    resp2 <- httr2::req_perform(req2)
-
-    # Read the returned data as a JSON file
-    page_data2 <- httr2::resp_body_json(resp2)
-
-    # Create a list to hold the list of full API results
-    api_data2 <- page_data2$results
-
-    # Get the information about the next page in the API results
-    next_page2 <- page_data2$`next`
-    cat(paste0(next_page2, '\n'))
-
-    cat(paste0('Number of API records = ', length(api_data2), '\n'))
-
-    # Check if the next page is not null (end of pages) before extract the data from
-    # next page.
-    while (!is.null(next_page2)) {
-
-      # Modifying API Call
-      req2 <- httr2::request(next_page2)
-
-      # Add custom headers
-      req2 <- req2 %>% httr2::req_headers("Cookie" = cookie)
-      req2 <- req2 %>% httr2::req_headers("Accept" = "application/json")
-
-      # Automatically retry if the request fails
-      req2 <- req2 %>% httr2::req_retry(max_tries = 5)
-
-      # Get the requested data by querying the API
-      resp2 <- httr2::req_perform(req2)
-
-      # Read the returned data as a JSON file
-      page_data2 <- httr2::resp_body_json(resp2)
-
-      # Add current page data to full list
-      api_data2 <- c(api_data2, page_data2$results)
-
-      cat(paste0('Number of API records = ', length(api_data2), '\n'))
-
-      # Get the information about the next page in the API results
-      next_page2 <- page_data2$`next`
-      cat(paste0(next_page2, '\n'))
-
-    }
-    p <- lapply(api_data2, function(x) x$project)
-
-  for (i in seq_along(p)) {
-    if (length(p[[i]]$activity_type) == 0) {
-      p[[i]]$activity_type <- as.numeric(0)
-    } else if (is.na(p[[i]]$activity_type)) {
-      p[[i]]$activity_type <- as.numeric(0)
-    }
-
-    if (length(p[[i]]$title) == 0) {
-      p[[i]]$title <- as.numeric(0)
-    } else if (is.na(p[[i]]$title)) {
-      p[[i]]$title <- as.numeric(0)
-    }
-#
-#     if (length(p[[i]]$function_group) == 0) {
-#       p[[i]]$functional_group <- as.numeric(0)
-#     } else if (is.na(p[[i]]$functional_group)) {
-#       p[[i]]$functional_group <- as.numeric(0)
-#     }
-
   }
 
-    pp <- lapply(p, function(x) as.data.frame(x[c("title", "activity_type", "functional_group", "section_display")]))
-    ppp <- do.call(rbind, pp)
-
+  SAL$theme <- 0
+  for (i in seq_along(project_ids)) {
+    for (j in seq_along(project_ids[[i]])) {
+      SAL$theme[which(SAL$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
+    }
+  }
+  if (type == "salary") {
     SAL$activity_type <- 0
     SAL$functional_group <- 0
     SAL$section_display <- 0
     for (i in seq_along(ppp$title)) {
       if (any(SAL$project_title == ppp$title[i])) {
-      SAL$activity_type[which(SAL$project_title == ppp$title[i])] <- ppp$activity_type[i]
-      SAL$functional_group[which(SAL$project_title == ppp$title[i])] <- ppp$functional_group[i]
-      SAL$section_display[which(SAL$project_title == ppp$title[i])] <- ppp$section_display[i]
+        SAL$activity_type[which(SAL$project_title == ppp$title[i])] <- ppp$activity_type[i]
+        SAL$functional_group[which(SAL$project_title == ppp$title[i])] <- ppp$functional_group[i]
+        SAL$section_display[which(SAL$project_title == ppp$title[i])] <- ppp$section_display[i]
       }
     }
 
@@ -1012,22 +628,72 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
     SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
     SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
-
-    # Change IT-03 to CS-03
-    #SAL$level_display[which(grepl("CS--03", SAL$level_display))] <- "IT--03"
-
-    if(keep){
-      fn <- file.path(path,"dataSPA_SAL.rds")
-      if(file.exists(fn)){
-        date <- as.Date(file.info(fn)$mtime)
-        file.rename(fn,
-                    file.path(path,paste0("dataSPA_SAL_",date,".rds")))
-        message(paste0("Renaming the pre-existing dataSPA_SAL.rds to: ",paste0("dataSPA_SAL_",date,".rds")))
-      }
-
-      saveRDS(SAL,file = fn)
-    }
-    return(SAL)
-
   }
+
+
+
+  ## ADDING IN OVERVIEW/ OBJECTIVES
+  # ppp has overview ppp$overview[which(ppp$id == om$project_id[i])][1]
+  SAL$overview <- 0
+  SAL$objectives <- 0
+  for (i in seq_along(ppp$id)) {
+    SAL$overview[which(SAL$project_id == ppp$id[i])] <- ppp$overview[i]
+    SAL$objectives[which(SAL$project_id == ppp$id[i])] <- ppp$objectives[i]
+  }
+
+
+  ## STATUS
+  # status display is in ttt
+
+  ## LEAD STAFF
+  # j HAS THIS
+
+  SAL$status <- 0
+  SAL$lead_staff <- 0
+  for (i in seq_along(SAL$smart_name)) {
+    replace3 <- ttt$status_display[which(ttt$id == SAL$project_year_id[i])][1]
+    replace7 <- ppp$lead_staff[which(ppp$id == SAL$project_id[i])][1]
+    replace8 <- ppp$section_display[which(ppp$id == SAL$project_id[i])][1]
+    SAL$status[i] <- replace3
+    SAL$lead_staff[i] <- replace7
+    SAL$section_display[i] <- replace8
+  }
+
+  ## ADDING IN DELIVERABLES / MILESTONES
+  # DDF activities_full
+  SAL$deliverables <- 0
+  SAL$milestones <- 0
+
+  for (j in seq_along(unique(DDF$title))) {
+    value <-
+      SAL[which(SAL$project_title == unique(DDF$title)[j]),] # Look at one project
+    d <- DDF[which(DDF$title == unique(DDF$title)[j]),]
+    if (!(length(value$id) == 0)) {
+    for (k in seq_along(unique(d$year))) {
+      value2 <-
+        value[which(value$fiscal_year == unique(d$year)[k]),] # Look at one year
+      SAL$deliverables[which(
+        SAL$project_title == unique(value2$project_title) &
+          SAL$fiscal_year == unique(d$year)[k]
+      )] <- DELIVERABLES[[j]][k]
+      SAL$milestones[which(
+        SAL$project_title == unique(value2$project_title) &
+          SAL$fiscal_year == unique(d$year)[k]
+      )] <- MILESTONES[[j]][k]
+    }
+    }
+  }
+
+  if(keep){
+    fn <- file.path(path,"dataSPA_SAL.rds")
+    if(file.exists(fn)){
+      date <- as.Date(file.info(fn)$mtime)
+      file.rename(fn,
+                  file.path(path,paste0("dataSPA_SAL_",date,".rds")))
+      message(paste0("Renaming the pre-existing dataSPA_SAL.rds to: ",paste0("dataSPA_SAL_",date,".rds")))
+    }
+
+    saveRDS(SAL,file = fn)
+  }
+  return(SAL)
 }
