@@ -67,7 +67,7 @@ res <- try(plotSPA(om=index, theme=unique(index$theme), which="omBar"), silent=T
 ### Choose an om allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- plotSPA(om=index, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+df <- try(plotSPA(om=index, which="omAllocation", theme=unique(index$theme), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -147,7 +147,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=research1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+df <- try(plotSPA(om=research1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -238,7 +238,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=monitor1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+df <- try(plotSPA(om=monitor1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -328,7 +328,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=assessment1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+df <- try(plotSPA(om=assessment1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -415,7 +415,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=management1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+df <- try(plotSPA(om=management1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -504,7 +504,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=other1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE)
+df <- try(plotSPA(om=other1, which="omAllocation", theme=unique(index$theme), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",

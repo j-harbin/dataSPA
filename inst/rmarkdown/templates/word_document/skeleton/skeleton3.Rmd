@@ -65,7 +65,7 @@ res <- try(plotSPA(om=index, functionalGroup=unique(index$functional_group), whi
 ### Choose an om allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- plotSPA(om=index, which="omAllocation", functionalGroup =unique(index$functional_group), dataframe = TRUE)
+df <- try(plotSPA(om=index, which="omAllocation", functionalGroup =unique(index$functional_group), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -91,7 +91,7 @@ res <- try(plotSPA(salary=index2, functionalGroup=unique(index2$functional_group
 ### Choose a salary allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- try(plotSPA(salary=index2, which="salaryAllocation", functionalGroup=unique(index2$functiona_group), dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=index2, which="salaryAllocation", functionalGroup=unique(index2$functional_group), dataframe = TRUE), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
@@ -145,7 +145,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=research1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- try(plotSPA(om=research1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -236,7 +236,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=monitor1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- try(plotSPA(om=monitor1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -326,7 +326,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=assessment1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- try(plotSPA(om=assessment1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -413,7 +413,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=management1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- try(plotSPA(om=management1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -502,7 +502,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- plotSPA(om=other1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE)
+df <- try(plotSPA(om=other1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",

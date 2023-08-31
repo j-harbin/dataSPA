@@ -5,16 +5,16 @@ output: html_document
 
 ```{r, echo=FALSE}
 if (!(is.null(theme))) {
-df <- plotSPA(om=index, which="omAllocation", theme=theme[i], dataframe = TRUE)
+df <- try(plotSPA(om=index, which="omAllocation", theme=theme[i], dataframe = TRUE), silent=TRUE)
 res <- try(plotSPA(index, which="omAllocation", theme=unique(index$theme), item=names(df)[j]), silent=TRUE)
 } else if (!(is.null(functionalGroup))) {
-  df <- plotSPA(om=index, which="omAllocation", functionalGroup=functionalGroup[i], dataframe = TRUE)
+  df <- try(plotSPA(om=index, which="omAllocation", functionalGroup=functionalGroup[i], dataframe = TRUE), silent=TRUE)
 res <- try(plotSPA(index, which="omAllocation", functionalGroup=unique(index$functional_group), item=names(df)[j]), silent=TRUE)
 } else if (!(is.null(section))) {
-    df <- plotSPA(om=index, which="omAllocation", section=section[i], dataframe = TRUE)
+    df <- try(plotSPA(om=index, which="omAllocation", section=section[i], dataframe = TRUE), silent=TRUE)
 res <- try(plotSPA(index, which="omAllocation", section=SEC, item=names(df)[j]), silent = TRUE)
 } else if (!(is.null(division))) {
-      df <- plotSPA(om=index, which="omAllocation", division=division[i], dataframe = TRUE)
+      df <- try(plotSPA(om=index, which="omAllocation", division=division[i], dataframe = TRUE), silent=TRUE)
 res <- try(plotSPA(index, which="omAllocation", division=DIV, item=names(df)[j]), silent=TRUE)
 }
 ```

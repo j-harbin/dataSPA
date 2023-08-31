@@ -615,8 +615,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$section_display <- 0
     for (i in seq_along(ppp$title)) {
       if (any(SAL$project_title == ppp$title[i])) {
-        SAL$activity_type[which(SAL$project_title == ppp$title[i])] <- ppp$activity_type[i]
-        SAL$functional_group[which(SAL$project_title == ppp$title[i])] <- ppp$functional_group[i]
+        #SAL$activity_type[which(SAL$project_title == ppp$title[i])] <- ppp$activity_type[i]
         SAL$section_display[which(SAL$project_title == ppp$title[i])] <- ppp$section_display[i]
       }
     }
@@ -639,8 +638,15 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   for (i in seq_along(ppp$id)) {
     SAL$overview[which(SAL$project_id == ppp$id[i])] <- ppp$overview[i]
     SAL$objectives[which(SAL$project_id == ppp$id[i])] <- ppp$objectives[i]
+    SAL$activity_type[which(SAL$project_id == ppp$id[i])] <- ppp$activity_type[i]
   }
-
+  SAL$activity_type[which(SAL$activity_type == 1)] <- "Monitoring"
+  SAL$activity_type[which(SAL$activity_type == 2)] <- "Research"
+  SAL$activity_type[which(SAL$activity_type == 3)] <- "Other"
+  SAL$activity_type[which(SAL$activity_type == 4)] <- "Data Management"
+  SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
+  SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
+  SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
 
   ## STATUS
   # status display is in ttt
@@ -654,9 +660,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     replace3 <- ttt$status_display[which(ttt$id == SAL$project_year_id[i])][1]
     replace7 <- ppp$lead_staff[which(ppp$id == SAL$project_id[i])][1]
     replace8 <- ppp$section_display[which(ppp$id == SAL$project_id[i])][1]
+    replace2 <- ppp$functional_group[which(ppp$id == SAL$project_id[i])][1]
+
     SAL$status[i] <- replace3
     SAL$lead_staff[i] <- replace7
     SAL$section_display[i] <- replace8
+    SAL$functional_group[i] <- replace2
   }
 
   ## ADDING IN DELIVERABLES / MILESTONES

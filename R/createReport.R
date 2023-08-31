@@ -114,7 +114,6 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       )
     }
   } else {
-    # theme or functionalGroup
     if (!(is.null(theme))) {
     for (i in seq_along(theme)) {
       index <- om[which(om$theme == theme[i]),]
