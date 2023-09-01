@@ -237,72 +237,83 @@ plotSPA <-
 
     # DEALING WITH FORMAT OF SECTIONS
     # Step 1: IDENTIFY WHICH SECTION_DISPLAY HAS MORE THAN 3 -
-    sd <- unique(om$section_display[which(!(str_count(om$section_display,"\\-") == 3))])
-    sd <- sd[-(which(sd == ""))]
-    SD <- sd
-    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
-    # AND REMOVE THE -
-    bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
-    if (!(length(bad2) == 0)) {
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
-    sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
-    }
-
-
-    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
-    # AND REMOVE THE -
-    bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
-    if (!(length(bad2) == 0)) {
-    sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
-    }
-
-    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
-    # AND REMOVE THE -
-    bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
-    if (!(length(bad2) == 0)) {
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
-    sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
-    }
-
-    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
-    # AND REMOVE THE -
-    bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
-    if (!(length(bad2) == 0)) {
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
-    sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
-    }
-
-
-    # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
-    ss <- NULL
-    for (i in seq_along(sd)) {
-      if (!(grepl("Regional Director Science Office", sd[i]))) {
-        ss[[i]] <- unique(strsplit(sd[i], " - ", fixed=TRUE)[[1]])
-      } else {
-        ss[[i]] <- strsplit(sd[i], " - ", fixed=TRUE)[[1]]
-
-      }
-    }
-    ss <- unique(ss)
-    SS <- NULL
-    for (i in seq_along(ss)) {
-      SS[[i]] <- toString(paste0(ss[[i]], collapse=" - "))
-    }
-    SS <- unlist(SS)
-
-    # NEXT STEP: REDEFINE THE SECTION_DISPLAY IN THE OM DATAFRAME
-    for (i in seq_along(sd)) {
-      #message(unique(om$section_display[which(om$section_display == SD[i])]), " is being replaced with ", SS[i])
-      om$section_display[which(om$section_display == SD[i])] <- SS[i]
-    }
-
+    # if (!(is.null(om))) {
+    #   test <- om
+    # } else {
+    #   test <- salary
+    # }
+    # sd <- unique(test$section_display[which(!(str_count(test$section_display,"\\-") == 3))])
+    # sd <- sd[-(which(sd == ""))]
+    # SD <- sd
+    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
+    # # AND REMOVE THE -
+    # bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
+    # if (!(length(bad2) == 0)) {
+    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
+    # sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
+    # }
+    #
+    #
+    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
+    # # AND REMOVE THE -
+    # bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
+    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
+    # if (!(length(bad2) == 0)) {
+    # sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
+    # }
+    #
+    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
+    # # AND REMOVE THE -
+    # bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
+    # if (!(length(bad2) == 0)) {
+    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
+    # sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
+    # }
+    #
+    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
+    # # AND REMOVE THE -
+    # bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
+    # if (!(length(bad2) == 0)) {
+    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
+    # sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
+    # }
+    #
+    # # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
+    # ss <- NULL
+    # for (i in seq_along(sd)) {
+    #   if (!(grepl("Regional Director Science Office", sd[i]))) {
+    #     ss[[i]] <- unique(strsplit(sd[i], " - ", fixed=TRUE)[[1]])
+    #   } else {
+    #     ss[[i]] <- strsplit(sd[i], " - ", fixed=TRUE)[[1]]
+    #   }
+    # }
+    # ss <- unique(ss)
+    # SS <- NULL
+    # for (i in seq_along(ss)) {
+    #   SS[[i]] <- toString(paste0(ss[[i]], collapse=" - "))
+    # }
+    # SS <- unlist(SS)
+    #
+    # # NEXT STEP: REDEFINE THE SECTION_DISPLAY IN THE OM DATAFRAME
+    # for (i in seq_along(sd)) {
+    #   #message(unique(om$section_display[which(om$section_display == SD[i])]), " is being replaced with ", SS[i])
+    #   if (is.null(salary)) {
+    #   om$section_display[which(om$section_display == SD[i])] <- SS[i]
+    #   } else if (is.null(om)) {
+    #     salary$section_display[which(salary$section_display == SD[i])] <- SS[i]
+    #   } else {
+    #     om$section_display[which(om$section_display == SD[i])] <- SS[i]
+    #     salary$section_display[which(salary$section_display == SD[i])] <- SS[i]
+    #   }
+    # }
+    #
+    if (!(is.null(om))) {
     sec <- unique(gsub(".*- ","",unique(om$section_display)))
-    #sec <- sec[-(which(sec == ""))]
 
+    } else {
+    sec <- unique(gsub(".*- ","",unique(salary$section_display)))
+    }
     # END OF DEALING WITH FORMAT SECTIONS
-
-
 
     if (which %in% c(
       "omBar",

@@ -106,9 +106,37 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
             ") does not exist. User must first save om type AND be on the VPN. See examples in ?getData for how to fix this."
           ))}}}
 
+
+  if(age>0 && type %in% c("salary", "salary_date")){
+    # Look for files in path, only return the file the matches pattern
+    fn <- file.path(path,"dataSPA_SAL.rds")
+
+    if(file.exists(fn)){
+      # Load file if more recent than `keep` days old
+      d <- as.Date(file.info(fn)$mtime)
+      if((Sys.Date()-d)<age){
+        if(type=="salary"){
+          SAL <- readRDS(file = fn)
+          message(paste0("loading file from disk(",fn,")"))
+          return(SAL)
+        } else if(type=="salary_date"){
+          message(paste0("returning date from file on disk(",fn,")"))
+          return(d)
+        }
+
+      }
+    } else if(type=="salary_date"){
+      stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
+    }
+  }
+
   # 1. LISTING LINKS
 
+  if (type %in% c("salary", "salary_date")) {
   links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff")
+  } else {
+    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/")
+  }
 
   API_DATA <- NULL
 
@@ -283,6 +311,80 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
   ppp <- do.call(rbind, pp)
 
+  ## Fixing section_display for sections
+
+  sd <- unique(ppp$section_display[which(!(str_count(ppp$section_display,"\\-") == 3))])
+  SD <- sd
+  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
+  # AND REMOVE THE -
+  bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
+  if (!(length(bad2) == 0)) {
+    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
+    sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
+  }
+
+  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
+  # AND REMOVE THE -
+  bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
+  if (!(length(bad2) == 0)) {
+    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
+    sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
+  }
+
+  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
+  # AND REMOVE THE -
+  bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
+  if (!(length(bad2) == 0)) {
+    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
+    sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
+  }
+
+  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
+  # AND REMOVE THE -
+  bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
+  if (!(length(bad2) == 0)) {
+    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
+    sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
+  }
+
+
+  # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
+  ss <- NULL
+  for (i in seq_along(sd)) {
+    if (!(grepl("Regional Director Science Office", sd[i]))) {
+      ss[[i]] <- unique(strsplit(sd[i], " - ", fixed=TRUE)[[1]])
+    } else {
+      ss[[i]] <- strsplit(sd[i], " - ", fixed=TRUE)[[1]]
+
+    }
+  }
+  ss <- unique(ss)
+  SS <- NULL
+  for (i in seq_along(ss)) {
+    SS[[i]] <- toString(paste0(ss[[i]], collapse=" - "))
+  }
+  SS <- unlist(SS)
+
+  # NEXT STEP: REDEFINE THE SECTION_DISPLAY IN THE OM DATAFRAME
+  for (i in seq_along(sd)) {
+    ppp$section_display[which(ppp$section_display == SD[i])] <- SS[i]
+  }
+
+  ## end of fix
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   lov <- list()
   for (i in 1:length(p))  {
     lov <- c(lov, p[[i]])
@@ -446,30 +548,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   salaries <- NULL
   load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
 
-  if(age>0){
-    # Look for files in path, only return the file the matches pattern
-    fn <- file.path(path,"dataSPA_SAL.rds")
-
-    if(file.exists(fn)){
-      # Load file if more recent than `keep` days old
-      d <- as.Date(file.info(fn)$mtime)
-      if((Sys.Date()-d)<age){
-        if(type=="salary"){
-          SAL <- readRDS(file = fn)
-          message(paste0("loading file from disk(",fn,")"))
-          return(SAL)
-        } else if(type=="salary_date"){
-          message(paste0("returning date from file on disk(",fn,")"))
-          return(d)
-        }
-
-      }
-    } else if(type=="salary_date"){
-      stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
-    }
-  }
-
   ## DEALING WITH "http://dmapps/api/ppt/staff"
+  if (type == "salary") {
   api_data3 <- API_DATA[[4]]
 
   j <- lapply(api_data3, function(x) x[c('id', 'overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
@@ -499,7 +579,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     list[[i]] <- as.data.frame(j[[i]])
   }
 
-  if (type == "salary") {
     SAL <- do.call(rbind, list)
 
     ## Obtain information from project_year_obj

@@ -73,13 +73,12 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       stop("No projects for this subset in this region.")
     }
   }
-
   if (!(identical(c("id","overtime_hours","smart_name","duration_weeks",
-                    "level_display","funding_source_display","employee_type_display",  "project_year_id",
-                    "project_id","fiscal_year", "project_title","median_salary",
-                    "salary_per_week","amount_week","amount_overtime", "amount_total", "theme", "activity_type", "functional_group","section_display", "overview",
-                    "objectives", "status","lead_staff","deliverables","milestones"), names(salary)))) {
-    stop("Must obtain data for salary using getData(type='salary')")
+                   "level_display","funding_source_display","employee_type_display",  "project_year_id",
+                   "project_id","fiscal_year", "project_title","median_salary",
+                   "salary_per_week","amount_week","amount_overtime", "amount_total", "theme", "activity_type", "functional_group","section_display", "overview",
+                   "objectives", "status","lead_staff","deliverables","milestones"), names(salary)))) {
+   stop("Must obtain data for salary using getData(type='salary')")
   }
 
   if (!(class(om) == "data.frame")) {

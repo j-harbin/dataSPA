@@ -65,7 +65,6 @@ for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
          knitr::knit_child("plot.Rmd", quiet = TRUE), "\n\n")
 }
-
 ```
 
 ### {-}
@@ -99,14 +98,10 @@ for (j in seq_along(headers)) {
 
 
 
-```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
-#plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
-```
-
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-res <- try(plotSPA(om=index, salary=index2, which="predictSalary", section=SECtion[i]), silent=TRUE)
+res <- try(plotSPA(om=index, salary=index2, which="predictSalary", section=SEC[i]), silent=TRUE)
 
 ```
 
