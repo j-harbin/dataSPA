@@ -427,10 +427,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     om$milestones[which(om$milestones == "")] <- 0 # This means there was no milestones
     om$deliverables[which(om$deliverables == "")] <- 0
-    return(om)
   }
 
-  if(keep){
+  if(keep && type == "om"){
     fn <- file.path(path,"dataSPA_om.rds")
     if(file.exists(fn)){
       date <- as.Date(file.info(fn)$mtime)
@@ -441,6 +440,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     saveRDS(om,file = fn)
   }
+  return(om)
 
   ## WORKING WITH SALARY DATA FRAME
   salaries <- NULL
@@ -693,7 +693,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
   }
 
-  if(keep){
+  if(keep && type == "salary"){
     fn <- file.path(path,"dataSPA_SAL.rds")
     if(file.exists(fn)){
       date <- as.Date(file.info(fn)$mtime)

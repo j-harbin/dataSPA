@@ -3,6 +3,7 @@
 #' This function highlights text based on the 2023 Ecological Pillar Objectives.
 #'
 #' @param om a data frame likely from `getData(type='om')`
+#' @param salary a data frame likely from `getData(type='salary')`
 #' @param id the project_id from the Project Planning Tool
 #' @param legend a boolean indicating if a legend should be returned
 #' @param file the word file describing the EBM framwork. Defaults to the IN folder
@@ -30,15 +31,20 @@
 #' @author Remi Daigle and Jaimie Harbin
 
 highlightOverview <- function(om=NULL,
+                              salary=NULL,
                               id=NULL, legend=FALSE,
                               file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI
                               -Projects/dataSPA/inputs/Ecological Pillar Objectives
                               20 April 2023.docx") {
-  if (is.null(om)) {
-    stop("In highlightOverview must provide an om argument, likely from getData(type='om')")
+  if (is.null(om) && is.null(salary)) {
+    stop("In highlightOverview must provide an om or salary argument, likely from getData()")
   }
   if (is.null(id)) {
     stop("Must provide an id argument in highlightOverview")
+  }
+
+  if (!(is.null(salary))) {
+    om <- salary
   }
 
   subpoint <- words <-  color <- NULL

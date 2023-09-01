@@ -6,6 +6,7 @@
 \usage{
 highlightOverview(
   om = NULL,
+  salary = NULL,
   id = NULL,
   legend = FALSE,
   file =
@@ -14,6 +15,8 @@ highlightOverview(
 }
 \arguments{
 \item{om}{a data frame likely from \code{getData(type='om')}}
+
+\item{salary}{a data frame likely from \code{getData(type='salary')}}
 
 \item{id}{the project_id from the Project Planning Tool}
 

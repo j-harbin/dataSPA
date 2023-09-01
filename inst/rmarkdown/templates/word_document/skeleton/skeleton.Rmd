@@ -52,20 +52,18 @@ if (!(length(index$project_id) == 0)) {
 } else if (!(length(index2$fiscal_year)== 0)) {
   ID <- unique(index2$project_id)
 }
-if (!(length(index$project_id) == 0)) {
-  if(dir.exists("//dcnsbiona01a")){
+
+  if (file.exists("//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx")){
     file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
   } else {
     file <- "/home/rdaigle/Ecological Pillar Objectives 20 April 2023.docx"
   }
-
-#ID <- unique(index$project_id)
+if (!(length(index$project_id) == 0) | (!(length(index2$project_id) == 0))) {
 if (file.exists(file)) {
-  cat(highlightOverview(om=index,id=ID, file=file))
+  cat(highlightOverview(om=index, salary=index2, id=ID, file=file))
 } else {
-  cat(paste0(unique(index$overview)))
-}
-}
+  cat(paste0(ifelse(!(length(index$project_id) == 0), unique(index$overview), unique(index2$overview))))
+}}
 ```
 
 <center>
@@ -82,7 +80,13 @@ if (!(length(index$project_id) == 0)) {
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
 if (!(length(index$project_id) == 0)) {
-d <- unique(index$deliverables)
+  test <- index
+} else if (!(length(index2$project_id) == 0)) {
+  test <- index2
+}
+
+if (!(length(test$project_id) == 0)) {
+d <- unique(test$deliverables)
 if (length(unique(d)) == 1 && unique(d) == 0) {
   cat(paste0("There are no identified deliverables for this project."))
   #print(paste0(unlist(strsplit(unique(index$milestones)[1], "|-----|", fixed=TRUE))))
@@ -90,7 +94,7 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
     deliverables <- NULL
     if (!(length(unique(d))) == 1) {
       for (Y in seq_along(years)) {
-        ii <- index[which(index$fiscal_year == years[Y]), ]
+        ii <- test[which(test$fiscal_year == years[Y]), ]
         deliverables[[Y]] <- unique(ii$deliverables)
       }
       deliverables <- unlist(deliverables)
@@ -114,7 +118,7 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
           dd <- which(deliverables == d[D])
           
           if (length(dd) == 1) {
-            years <- unique(index$fiscal_year[which(index$deliverables == deliverables[dd])])
+            years <- unique(test$fiscal_year[which(test$deliverables == deliverables[dd])])
             cat(paste0(years, ": \n"))
             if (!(deliverables[dd] == 0)) {
             cat(paste0(unlist(
@@ -128,7 +132,7 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
           } else {
             # This is where the change occurs
             YEARS <-
-              unique(index$fiscal_year[which(index$deliverables == deliverables[dd[1]])])
+              unique(test$fiscal_year[which(test$deliverables == deliverables[dd[1]])])
             
             if (!(deliverables[dd[1]] == 0)) {
 
@@ -169,16 +173,16 @@ if (length(unique(d)) == 1 && unique(d) == 0) {
 **Milestones**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
-if (!(length(index$project_id) == 0)) {
-years <- unique(index$fiscal_year)
-m <- unique(index$milestones)
+if (!(length(test$project_id) == 0)) {
+years <- unique(test$fiscal_year)
+m <- unique(test$milestones)
 if (length(unique(m)) == 1 && unique(m) == 0) {
   cat(paste0("There are no identified milestones for this project."))
 } else {
     milestones <- NULL
     if (!(length(unique(m))) == 1) {
       for (Y in seq_along(years)) {
-        ii <- index[which(index$fiscal_year == years[Y]), ]
+        ii <- test[which(test$fiscal_year == years[Y]), ]
         milestones[[Y]] <- unique(ii$milestones)
       }
       milestones <- unlist(milestones)
@@ -196,9 +200,8 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
         # At least one year has the same milestone, but not all
         for (M in seq_along(m)) {
           mm <- which(milestones == m[M])
-          
           if (length(mm) == 1) {
-            years <- unique(index$fiscal_year[which(index$milestones == milestones[mm])])
+            years <- unique(test$fiscal_year[which(test$milestones == milestones[mm])])
             cat(paste0(years, ": \n"))
             if (!(milestones[mm] == 0)) {
             cat(paste0(unlist(
@@ -212,7 +215,7 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
           } else {
             # This is where the change occurs
             YEARSM <-
-              unique(index$fiscal_year[which(index$milestones == milestones[mm[1]])])
+              unique(test$fiscal_year[which(test$milestones == milestones[mm[1]])])
             
             if (!(milestones[mm[1]] == 0)) {
 
@@ -228,10 +231,8 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
             }
             cat("  \n")
             cat("  \n")
-
           }
         }
-
       }
       
     } else {
@@ -255,11 +256,11 @@ if (length(unique(m)) == 1 && unique(m) == 0) {
 **Objectives**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
-if (!(length(index$project_id) == 0)) {
-if (unique(index$objectives) == 0) {
+if (!(length(test$project_id) == 0)) {
+if (unique(test$objectives) == 0) {
   cat(paste0("There are no identified objectives for this project."))
 } else {
-cat(paste0(unique(index$objectives)))
+cat(paste0(unique(test$objectives)))
 }
 }
 
@@ -268,18 +269,18 @@ cat(paste0(unique(index$objectives)))
 **Status**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
-if (!(length(index$project_id) == 0)) {
-years <- unique(index$fiscal_year)
+if (!(length(test) == 0)) {
+years <- unique(test$fiscal_year)
 status <- NULL
-if (!(length(unique(index$status)) == 1)) {
+if (!(length(unique(test$status)) == 1)) {
   for (Y in seq_along(years)) {
-    ii <- index[which(index$fiscal_year == years[Y]),]
+    ii <- test[which(test$fiscal_year == years[Y]),]
     status[[Y]] <- unique(ii$status)
   }
   status <- unlist(status)
   cat(paste0(years," : ", status, collapse=", "))
 } else {
-  cat(paste0(unique(index$status)), " for all project years")
+  cat(paste0(unique(test$status)), " for all project years")
 }
 }
 ```
@@ -289,6 +290,8 @@ if (!(length(unique(index$status)) == 1)) {
 ```{r, echo=FALSE, comment=NA,results='asis'}
 if (!(length(index$project_id) == 0)) {
 cat(paste0(unique(index$lead_staff)))
+} else if (!(length(index2$project_id) == 0)) {
+  cat(paste0(unique(index2$lead_staff)))
 }
 ```
 
