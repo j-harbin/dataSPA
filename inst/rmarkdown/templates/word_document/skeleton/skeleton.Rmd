@@ -56,7 +56,7 @@ if (!(length(index$project_id) == 0)) {
   if (file.exists("//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx")){
     file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
   } else {
-    file <- "/home/rdaigle/Ecological Pillar Objectives 20 April 2023.docx"
+    file <- "/home/mar-spa/Ecological Pillar Objectives 20 April 2023.docx"
   }
 if (!(length(index$project_id) == 0) | (!(length(index2$project_id) == 0))) {
 if (file.exists(file)) {
