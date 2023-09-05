@@ -98,6 +98,9 @@ DT::datatable(df3,
 
 ```{r, echo=FALSE}
 sections <- unique(gsub(".*- ","",unique(om$section_display)))
+if ("Aquatic Biotechnology Laboratory ( TO BE DELETE)" %in% sections) {
+sections <- sections[-which(sections == "Aquatic Biotechnology Laboratory ( TO BE DELETE)")]
+}
 
 df2 <- data.frame(matrix(NA, ncol = 1, nrow = length(sections)))
 names(df2) <- "Section"
