@@ -107,7 +107,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           ))}}}
 
 
-  if(age>0 && type %in% c("salary", "salary_date")){
+  if(age > 0 && type %in% c("salary", "salary_date")){
     # Look for files in path, only return the file the matches pattern
     fn <- file.path(path,"dataSPA_SAL.rds")
 
@@ -129,7 +129,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
     }
   }
-
   # 1. LISTING LINKS
 
   if (type %in% c("salary", "salary_date")) {
@@ -529,6 +528,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     om$milestones[which(om$milestones == "")] <- 0 # This means there was no milestones
     om$deliverables[which(om$deliverables == "")] <- 0
+    return(om)
   }
 
   if(keep && type == "om"){
@@ -538,11 +538,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       file.rename(fn,
                   file.path(path,paste0("dataSPA_om_",date,".rds")))
       message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
-    }
+      return(om)
+
+      }
 
     saveRDS(om,file = fn)
   }
-  return(om)
 
   ## WORKING WITH SALARY DATA FRAME
   salaries <- NULL
@@ -771,8 +772,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     }
   }
-
-  if(keep && type == "salary"){
+  if(keep && type == "salary") {
+    #JAIM
     fn <- file.path(path,"dataSPA_SAL.rds")
     if(file.exists(fn)){
       date <- as.Date(file.info(fn)$mtime)
