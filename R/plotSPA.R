@@ -1143,7 +1143,6 @@ plotSPA <-
           legend.text = TRUE,
           args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7))
         } else {
-#JAIM
           holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 2))
           names(holder) <- c("  ", "   ")
           DF <- cbind(saldf, holder)
@@ -1845,6 +1844,7 @@ plotSPA <-
 
       # STEP 2: DETERMINE MEDIAN SALARIES FOR EACH YEAR
       fundingLevel <- salary$level_display
+      fundingLevel[which(fundingLevel == "IT--03")] <- "CS--03"
       soi <- vector(mode = "list", length(unique(salary$level_display)))
       load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
       for (i in seq_along(unique(fundingLevel))) {
@@ -2012,8 +2012,6 @@ legend(
   for (i in seq_along(DF[keep])) {
     DF[keep][,i] <- as.numeric(DF[keep][,i])
   }
-
-#JAIM
   bp <-
     barplot(
       as.matrix(DF),
