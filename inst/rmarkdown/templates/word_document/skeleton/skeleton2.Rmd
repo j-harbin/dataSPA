@@ -18,19 +18,19 @@ cat(paste0("Data pulled for this report was obtained on ", filedate))
 
 <p style="text-align:left;width: 90%">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-IDs <- unique(index$project_id)
+ID1 <- unique(index$project_id)
+ID2 <- unique(index2$project_id)
+IDs <- sort(unique(c(ID1, ID2)))
 
 path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
 
 if(!dir.exists(path)){
   path <- "http://glf-proxy:8018/mar-spa/reports/"
 }
-
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
  
 cat("The project IDs included in this theme include: ", LINKS)
-
 ```
 </p>
 

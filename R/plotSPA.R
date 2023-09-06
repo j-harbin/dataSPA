@@ -616,6 +616,7 @@ plotSPA <-
         }
 
       } else if (which == "predictOM") {
+        #HERE JAIM
         ly <-
           as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", years[length(years)])) # Getting last number of last year (ie. 2023-2024)
         lys <- as.numeric(ly) + 1:2

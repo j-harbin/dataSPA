@@ -30,12 +30,13 @@
 #' @export
 #' @author Remi Daigle and Jaimie Harbin
 
-highlightOverview <- function(om=NULL,
-                              salary=NULL,
-                              id=NULL, legend=FALSE,
-                              file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI
-                              -Projects/dataSPA/inputs/Ecological Pillar Objectives
-                              20 April 2023.docx") {
+highlightOverview <-
+  function(om = NULL,salary = NULL, id = NULL,legend = FALSE,
+           file = "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI
+                              -Projects/dataSPA/inputs/
+                              Ecological Pillar Objectives
+                              20 April 2023.docx"
+  ) {
   if (is.null(om) && is.null(salary)) {
     stop("In highlightOverview must provide an om or salary argument, likely from getData()")
   }
