@@ -56,13 +56,13 @@ A number of assumptions exist for the following
 
 ```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 
-res <- try(plotSPA(om=index, section=SEC, which="omBar"), silent=TRUE)
+res <- try(plotSPA(om=index, section=SEC, which="omBar", approved=approved), silent=TRUE)
 ```
 
 ### Choose an om allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- try(plotSPA(om=index, which="omAllocation", section =SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(om=index, which="omAllocation", section =SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -74,20 +74,20 @@ for (j in seq_along(headers)) {
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-res <- try(plotSPA(om=index,which="predictOM", section=section[i]), silent=TRUE)
+res <- try(plotSPA(om=index,which="predictOM", section=section[i], approved=approved), silent=TRUE)
 ```
 
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-res <- try(plotSPA(salary=index2, section=SEC, which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=index2, section=SEC, which="salaryBar", approved=approved), silent=TRUE)
 ```
 
 
 ### Choose a salary allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- try(plotSPA(salary=index2, which="salaryAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=index2, which="salaryAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
@@ -100,11 +100,9 @@ for (j in seq_along(headers)) {
 ### {-}
 
 
-
-
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-res <- try(plotSPA(om=index, salary=index2, which="predictSalary", section=SEC), silent=TRUE)
+res <- try(plotSPA(om=index, salary=index2, which="predictSalary", section=SEC, approved=approved), silent=TRUE)
 
 ```
 
@@ -123,7 +121,7 @@ cat(paste0("section: ", SEC))
 run <- ifelse(("Research" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 research1 <- index[which(index$activity_type == "Research"),]
-res <- try(plotSPA(om=research1, section=SEC, which="omBar"), silent=TRUE)
+res <- try(plotSPA(om=research1, section=SEC, which="omBar", approved=approved), silent=TRUE)
 } else {
   cat(paste0("There are no Research projects for this section"))
 }
@@ -137,7 +135,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(om=research1, which="omAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(om=research1, which="omAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -151,14 +149,14 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=research1,which="predictOM", section=section[i]), silent=TRUE)
+res <- try(plotSPA(om=research1,which="predictOM", section=section[i], approved=approved), silent=TRUE)
 }
 ```
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 research2 <- index2[which(index2$activity_type == "Research"),]
-res <- try(plotSPA(salary=research2, section=SEC, which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=research2, section=SEC, which="salaryBar", approved=approved), silent=TRUE)
 }
 ```
 
@@ -171,7 +169,7 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=research2, which="salaryAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=research2, which="salaryAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
@@ -184,7 +182,6 @@ for (j in seq_along(headers)) {
 ### {-}
 
 
-
 ```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
@@ -193,7 +190,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-res <- try(plotSPA(om=research1, salary=research2, which="predictSalary", section=SEC), silent=TRUE)
+res <- try(plotSPA(om=research1, salary=research2, which="predictSalary", section=SEC, approved=approved), silent=TRUE)
 }
 ```
 
@@ -214,7 +211,7 @@ cat(paste0("section: ", paste0(SEC)))
 run <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
-res <- try(plotSPA(om=monitor1, section=SEC, which="omBar"), silent=TRUE)
+res <- try(plotSPA(om=monitor1, section=SEC, which="omBar", approved=approved), silent=TRUE)
 } else {
   cat(paste0("There are no Monitoring projects for this section"))
 }
@@ -228,7 +225,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(om=monitor1, which="omAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(om=monitor1, which="omAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -242,7 +239,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=monitor1,which="predictOM", section=section[i]), silent=TRUE)
+res <- try(plotSPA(om=monitor1,which="predictOM", section=section[i], approved=approved), silent=TRUE)
 }
 ```
 
@@ -250,7 +247,7 @@ res <- try(plotSPA(om=monitor1,which="predictOM", section=section[i]), silent=TR
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 monitor2 <- index2[which(index2$activity_type == "Monitoring"),]
-res <- try(plotSPA(salary=monitor2, section=SEC, which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=monitor2, section=SEC, which="salaryBar", approved=approved), silent=TRUE)
 }
 ```
 
@@ -263,7 +260,7 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=monitor2, which="salaryAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=monitor2, which="salaryAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
@@ -284,7 +281,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=monitor1, salary=monitor2, which="predictSalary", section=SEC), silent=TRUE)
+res <- try(plotSPA(om=monitor1, salary=monitor2, which="predictSalary", section=SEC, approved=approved), silent=TRUE)
 }
 ```
 
@@ -304,7 +301,7 @@ cat(paste0("section: ", paste0(unique(SEC))))
 run <- ifelse(("Assessment" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 assessment1 <- index[which(index$activity_type == "Assessment"),]
-res <- try(plotSPA(om=assessment1, section=SEC, which="omBar"), silent=TRUE)
+res <- try(plotSPA(om=assessment1, section=SEC, which="omBar", approved=approved), silent=TRUE)
 } else {
   cat(paste0("There are no Assessment projects for this section"))
 }
@@ -318,7 +315,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(om=assessment1, which="omAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(om=assessment1, which="omAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -331,7 +328,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=assessment1,which="predictOM", section=section[i]), silent=TRUE)
+res <- try(plotSPA(om=assessment1,which="predictOM", section=section[i], approved=approved), silent=TRUE)
 }
 ```
 
@@ -339,7 +336,7 @@ res <- try(plotSPA(om=assessment1,which="predictOM", section=section[i]), silent
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 assessment2 <- index2[which(index2$activity_type == "Assessment"),]
-res <- try(plotSPA(salary=assessment2, section=SEC, which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=assessment2, section=SEC, which="salaryBar", approved=approved), silent=TRUE)
 }
 ```
 
@@ -352,7 +349,7 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=assessment2, which="salaryAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=assessment2, which="salaryAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
@@ -364,8 +361,6 @@ for (j in seq_along(headers)) {
 
 ### {-}
 
-
-
 ```{r, echo=FALSE, fig.cap="Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
 #plotSPA(om=index, salary=index2, theme=theme, which="indeterminate")
 ```
@@ -373,7 +368,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=assessment1, salary=assessment2, which="predictSalary", section=SEC))
+res <- try(plotSPA(om=assessment1, salary=assessment2, which="predictSalary", section=SEC, approved=approved), silent=TRUE)
 }
 ```
 
@@ -391,7 +386,7 @@ cat(paste0("section: ", paste0(unique(SEC))))
 run <- ifelse(("Data Management" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 management1 <- index[which(index$activity_type == "Data Management"),]
-res <- try(plotSPA(om=management1, section=SEC, which="omBar"), silent=TRUE)
+res <- try(plotSPA(om=management1, section=SEC, which="omBar", approved=approved), silent=TRUE)
 } else {
   cat(paste0("There are no Data Management projects for this section"))
 }
@@ -405,7 +400,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(om=management1, which="omAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(om=management1, which="omAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -419,7 +414,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-res <- try(plotSPA(om=management1,which="predictOM", section=section[i]), silent=TRUE)
+res <- try(plotSPA(om=management1,which="predictOM", section=section[i], approved=approved), silent=TRUE)
 }
 ```
 
@@ -427,7 +422,7 @@ res <- try(plotSPA(om=management1,which="predictOM", section=section[i]), silent
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 management2 <- index2[which(index2$activity_type == "Data Management"),]
-res <- try(plotSPA(salary=management2, section=SEC, which="salaryBar"), silent = TRUE)
+res <- try(plotSPA(salary=management2, section=SEC, which="salaryBar", approved=approved), silent = TRUE)
 }
 ```
 
@@ -440,7 +435,7 @@ cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(salary=management2, which="salaryAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(salary=management2, which="salaryAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 
 headers <- names(df)
 for (j in seq_along(headers)) {
@@ -461,7 +456,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=management1, salary=management2, which="predictSalary", section=SEC))
+res <- try(plotSPA(om=management1, salary=management2, which="predictSalary", section=SEC, approved=approved), silent=TRUE)
 }
 ```
 
@@ -480,7 +475,7 @@ cat(paste0("section: ", paste0(unique(SEC))))
 run <- ifelse(("Other" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 other1 <- index[which(index$activity_type == "Other"),]
-res <- try(plotSPA(om=other1, section=SEC, which="omBar"), silent=TRUE)
+res <- try(plotSPA(om=other1, section=SEC, which="omBar", approved=approved), silent=TRUE)
 } else {
   cat(paste0("There are no Other projects for this section"))
 }
@@ -494,7 +489,7 @@ cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 
 ```{r, results="asis", echo=FALSE}
 if (run) {
-df <- try(plotSPA(om=other1, which="omAllocation", section=SEC, dataframe = TRUE), silent=TRUE)
+df <- try(plotSPA(om=other1, which="omAllocation", section=SEC, dataframe = TRUE, approved=approved), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -507,7 +502,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=other1,which="predictOM", section=section[i]), silent=TRUE)
+res <- try(plotSPA(om=other1,which="predictOM", section=section[i], approved=approved), silent=TRUE)
 }
 ```
 
@@ -515,7 +510,7 @@ res <- try(plotSPA(om=other1,which="predictOM", section=section[i]), silent=TRUE
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 other2 <- index2[which(index2$activity_type == "Other"),]
-res <- try(plotSPA(salary=other2, section=SEC, which="salaryBar"), silent=TRUE)
+res <- try(plotSPA(salary=other2, section=SEC, which="salaryBar", approved=approved), silent=TRUE)
 }
 ```
 
@@ -549,7 +544,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=other1, salary=other2, which="predictSalary", section=SEC), silent=TRUE)
+res <- try(plotSPA(om=other1, salary=other2, which="predictSalary", section=SEC, approved=approved), silent=TRUE)
 }
 ```
 

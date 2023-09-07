@@ -4,6 +4,6 @@ output: html_document
 ---
 
 ```{r, echo=FALSE,fig.cap="Line graphs representing changes in salary investment for categories over the years. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
-df <- plotSPA(salary=index2, which="salaryAllocation", division = DIV, dataframe = TRUE)
-res <- try(plotSPA(salary=index2, which="salaryAllocation", division=DIV, item=names(df)[j]), silent=TRUE)
+df <- plotSPA(salary=index2, which="salaryAllocation", division = DIV, dataframe = TRUE, approved = approved)
+res <- try(plotSPA(salary=index2, which="salaryAllocation", division=DIV, item=names(df)[j], approved = approved), silent=TRUE)
 ```

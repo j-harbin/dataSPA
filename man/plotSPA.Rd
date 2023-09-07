@@ -17,6 +17,7 @@ plotSPA(
   item = NULL,
   funding = NULL,
   fundingChange = NULL,
+  approved = TRUE,
   dataframe = FALSE,
   year = NULL,
   endDate = NULL,
@@ -70,6 +71,11 @@ or \code{which=predict} used to indicate by how much the funding
 specified in \code{funding} will change by. If \code{endDate} is provided,
 this argument is ignored.}
 
+\item{approved}{a boolean indicating if the plots should only include
+the approved projects. If FALSE, projects of all status (Approved,
+Reviewed, Draft, Submitted, Not Approved, Recommended, and Cancelled)
+are included}
+
 \item{dataframe}{a Boolean indicating if the user wants the data frame
 of what is being plotted returned. For multi-year projects, a list of
 data frames for each year is returned. This is mainly for package testing}
@@ -91,8 +97,9 @@ None (invisible NULL).
 }
 \description{
 This function plots specific graphs using the data
-frames returned by \code{\link[=getData]{getData()}}. Projects \emph{only} get
-included in these summary plots if they are Approved.
+frames returned by \code{\link[=getData]{getData()}}. Note: by default, only
+the approved projects are included (this can be changed
+using the approved argument).
 }
 \details{
 The various plot types are as follows:

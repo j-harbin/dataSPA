@@ -4,7 +4,8 @@
 #' specified project id, theme, functional group, section,
 #' or division. Each summary fact sheet is broken up into
 #' different tabs: Summary, Research, Monitoring, Advice,
-#' and Other.
+#' and Other. By default, this only looks at the Approved
+#' projects.
 #'
 #' @param om a data frame created by `getData(type='om')`
 #' @param salary a data frame created by `getData(type='salary')`
@@ -26,6 +27,10 @@
 #' `getData(type="om")`
 #' @param region parameter to specific specific region of either `Gulf`, `Maritimes`,
 #' `Pacific`, `Quebec`, or `Ontario and Prairie`
+#' @param approved a boolean indicating if the plots should only include
+#' the approved projects. If FALSE, projects of all status (Approved,
+#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
+#' are included
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
 #' format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID
@@ -42,7 +47,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, approved=TRUE, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(om)) {
     stop("In createReport() must provide an om argument")

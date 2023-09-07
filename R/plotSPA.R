@@ -1,8 +1,9 @@
 #' Plot dataSPA information
 #'
 #' This function plots specific graphs using the data
-#' frames returned by [getData()]. Projects *only* get
-#' included in these summary plots if they are Approved.
+#' frames returned by [getData()]. Note: by default, only
+#' the approved projects are included (this can be changed
+#' using the approved argument).
 #'
 #' The various plot types are as follows:
 #'
@@ -79,6 +80,10 @@
 #' @param region parameter to specific specific region of either `Gulf`, `Maritimes`,
 #' `Pacific`, `Quebec`, or `Ontario and Prairie`. If no region is given, a summary plot
 #' of all regions is given.
+#' @param approved a boolean indicating if the plots should only include
+#' the approved projects. If FALSE, projects of all status (Approved,
+#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Cancelled)
+#' are included
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
 #' experience change in the prediction. If `endDate` is provided,
@@ -166,6 +171,7 @@ plotSPA <-
            item = NULL,
            funding = NULL,
            fundingChange = NULL,
+           approved = TRUE,
            dataframe = FALSE,
            year = NULL,
            endDate = NULL,
@@ -204,6 +210,11 @@ plotSPA <-
       if (length(om) == 0 && length(salary) == 0) {
         stop("No projects for this subset in this region.")
       }
+    }
+
+    if (approved) {
+      om <- om[which(om$status == "Approved"),]
+      salary <- salary[which(salary$status == "Approved"),]
     }
 
     if (!(
