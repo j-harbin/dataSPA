@@ -1,5 +1,5 @@
 ---
-title: "Summary Fact Sheet"
+title: "Functional Group Summary of Approved Projects in the Maritimes Region"
 output:
   html_document: default
   pdf_document: default
@@ -46,20 +46,21 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 ```
 </font>
 
-**Plots**
+**Assumptions/ Disclaimers**
 
-A number of assumptions exist for the following
-
-1. The calculated salaries use the median salaries for the year specific to the project of each given job classification. 
-2. If a classification level is not given in the project planning tool, a level of PC-2 is assumed. 
+1. The calculated salaries use the median salaries, not exact salaries of staff
+2. If a classification level is not given in the Project Planning Tool (PPT), a level of PC-02 is assumed.
 3. If the salary for a given year of the project is not available in the public DFO pay scale website, the closest year is used.
-4. When overtime amounts are considered in the total, it does not take into account that overtime can sometimes be 1.5 or 2X the pay.
-5. When a person with job classification EX is associated with a project, they are not included in total salary.
+4. When overtime amounts are considered, it does not take into account that overtime can sometimes be 1.5 or 2X the pay. It assumes regular salary.
+5. When a staff member has a job classification EX, they are not included in total salary.
 6. For salary predictions, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
-7. The PPT was only mandated in the Maritimes region 2 years ago
-8. The plots in each tab are heavily dependent on which activity type is assigned in the PPT
-9. The salaries are based on time planned on these projects. The actual time spent may have varied.
-10. Individuals who have level IT--03 use the salary of  "CS-03" due to the name change in level
+7. The PPT was only mandated in the Maritime region 2 years ago and therefore all relevant information may not be included
+8. The investment amounts are based on what was PLANNED to be spent on each project. The actual amounts may vary
+9. Individuals who have level IT--03 use the salary of CS-03 due to the name change in level
+10. The plots in each tab are heavily dependent on which activity type is assigned in the PPT
+
+
+**Plots**
 
 ```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
 res <- try(plotSPA(om=index, functionalGroup=unique(index$functional_group), which="omBar", approved=approved), silent=TRUE)

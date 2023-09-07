@@ -3,7 +3,7 @@ title: "plot"
 output: html_document
 ---
 
-```{r, echo=FALSE, fig.cap="Line graphs representing changes in O&M investment for categories over the years. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
+```{r, echo=FALSE, fig.cap="Line graphs representing changes in O&M investment for categories over the years for approved projects in the Maritimes. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
 if (!(is.null(theme))) {
 df <- try(plotSPA(om=index, which="omAllocation", theme=theme[i], dataframe = TRUE, approved=approved), silent=TRUE)
 res <- try(plotSPA(index, which="omAllocation", theme=unique(index$theme), item=names(df)[j], approved=approved), silent=TRUE)
