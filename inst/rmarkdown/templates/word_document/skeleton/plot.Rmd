@@ -15,6 +15,6 @@ res <- try(plotSPA(index, which="omAllocation", functionalGroup=unique(index$fun
 res <- try(plotSPA(index, which="omAllocation", section=SEC, item=names(df)[j], approved=approved), silent = TRUE)
 } else if (!(is.null(division))) {
       df <- try(plotSPA(om=index, which="omAllocation", division=division[i], dataframe = TRUE, approved=approved), silent=TRUE)
-res <- try(plotSPA(index, which="omAllocation", division=DIV, item=names(df)[j], approved=approved), silent=TRUE)
+res <- try(plotSPA(index, which="omAllocation", division= DIV, item=names(df)[j], approved=approved), silent=TRUE)
 }
 ```

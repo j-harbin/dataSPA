@@ -164,6 +164,8 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       }
 
     } else if (!(is.null(division))) {
+      #browser()
+      divvy <- unlist(lapply(strsplit(om$section_display, " - ", fixed=TRUE), function(x) x[3]))
       for (i in seq_along(division)) {
         index <- om[which(unlist(lapply(strsplit(om$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
         index2 <- salary[which(unlist(lapply(strsplit(salary$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]

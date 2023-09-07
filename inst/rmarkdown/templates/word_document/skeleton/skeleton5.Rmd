@@ -21,8 +21,14 @@ IDs <- sort(unique(c(ID1, ID2)))
 path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
+DIV <- unlist(unique(lapply(strsplit(index$section_display, " - ", fixed=TRUE), function(x) x[3])))
  
 cat("The project IDs included in this division are: ", LINKS)
+
+cat("\n")
+cat("\n")
+cat(paste0("This fact sheet summarizes both O&M and salary investments expected as well as potential risks due to inflation for Approved projects in the Maritimes Region for the ", unique(DIV), " division. The 'Summary' tab shows the total investment for the entire division (for approved projects in the Maritimes region), while the 'Research' tab shows the investment for projects in division ", unique(DIV), ' that are also classified as research, and so on.'))
+
 
 ```
 </p>
@@ -35,7 +41,6 @@ cat("The project IDs included in this division are: ", LINKS)
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
 
-DIV <- unlist(unique(lapply(strsplit(index$section_display, " - ", fixed=TRUE), function(x) x[3])))
 cat(paste0("Division: ", paste0(unique(DIV))))
 ```
 </font>
@@ -56,7 +61,7 @@ cat(paste0("Division: ", paste0(unique(DIV))))
 
 **Plots**
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved projects in the Maritimes region for this division. Graph color coded by funding type as shown by the legend"}
 
 res <- try(plotSPA(om=index, division=DIV, which="omBar", approved=approved), silent=TRUE)
 ```
@@ -64,7 +69,7 @@ res <- try(plotSPA(om=index, division=DIV, which="omBar", approved=approved), si
 ### Choose an om allocation plot {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE}
-df <- plotSPA(om=index, which="omAllocation", division =DIV, dataframe = TRUE, approved=approved)
+df <- plotSPA(om=index, which="omAllocation", division = DIV, dataframe = TRUE, approved=approved)
 headers <- names(df)
 for (j in seq_along(headers)) {
      cat("#### ", headers[j], "\n\n",
@@ -82,7 +87,7 @@ res <- try(plotSPA(om=index,which="predictOM", division=division[i], approved=ap
 
 
 
-```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved projects in the Maritimes region for this division. Investments calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 res <- try(plotSPA(salary=index2, division=DIV, which="salaryBar", approved=approved), silent=TRUE)
 ```
 
@@ -126,7 +131,7 @@ cat(paste0("division: ", DIV))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively", results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved research projects in the Martimes region in this division. Graph color coded by funding type as shown by the legend", results="asis", comment=NA}
 run <- ifelse(("Research" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 research1 <- index[which(index$activity_type == "Research"),]
@@ -162,7 +167,7 @@ res <- try(plotSPA(om=research1,which="predictOM", division=division[i], approve
 }
 ```
 
-```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved research projects in the Maritimes region in this division. Investments calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 research2 <- index2[which(index2$activity_type == "Research"),]
 res <- try(plotSPA(salary=research2, division=DIV, which="salaryBar", approved=approved), silent=TRUE)
@@ -217,7 +222,7 @@ cat(paste0("division: ", paste0(DIV)))
 </font>
 
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved monitoring projects in the Maritimes region for this division. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
 run <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
@@ -254,7 +259,7 @@ res <- try(plotSPA(om=monitor1,which="predictOM", division=division[i], approved
 ```
 
 
-```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved monitoring projects in the Maritimes region in this division. Investments calculating using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 monitor2 <- index2[which(index2$activity_type == "Monitoring"),]
 res <- try(plotSPA(salary=monitor2, division=DIV, which="salaryBar", approved=approved), silent=TRUE)
@@ -307,7 +312,7 @@ cat(paste0("division: ", paste0(unique(DIV))))
 </font>
 
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved assessment projects in the Maritimes region in this division. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
 run <- ifelse(("Assessment" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 assessment1 <- index[which(index$activity_type == "Assessment"),]
@@ -343,7 +348,7 @@ res <- try(plotSPA(om=assessment1,which="predictOM", division=division[i], appro
 ```
 
 
-```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved assessment projects in the Maritimes region in this division. Investments calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 assessment2 <- index2[which(index2$activity_type == "Assessment"),]
 res <- try(plotSPA(salary=assessment2, division=DIV, which="salaryBar", approved=approved), silent=TRUE)
@@ -394,7 +399,7 @@ cat(paste0("division: ", paste0(unique(DIV))))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved data management projects in the Maritimes region for this division. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
 run <- ifelse(("Data Management" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 management1 <- index[which(index$activity_type == "Data Management"),]
@@ -431,7 +436,7 @@ res <- try(plotSPA(om=management1,which="predictOM", division=division[i], appro
 ```
 
 
-```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved data management projects in the Maritimes region in this division. Investments calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 management2 <- index2[which(index2$activity_type == "Data Management"),]
 res <- try(plotSPA(salary=management2, division=DIV, which="salaryBar", approved=approved), silent = TRUE)
@@ -483,7 +488,7 @@ cat(paste0("division: ", paste0(unique(DIV))))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved other projects for the Maritimes region in this division. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
 run <- ifelse(("Other" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 other1 <- index[which(index$activity_type == "Other"),]
@@ -519,7 +524,7 @@ res <- try(plotSPA(om=other1,which="predictOM", division=division[i], approved=a
 ```
 
 
-```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved other projects in the Maritimes region in this division. Investments calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 other2 <- index2[which(index2$activity_type == "Other"),]
 res <- try(plotSPA(salary=other2, division=DIV, which="salaryBar", approved=approved), silent=TRUE)
