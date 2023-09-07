@@ -39,7 +39,7 @@ cat(paste0("This fact sheet summarizes both O&M and salary investments expected 
 </p>
 
 
-# Select the appropriate tab {.tabset}
+#   {.tabset}
 
 ## Summary
 
