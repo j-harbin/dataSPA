@@ -2,7 +2,7 @@
 % Please edit documentation in R/plotSPA.R
 \name{plotSPA}
 \alias{plotSPA}
-\title{Plot an dataSPA information}
+\title{Plot dataSPA information}
 \usage{
 plotSPA(
   om = NULL,
@@ -90,34 +90,35 @@ some functions will print debugging information.}
 None (invisible NULL).
 }
 \description{
-This function plots specific graphs (determined by the
-\code{which} argument) using the data frames returned by
-\code{\link[=getData]{getData()}}.
+This function plots specific graphs using the data
+frames returned by \code{\link[=getData]{getData()}}. Projects \emph{only} get
+included in these summary plots if they are Approved.
 }
 \details{
 The various plot types are as follows:
 \itemize{
 \item For \code{which="omBar"}, a bar graph representing amount of money ($)
-coded by funding type and show the number of deliverables and milestones per year in blue and red respectively
+coded by funding type. If plotting for a specific project, the number of
+deliverables and milestones per year are shown in blue and red respectively
 \item For \code{which="omPie"}, a pie chart representing amount of money ($)
 coded by funding type
 \item For \code{which="omAllocation"} Line graphs representing changes in O&M
-investment for categories over the years for a specific project.
-Average rate of change per year for each category, where applicable,
-displayed on the graph in red
+investment for categories over the years. The average rate of change
+per year for each category, where applicable, displayed on the graph in red
 \item For \code{which=omAllocationGeneral} a pie chat representing proportion of
 funding per category type is plotted for year each of the specified project
 \item For \code{which="salaryBar"} a bar graph representing amount of salary money ($)
 using the median values of a specific job classification. Graph color
 coded by funding type indicated by the legend.
 \item For \code{which="salaryAllocation"} Line graphs representing changes in Salary
-investment for different classifications over the years for a specific project.
-Average rate of change per year for each category, where applicable,
-displayed on the graph in red
+investment for different classifications over the years. The average rate
+of change per year for each category, where applicable, displayed on the
+graph in red
 \item For \code{which="weekAllocation"} a bar graph representing time (weeks)
-\item For \code{which="indeterminate"} a bar chart representing percentage of indeterminate vs
-non-Indeterminate employees for project years. Number of staff shown on the
-figure in red
+invested per job classification for project years is plotted
+\item For \code{which="indeterminate"} a bar chart representing percentage of
+indeterminate vs non-Indeterminate employees for project years.
+Number of staff shown on the figure in red
 \item For \code{which="predictSummary"}a line chart showing the trends for
 changes in different funding scenarios
 \item For \code{which="predict"} a bar chart showing the trends for changes

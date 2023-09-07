@@ -1,11 +1,7 @@
 #' Get required data from the PPT API
 #'
-#' If `type` is `om`, this function extracts information from the
-#' Project Planning Tool's (PPT) API to obtain information for
-#' the O&M investment into projects. If type is `salary`,
-#' salary information pertaining to projects is obtained.
-#' For type is `om_date` or `salary_date`, information about
-#' the date the information was pulled is obtained.
+#' This function obtains information from the PPT for
+#' either the O&M or salary investment.
 #'
 #' @param type the type of data that is wished to be extracted
 #' (either `om`, `om_date`, `salary`, or `salary_date`).

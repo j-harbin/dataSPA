@@ -59,7 +59,10 @@ A fact sheet about the specified project id.
 }
 \description{
 This function creates a fact sheet report for the
-specified project id or theme.
+specified project id, theme, functional group, section,
+or division. Each summary fact sheet is broken up into
+different tabs: Summary, Research, Monitoring, Advice,
+and Other.
 }
 \examples{
 \dontrun{

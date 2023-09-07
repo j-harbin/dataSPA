@@ -41,12 +41,8 @@ Set to \code{0} to download new data every time.}
 dataframe
 }
 \description{
-If \code{type} is \code{om}, this function extracts information from the
-Project Planning Tool's (PPT) API to obtain information for
-the O&M investment into projects. If type is \code{salary},
-salary information pertaining to projects is obtained.
-For type is \code{om_date} or \code{salary_date}, information about
-the date the information was pulled is obtained.
+This function obtains information from the PPT for
+either the O&M or salary investment.
 }
 \examples{
 \dontrun{

@@ -1,7 +1,10 @@
 #' Create a fact sheet for a specific project
 #'
 #' This function creates a fact sheet report for the
-#' specified project id or theme.
+#' specified project id, theme, functional group, section,
+#' or division. Each summary fact sheet is broken up into
+#' different tabs: Summary, Research, Monitoring, Advice,
+#' and Other.
 #'
 #' @param om a data frame created by `getData(type='om')`
 #' @param salary a data frame created by `getData(type='salary')`

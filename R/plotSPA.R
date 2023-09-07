@@ -1,23 +1,23 @@
-#' Plot an dataSPA information
+#' Plot dataSPA information
 #'
-#' This function plots specific graphs (determined by the
-#' `which` argument) using the data frames returned by
-#' [getData()].
+#' This function plots specific graphs using the data
+#' frames returned by [getData()]. Projects *only* get
+#' included in these summary plots if they are Approved.
 #'
 #' The various plot types are as follows:
 #'
 #' * For `which="omBar"`, a bar graph representing amount of money ($)
 #  invested in O&M per funding type for project years is plotted. Graph color
-#' coded by funding type and show the number of deliverables and milestones per year in blue and red respectively
+#' coded by funding type. If plotting for a specific project, the number of
+#' deliverables and milestones per year are shown in blue and red respectively
 #'
 #' * For `which="omPie"`, a pie chart representing amount of money ($)
 #  invested in O&M per funding type for project years is plotted. Graph color
 #' coded by funding type
 #'
 #' * For `which="omAllocation"` Line graphs representing changes in O&M
-#' investment for categories over the years for a specific project.
-#' Average rate of change per year for each category, where applicable,
-#' displayed on the graph in red
+#' investment for categories over the years. The average rate of change
+#' per year for each category, where applicable, displayed on the graph in red
 #'
 #' * For `which=omAllocationGeneral` a pie chat representing proportion of
 #' funding per category type is plotted for year each of the specified project
@@ -28,16 +28,16 @@
 #' coded by funding type indicated by the legend.
 #'
 #' * For `which="salaryAllocation"` Line graphs representing changes in Salary
-#' investment for different classifications over the years for a specific project.
-#' Average rate of change per year for each category, where applicable,
-#' displayed on the graph in red
+#' investment for different classifications over the years. The average rate
+#' of change per year for each category, where applicable, displayed on the
+#' graph in red
 #'
 #' * For `which="weekAllocation"` a bar graph representing time (weeks)
-# invested per job classification for project years is plotted
-
-#' * For `which="indeterminate"` a bar chart representing percentage of indeterminate vs
-#' non-Indeterminate employees for project years. Number of staff shown on the
-#' figure in red
+#' invested per job classification for project years is plotted
+#'
+#' * For `which="indeterminate"` a bar chart representing percentage of
+#' indeterminate vs non-Indeterminate employees for project years.
+#' Number of staff shown on the figure in red
 #'
 #' * For `which="predictSummary"`a line chart showing the trends for
 #' changes in different funding scenarios
@@ -152,7 +152,6 @@
 #' @return None (invisible NULL).
 #'
 #' @author Jaimie Harbin
-#'
 
 plotSPA <-
   function(om = NULL,
@@ -235,78 +234,6 @@ plotSPA <-
       message("which= ", which, " and id = ", id)
     }
 
-    # DEALING WITH FORMAT OF SECTIONS
-    # Step 1: IDENTIFY WHICH SECTION_DISPLAY HAS MORE THAN 3 -
-    # if (!(is.null(om))) {
-    #   test <- om
-    # } else {
-    #   test <- salary
-    # }
-    # sd <- unique(test$section_display[which(!(str_count(test$section_display,"\\-") == 3))])
-    # sd <- sd[-(which(sd == ""))]
-    # SD <- sd
-    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
-    # # AND REMOVE THE -
-    # bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
-    # if (!(length(bad2) == 0)) {
-    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
-    # sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
-    # }
-    #
-    #
-    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
-    # # AND REMOVE THE -
-    # bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
-    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
-    # if (!(length(bad2) == 0)) {
-    # sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
-    # }
-    #
-    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
-    # # AND REMOVE THE -
-    # bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
-    # if (!(length(bad2) == 0)) {
-    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
-    # sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
-    # }
-    #
-    # # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
-    # # AND REMOVE THE -
-    # bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
-    # if (!(length(bad2) == 0)) {
-    # bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
-    # sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
-    # }
-    #
-    # # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
-    # ss <- NULL
-    # for (i in seq_along(sd)) {
-    #   if (!(grepl("Regional Director Science Office", sd[i]))) {
-    #     ss[[i]] <- unique(strsplit(sd[i], " - ", fixed=TRUE)[[1]])
-    #   } else {
-    #     ss[[i]] <- strsplit(sd[i], " - ", fixed=TRUE)[[1]]
-    #   }
-    # }
-    # ss <- unique(ss)
-    # SS <- NULL
-    # for (i in seq_along(ss)) {
-    #   SS[[i]] <- toString(paste0(ss[[i]], collapse=" - "))
-    # }
-    # SS <- unlist(SS)
-    #
-    # # NEXT STEP: REDEFINE THE SECTION_DISPLAY IN THE OM DATAFRAME
-    # for (i in seq_along(sd)) {
-    #   #message(unique(om$section_display[which(om$section_display == SD[i])]), " is being replaced with ", SS[i])
-    #   if (is.null(salary)) {
-    #   om$section_display[which(om$section_display == SD[i])] <- SS[i]
-    #   } else if (is.null(om)) {
-    #     salary$section_display[which(salary$section_display == SD[i])] <- SS[i]
-    #   } else {
-    #     om$section_display[which(om$section_display == SD[i])] <- SS[i]
-    #     salary$section_display[which(salary$section_display == SD[i])] <- SS[i]
-    #   }
-    # }
-    #
     if (!(is.null(om))) {
     sec <- unique(gsub(".*- ","",unique(om$section_display)))
 
@@ -616,7 +543,16 @@ plotSPA <-
         }
 
       } else if (which == "predictOM") {
-        #HERE JAIM
+        # Only considering years up until the current fiscal date.
+        if (as.numeric(str_extract(max(years), ".+?(?=-)")) > as.numeric(str_extract(Sys.time(), ".+?(?=-)"))) {
+          fiscalyear <- as.numeric(str_extract(Sys.time(), ".+?(?=-)"))
+          firstyears <- as.numeric(str_extract(names(df), ".+?(?=-)"))
+          current <- which(abs(firstyears - fiscalyear) == min(abs(firstyears - fiscalyear)))  # Find closest year
+          df <- df[1:current]
+          years <- years[1:current]
+        }
+
+
         ly <-
           as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", years[length(years)])) # Getting last number of last year (ie. 2023-2024)
         lys <- as.numeric(ly) + 1:2
@@ -653,7 +589,6 @@ plotSPA <-
 
         DFs <- rbind(dfs, gap)
         rownames(DFs) <- c(namesFunding, paste0(namesFunding, " GAP"))
-
 
         # Restructure gap
         DFs <- DFs[sort(row.names(DFs)),]
@@ -1828,6 +1763,16 @@ plotSPA <-
         }
       }
     } else if (which == "predictSalary") {
+      #browser()
+
+      if (as.numeric(str_extract(max(salyears), ".+?(?=-)")) > as.numeric(str_extract(Sys.time(), ".+?(?=-)"))) {
+        fiscalyear <- as.numeric(str_extract(Sys.time(), ".+?(?=-)"))
+        firstyears <- as.numeric(str_extract(names(saldf), ".+?(?=-)"))
+        current <- which(abs(firstyears - fiscalyear) == min(abs(firstyears - fiscalyear)))  # Find closest year
+        saldf <- saldf[1:current]
+        salyears <- salyears[1:current]
+      }
+
       ncol <- length(salyears) + 3 # For three years
       DFSAL <-
         data.frame(matrix(NA, nrow = length(salnamesFunding), ncol = ncol))
@@ -2054,7 +1999,6 @@ text(
 if (dataframe == TRUE) {
   return(dfROI2)
 }
-
 }
 }
 

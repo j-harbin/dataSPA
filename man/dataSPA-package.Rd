@@ -8,8 +8,9 @@
 The \code{dataSPA} package is intended to be used by Department
 Of Fisheries and Oceans Canada (DFO) employees to obtain data
 from A) the Project Planning Tool (PPT) API and B) Salary
-Spread sheets to plot information related to allocation of
-funding.
+Spread sheets to create fact sheets summarizing O&M and
+Salary investments of specific projects, functional groups,
+sections, and divisions.
 }
 \details{
 The sketch given below illustrates the typical workflow with the package
