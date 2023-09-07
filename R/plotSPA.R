@@ -215,6 +215,9 @@ plotSPA <-
     if (approved) {
       om <- om[which(om$status == "Approved"),]
       salary <- salary[which(salary$status == "Approved"),]
+      if (length(om) == 0 && length(salary) == 0) {
+        stop("No projects for this subset in this region.")
+      }
     }
 
     if (!(
@@ -244,8 +247,8 @@ plotSPA <-
     if (debug > 0) {
       message("which= ", which, " and id = ", id)
     }
-
-    if (!(is.null(om))) {
+    if (!(is.null(om)) | !(length(om$project_id) == 0)) {
+    #message("dont want this")
     sec <- unique(gsub(".*- ","",unique(om$section_display)))
 
     } else {
@@ -305,13 +308,7 @@ plotSPA <-
         functionalGroup <- NULL
         division <- NULL
       }
-        # if (!(is.null(id)) && (!is.null(theme)) && (!(is.null(functionalGroup))) && (!(is.null(section)) && (!(is.null(division))))) {
-        #   message("Multiple arguments (id, theme, functionalGroup, section, and division) are given. The theme argument is used")
-        #   id <- NULL
-        #   functionalGroup <- NULL
-        #   section <- NULL
-        #   division <- NULL
-        # }
+
         if (!(is.null(id))) {
         crab <- om[which(om$project_id == id),]
         } else if (!(is.null(theme))) {
@@ -340,10 +337,6 @@ plotSPA <-
           if (length(section) > 1) {
             stop("Can only provide 1 section at a time, not ", length(section))
           }
-
-
-          #sec <- unique(gsub(".*- ","",unique(om$section_display)))
-          #sec <- sec[-which(sec == "")]
           if (!(section %in% unique(sec))) {
             stop("No projects have section ",section, " try ", paste0(sec, collapse=","), " instead.")
           }
@@ -989,8 +982,7 @@ plotSPA <-
           stop("No projects have functionalGroup ", functionalGroup, " try ", paste0(unique(salary$functionalGroup), collapse=","), " instead.")
         }
       } else if (!(is.null(section))) {
-        #sec <- unique(gsub(".*- ","",unique(salary$section_display)))
-        #sec <- sec[-which(sec == "")]
+
         if (!(section %in% unique(sec))) {
           stop("No projects have section ", section, " try ", paste0(unique(sec), collapse=","), " instead.")
         }
@@ -1101,7 +1093,7 @@ plotSPA <-
               data.frame(matrix(NA, nrow = length(salnamesFunding), ncol = length(salyears)))
             names(d) <- salyears
             rownames(d) <- sort(salnamesFunding)
-            d[, 1] <- DF[sort(rownames(DF)), ]
+            d[, 1] <- DF[sort(rownames(DF)), ][1]
             DF <- d
           }
 
@@ -1774,8 +1766,6 @@ plotSPA <-
         }
       }
     } else if (which == "predictSalary") {
-      #browser()
-
       if (as.numeric(str_extract(max(salyears), ".+?(?=-)")) > as.numeric(str_extract(Sys.time(), ".+?(?=-)"))) {
         fiscalyear <- as.numeric(str_extract(Sys.time(), ".+?(?=-)"))
         firstyears <- as.numeric(str_extract(names(saldf), ".+?(?=-)"))
