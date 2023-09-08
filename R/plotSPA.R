@@ -196,10 +196,15 @@ plotSPA <-
     } else {
     col <- sample(color, length(unique(salary$funding_source_display)))
     }
-
     if (!(is.null(region))) {
-      regions <- unique(str_extract(om$section_display, "[^-]+"))
+      if (!(is.null(om)) && (!(length(om$project_id) == 0))) {
+        regions <- unique(str_extract(om$section_display, "[^-]+"))
+      } else {
+      regions <- unique(str_extract(salary$section_display, "[^-]+"))
+      }
+      if (any(is.na(regions))) {
       regions <- regions[(-which(is.na(regions)))]
+      }
       regions <- str_trim(regions)
 
       if (!(region %in% regions)) {
