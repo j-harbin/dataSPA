@@ -296,6 +296,40 @@ cat(paste0(unique(index$lead_staff)))
 ```
 
 
+**About**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+  cat("  \n")
+  cat("  \n")
+
+if (!(unique(index$theme) == 0)) {
+  cat("Theme: ", unique(index$theme))
+  cat("  \n")
+  cat("  \n")
+}
+if (!(unique(index$functional_group) == "")) {
+  cat("Functional Group: ", unique(index$functional_group))
+  cat("  \n")
+  cat("  \n")
+
+}
+
+ss <- unique(gsub(".*- ","",unique(index$section_display)))
+if (!(ss %in% c('""', 'Aquatic Biotechnology Laboratory ( TO BE DELETE)'))) {
+  cat("Section: ", ss)
+  cat("  \n")
+  cat("  \n")
+
+}
+
+
+cat("Division: ", strsplit(index$section_display[1], " - ", fixed=TRUE)[[1]][3])
+cat("  \n")
+cat("  \n")
+
+```
+
+
 **Assumptions/ Disclaimers**
 
 1. The calculated salaries use the median salaries, not exact salaries of staff

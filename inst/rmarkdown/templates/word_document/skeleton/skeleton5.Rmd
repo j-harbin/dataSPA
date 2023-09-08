@@ -27,6 +27,8 @@ DIV <- unlist(unique(lapply(strsplit(index$section_display, " - ", fixed=TRUE), 
  
 cat("The project IDs included in this division are: ", LINKS)
 
+cat("DIV is equal to ", DIV)
+
 cat("\n")
 cat("\n")
 cat(paste0("This fact sheet summarizes both O&M and salary investments expected as well as potential risks due to inflation for Approved projects in the Maritimes Region for the ", unique(DIV), " division. The 'Summary' tab shows the total investment for the entire division (for approved projects in the Maritimes region), while the 'Research' tab shows the investment for projects in division ", unique(DIV), ' that are also classified as research, and so on.'))

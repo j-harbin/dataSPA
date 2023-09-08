@@ -196,7 +196,7 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
         index2 <- salary[which(unlist(lapply(strsplit(salary$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
 
         if (length(index$project_id) == 0 && length(index2$project_id) == 0) {
-          stop("No projects have division = ", division)
+          stop("No projects have division = ", division[i])
         }
 
         ## Move into Rmd
