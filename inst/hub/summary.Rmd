@@ -25,8 +25,10 @@ if (!(exists("cookie"))) {
       stop("Must add a line of code above that defines your cookie.")
 }
 
-om <- getData(type="om", cookie=cookie, age=90)
-om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),] # Hard coded in for maritimes
+if(!exists("om")){
+  om <- getData(type="om", cookie=cookie, age=90)
+  om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),] # Hard coded in for maritimes
+}
 
 theme <- unique(om$theme)
 theme <- theme[-which(theme == "0")]
