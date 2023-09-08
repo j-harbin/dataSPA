@@ -66,10 +66,21 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
   }
   Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
 
+  if (approved) {
+    om <- om[which(om$status == "Approved"),]
+    salary <- salary[which(salary$status == "Approved"),]
+
+    if (length(om) == 0 && length(salary) == 0) {
+      stop("No projects have approved projects.")
+    }
+
+  }
 
   if (!(is.null(region))) {
     regions <- unique(str_extract(om$section_display, "[^-]+"))
+    if (any(is.na(regions))) {
     regions <- regions[(-which(is.na(regions)))]
+    }
     regions <- str_trim(regions)
 
     if (!(region %in% regions)) {
@@ -111,7 +122,9 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       index <- om[which(om$project_id == id[i]), ]
       # Dealing with salary
       index2 <- salary[which(salary$project_id == id[i]), ]
-
+      if (length(index$project_id) == 0 && length(index2$project_id) == 0) {
+        stop("No projects have id = ", id)
+      }
       ## Move into Rmd
       rmarkdown::render(
         file.path(Rmdpath, "skeleton.Rmd"),
@@ -128,6 +141,10 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       # Dealing with salary
       index2 <- salary[which(salary$theme == theme[i]), ]
 
+      if (length(index$project_id) == 0 && length(index2$project_id) == 0) {
+        stop("No projects have theme = ", theme)
+      }
+
       ## Move into Rmd
       rmarkdown::render(
         file.path(Rmdpath, "skeleton2.Rmd"),
@@ -142,6 +159,10 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
         # Dealing with salary
         index2 <- salary[which(salary$functional_group == functionalGroup[i]), ]
 
+        if (length(index$project_id) == 0 && length(index2$project_id) == 0) {
+          stop("No projects have functional group = ", functionalGroup)
+        }
+
         ## Move into Rmd
         rmarkdown::render(
           file.path(Rmdpath, "skeleton3.Rmd"),
@@ -154,6 +175,11 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       for (i in seq_along(section)) {
         index <- om[which(gsub(".*- ","",om$section_display) == section[i]),]
         index2 <- salary[which(gsub(".*- ","",salary$section_display) == section[i]),]
+
+        if (length(index$project_id) == 0 && length(index2$project_id) == 0) {
+          stop("No projects have section = ", section)
+        }
+
         ## Move into Rmd
         rmarkdown::render(
           file.path(Rmdpath, "skeleton4.Rmd"),
@@ -169,6 +195,10 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       for (i in seq_along(division)) {
         index <- om[which(unlist(lapply(strsplit(om$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
         index2 <- salary[which(unlist(lapply(strsplit(salary$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
+
+        if (length(index$project_id) == 0 && length(index2$project_id) == 0) {
+          stop("No projects have division = ", division)
+        }
 
         ## Move into Rmd
         rmarkdown::render(

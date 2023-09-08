@@ -226,8 +226,9 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 
 
 ```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved monitoring projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
-run <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
-if (run) {
+
+runm <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
+if (runm) {
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
 res <- try(plotSPA(om=monitor1, functionalGroup=unique(index$functional_group), which="omBar", approved=approved), silent=TRUE)
 } else {
@@ -236,13 +237,13 @@ res <- try(plotSPA(om=monitor1, functionalGroup=unique(index$functional_group), 
 ```
 
 ```{r, echo=FALSE, results="asis"}
-if (run) {
+if (runm) {
 cat("### Choose an om allocation plot {.tabset .tabset-dropdown}")
 }
 ```
 
 ```{r, results="asis", echo=FALSE}
-if (run) {
+if (runm) {
 df <- try(plotSPA(om=monitor1, which="omAllocation", functionalGroup=unique(index$functional_group), dataframe = TRUE, approved=approved), silent=TRUE)
 headers <- names(df)
 for (j in seq_along(headers)) {
@@ -256,14 +257,14 @@ for (j in seq_along(headers)) {
 ### {-}
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-if (run) {
+if (runm) {
 res <- try(plotSPA(om=monitor1,which="predictOM", functionalGroup=functionalGroup[i], approved=approved), silent=TRUE)
 }
 ```
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved monitoring projects in the Maritimes region for this specific functional group. Investment calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-if (run) {
+if (runm) {
 monitor2 <- index2[which(index2$activity_type == "Monitoring"),]
 res <- try(plotSPA(salary=monitor2, functionalGroup=unique(index2$functional_group), which="salaryBar", approved=approved), silent=TRUE)
 }
@@ -271,13 +272,13 @@ res <- try(plotSPA(salary=monitor2, functionalGroup=unique(index2$functional_gro
 
 
 ```{r, echo=FALSE, results="asis"}
-if (run) {
+if (runm) {
 cat("### Choose an salary allocation plot {.tabset .tabset-dropdown}")
 }
 ```
 
 ```{r, results="asis", echo=FALSE}
-if (run) {
+if (runm) {
 df <- try(plotSPA(salary=monitor2, which="salaryAllocation", functionalGroup=unique(monitor2$functional_group), dataframe = TRUE, approved=approved), silent=TRUE)
 
 headers <- names(df)
@@ -298,7 +299,7 @@ for (j in seq_along(headers)) {
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-if (run) {
+if (runm) {
 res <- try(plotSPA(salary=monitor2, which="predictSalary", functionalGroup=unique(index2$functional_group), approved=approved), silent=TRUE)
 }
 ```
