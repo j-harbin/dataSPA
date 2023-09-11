@@ -363,7 +363,7 @@ res <- try(plotSPA(om=index, id=ID, which="omAllocation",approved=FALSE), silent
 
 ```{r, echo=FALSE, fig.cap="Figure 3: Bar graph showing gap in funding (red) if funding stayed the same and an inflation rate of 2% was applied to O&M costs. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-res <- try(plotSPA(om=index, salary=index2, which="predictOM", id=ID,approved=FALSE), silent=TRUE)
+res <- try(plotSPA(om=index, which="predictOM", id=ID,approved=FALSE), silent=TRUE)
 
 ```
 
