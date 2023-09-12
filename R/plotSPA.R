@@ -635,11 +635,20 @@ plotSPA <-
             cex = 0.7
           )
         } else {
-          l <- 10
+
           if (length(years) == 1) {
+            # 1
             l <- 1
-          } else if (length(years) > 12) {
-            l <- 17
+          } else if (length(years) > 1 && length(years) < 5) {
+            # 2,3,4
+            l <- 2
+          } else if (length(years) > 4 && length(years) < 7) {
+            # 5, 6
+            l <- 3
+          } else if (length(years) > 6) {
+            # To move further away, make l bigger
+            # 7
+            l <- 8
           }
 
           holder <- data.frame(matrix(0, nrow = length(DFs[,1]), l))
@@ -664,7 +673,7 @@ plotSPA <-
             c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding"),
             col = c(j[which(!(j == "red"))], "red"),
             pch = rep(15, (length(namesFunding)+1)),
-            cex = 0.4
+            cex = 0.55
           )
 
         }
@@ -1950,11 +1959,20 @@ legend(
   cex = 0.7
 )
 } else {
-  l <- 10
+
   if (length(salyears) == 1) {
+    # 1
     l <- 1
-  } else if (length(salyears) > 12) {
-    l <- 17
+  } else if (length(salyears) > 1 && length(salyears) < 5) {
+    # 2,3,4
+    l <- 2
+  } else if (length(salyears) > 4 && length(salyears) < 7) {
+    # 5, 6
+    l <- 3
+  } else if (length(salyears) > 6) {
+    # To move further away, make l bigger
+    # 7
+    l <- 8
   }
 
   holder <- data.frame(matrix(0, nrow = length(dfROI2[,1]), l))
@@ -1979,7 +1997,7 @@ legend(
     c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
     col = c(j[which(!(j == "red"))], "red"),
     pch = rep(15, (length(salnamesFunding)+1)),
-    cex = 0.5
+    cex = 0.55
   )
 
 }
