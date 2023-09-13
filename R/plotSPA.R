@@ -530,9 +530,13 @@ plotSPA <-
 
         } else {
           # Configure margins for theme plot
-          holder <- data.frame(matrix(0, nrow = length(df[,1]), 2))
-          names(holder) <- c("  ", "   ")
+          if (length(years) > 6) {
+          holder <- data.frame(matrix(0, nrow = length(df[,1]), 1))
+          names(holder) <- c("  ")
           DF <- cbind(df, holder)
+          } else {
+            DF <- df
+          }
           DF <- DF[sort(rownames(DF)),]
           barplot(
             as.matrix(DF),
@@ -542,7 +546,7 @@ plotSPA <-
             xlab = " ",
             las=2,
             legend.text = TRUE,
-            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.4)
+            args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5)
           )
           title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
 
