@@ -82,7 +82,7 @@
 #' of all regions is given.
 #' @param approved a boolean indicating if the plots should only include
 #' the approved projects. If FALSE, projects of all status (Approved,
-#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Cancelled)
+#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
 #' are included
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
@@ -253,7 +253,6 @@ plotSPA <-
       message("which= ", which, " and id = ", id)
     }
     if (!(is.null(om)) | !(length(om$project_id) == 0)) {
-    #message("dont want this")
     sec <- unique(gsub(".*- ","",unique(om$section_display)))
 
     } else {
@@ -639,7 +638,6 @@ plotSPA <-
             cex = 0.7
           )
         } else {
-
           if (length(years) == 1) {
             # 1
             l <- 1
@@ -672,8 +670,53 @@ plotSPA <-
               ylab = " ",
               cex.names=0.8,
             )
+#           browser()
+#           # Put legend labels on new line jaimielee
+#           #START
+#
+#           LABELS <- rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))]
+# # HERE MONDAY JAIMIE LEE
+#           final[[i]] <- NULL
+#           for (i in seq_along(LABELS)) {
+#             lab <- LABELS[i]
+#             numb <- 20
+#             if (nchar(lab) > numb) { # If more than numb characters
+#               match <- regexpr(".{numb} ", lab)
+#               if (!(match == " ")) { # If the numb value is not a space
+#                 if (match == -1) {
+#                   # JAIM split the label FIXME
+#                 } else {
+#                   position <- match + attr(match, "match.length")
+#                   location <- position[1]
+#                   # fixme: SPLIT AT THE LOCATION IT FIRST FINDS
+#                 }
+#               }
+#             } else {
+#               # Label wasn't too long
+#               final[[i]] <- lab
+#             }
+#           }
+#
+#
+#
+#
+#           # Position to insert at (e.g., 5th character)
+#           position_to_insert <- 5
+#
+#           # Insert the character
+#           modified_string <- paste(substr(input_string, 1, position_to_insert - 1),
+#                                    char_to_insert,
+#                                    substr(input_string, position_to_insert, nchar(input_string)),
+#                                    sep = "")
+#
+#           # Output the modified string
+#           cat(modified_string, "\n")
+          # END
+
+
+
           legend(
-            "bottomright",
+            "topright",
             c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding"),
             col = c(j[which(!(j == "red"))], "red"),
             pch = rep(15, (length(namesFunding)+1)),
@@ -800,7 +843,6 @@ plotSPA <-
             yearsx[[i]][[j]] <- which(years == yearsx[[i]][[j]])
           }
         }
-
 
         # Setting layout
         if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
@@ -973,13 +1015,6 @@ plotSPA <-
         section <- NULL
       }
 
-      # if (!(is.null(id)) && (!is.null(theme)) && (!is.null(functionalGroup)) && (!(is.null(section))) && (!(is.null(division)))) {
-      #   message("id, theme, functionalGroup, section, and divison argument are given. The theme argument is used")
-      #   id <- NULL
-      #   functionalGroup <- NULL
-      #   division <- NULL
-      #   section <- NULL
-      # }
       if (!(is.null(id))) {
         salaryKeep <- salary[which(salary$project_id == id),]
       } else if (!(is.null(theme))) {
@@ -1100,9 +1135,14 @@ plotSPA <-
           legend.text = TRUE,
           args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7))
         } else {
-          holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 2))
-          names(holder) <- c("  ", "   ")
+          # JAIMIE LEE
+          if (length(salyears) > 6) {
+          holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 1))
+          names(holder) <- c("  ")
           DF <- cbind(saldf, holder)
+          } else {
+            DF <- saldf
+          }
 
           if (length(salyears) > 1) {
             DF <- DF[sort(rownames(DF)), ]
@@ -1114,7 +1154,6 @@ plotSPA <-
             d[, 1] <- DF[sort(rownames(DF)), ][1]
             DF <- d
           }
-
           barplot(
             as.matrix(DF),
             col = col[which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))],
@@ -1122,10 +1161,9 @@ plotSPA <-
             ylim = c(0, max(unlist(ylim))*2),
             legend.text = TRUE,
             xlab = " ",
-            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.5),
+            args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5),
             las=2
           )
-
 
         }
         title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
