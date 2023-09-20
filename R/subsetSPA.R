@@ -24,6 +24,7 @@
 #' Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
 #' are included
 #' @importFrom stringr str_extract
+#' @export
 #' @examples
 #' \dontrun{
 #' # Example 1: Subset for approved projects in the Maritimes Region

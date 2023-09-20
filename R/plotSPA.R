@@ -670,54 +670,13 @@ plotSPA <-
               ylab = " ",
               cex.names=0.8,
             )
-#           browser()
-#           # Put legend labels on new line jaimielee
-#           #START
-#
-#           LABELS <- rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))]
-# # HERE MONDAY JAIMIE LEE
-#           final[[i]] <- NULL
-#           for (i in seq_along(LABELS)) {
-#             lab <- LABELS[i]
-#             numb <- 20
-#             if (nchar(lab) > numb) { # If more than numb characters
-#               match <- regexpr(".{numb} ", lab)
-#               if (!(match == " ")) { # If the numb value is not a space
-#                 if (match == -1) {
-#                   # JAIM split the label FIXME
-#                 } else {
-#                   position <- match + attr(match, "match.length")
-#                   location <- position[1]
-#                   # fixme: SPLIT AT THE LOCATION IT FIRST FINDS
-#                 }
-#               }
-#             } else {
-#               # Label wasn't too long
-#               final[[i]] <- lab
-#             }
-#           }
-#
-#
-#
-#
-#           # Position to insert at (e.g., 5th character)
-#           position_to_insert <- 5
-#
-#           # Insert the character
-#           modified_string <- paste(substr(input_string, 1, position_to_insert - 1),
-#                                    char_to_insert,
-#                                    substr(input_string, position_to_insert, nchar(input_string)),
-#                                    sep = "")
-#
-#           # Output the modified string
-#           cat(modified_string, "\n")
-          # END
-
-
+           # Put legend labels on new line
+          string <- rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))]
+          strings <- wrapText(string=string, nchar=20)
 
           legend(
             "topright",
-            c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding"),
+            c(strings, "Gap in funding"),
             col = c(j[which(!(j == "red"))], "red"),
             pch = rep(15, (length(namesFunding)+1)),
             cex = 0.55
@@ -2034,9 +1993,12 @@ legend(
       ylab = " ",
       cex.names=0.8,
     )
+
+  string <- rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))]
+  strings <- wrapText(string=string, nchar=20)
   legend(
     "bottomright",
-    c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
+    c(strings, "Gap in funding"),
     col = c(j[which(!(j == "red"))], "red"),
     pch = rep(15, (length(salnamesFunding)+1)),
     cex = 0.55
