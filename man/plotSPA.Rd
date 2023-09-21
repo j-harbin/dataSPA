@@ -73,7 +73,7 @@ this argument is ignored.}
 
 \item{approved}{a boolean indicating if the plots should only include
 the approved projects. If FALSE, projects of all status (Approved,
-Reviewed, Draft, Submitted, Not Approved, Recommended, and Cancelled)
+Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
 are included}
 
 \item{dataframe}{a Boolean indicating if the user wants the data frame

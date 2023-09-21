@@ -82,7 +82,7 @@
 #' of all regions is given.
 #' @param approved a boolean indicating if the plots should only include
 #' the approved projects. If FALSE, projects of all status (Approved,
-#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Cancelled)
+#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
 #' are included
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
@@ -253,7 +253,6 @@ plotSPA <-
       message("which= ", which, " and id = ", id)
     }
     if (!(is.null(om)) | !(length(om$project_id) == 0)) {
-    #message("dont want this")
     sec <- unique(gsub(".*- ","",unique(om$section_display)))
 
     } else {
@@ -530,9 +529,13 @@ plotSPA <-
 
         } else {
           # Configure margins for theme plot
-          holder <- data.frame(matrix(0, nrow = length(df[,1]), 2))
-          names(holder) <- c("  ", "   ")
+          if (length(years) > 6) {
+          holder <- data.frame(matrix(0, nrow = length(df[,1]), 1))
+          names(holder) <- c("  ")
           DF <- cbind(df, holder)
+          } else {
+            DF <- df
+          }
           DF <- DF[sort(rownames(DF)),]
           barplot(
             as.matrix(DF),
@@ -542,7 +545,7 @@ plotSPA <-
             xlab = " ",
             las=2,
             legend.text = TRUE,
-            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.4)
+            args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5)
           )
           title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
 
@@ -635,11 +638,19 @@ plotSPA <-
             cex = 0.7
           )
         } else {
-          l <- 10
           if (length(years) == 1) {
+            # 1
             l <- 1
-          } else if (length(years) > 12) {
-            l <- 17
+          } else if (length(years) > 1 && length(years) < 5) {
+            # 2,3,4
+            l <- 2
+          } else if (length(years) > 4 && length(years) < 7) {
+            # 5, 6
+            l <- 3
+          } else if (length(years) > 6) {
+            # To move further away, make l bigger
+            # 7
+            l <- 8
           }
 
           holder <- data.frame(matrix(0, nrow = length(DFs[,1]), l))
@@ -659,12 +670,16 @@ plotSPA <-
               ylab = " ",
               cex.names=0.8,
             )
+           # Put legend labels on new line
+          string <- rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))]
+          strings <- wrapText(string=string, nchar=20)
+
           legend(
-            "bottomright",
-            c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding"),
+            "topright",
+            c(strings, "Gap in funding"),
             col = c(j[which(!(j == "red"))], "red"),
             pch = rep(15, (length(namesFunding)+1)),
-            cex = 0.4
+            cex = 0.55
           )
 
         }
@@ -787,7 +802,6 @@ plotSPA <-
             yearsx[[i]][[j]] <- which(years == yearsx[[i]][[j]])
           }
         }
-
 
         # Setting layout
         if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
@@ -960,13 +974,6 @@ plotSPA <-
         section <- NULL
       }
 
-      # if (!(is.null(id)) && (!is.null(theme)) && (!is.null(functionalGroup)) && (!(is.null(section))) && (!(is.null(division)))) {
-      #   message("id, theme, functionalGroup, section, and divison argument are given. The theme argument is used")
-      #   id <- NULL
-      #   functionalGroup <- NULL
-      #   division <- NULL
-      #   section <- NULL
-      # }
       if (!(is.null(id))) {
         salaryKeep <- salary[which(salary$project_id == id),]
       } else if (!(is.null(theme))) {
@@ -1087,9 +1094,14 @@ plotSPA <-
           legend.text = TRUE,
           args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7))
         } else {
-          holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 2))
-          names(holder) <- c("  ", "   ")
+          # JAIMIE LEE
+          if (length(salyears) > 6) {
+          holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 1))
+          names(holder) <- c("  ")
           DF <- cbind(saldf, holder)
+          } else {
+            DF <- saldf
+          }
 
           if (length(salyears) > 1) {
             DF <- DF[sort(rownames(DF)), ]
@@ -1101,7 +1113,6 @@ plotSPA <-
             d[, 1] <- DF[sort(rownames(DF)), ][1]
             DF <- d
           }
-
           barplot(
             as.matrix(DF),
             col = col[which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))],
@@ -1109,10 +1120,9 @@ plotSPA <-
             ylim = c(0, max(unlist(ylim))*2),
             legend.text = TRUE,
             xlab = " ",
-            args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.5),
+            args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5),
             las=2
           )
-
 
         }
         title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
@@ -1950,11 +1960,20 @@ legend(
   cex = 0.7
 )
 } else {
-  l <- 10
+
   if (length(salyears) == 1) {
+    # 1
     l <- 1
-  } else if (length(salyears) > 12) {
-    l <- 17
+  } else if (length(salyears) > 1 && length(salyears) < 5) {
+    # 2,3,4
+    l <- 2
+  } else if (length(salyears) > 4 && length(salyears) < 7) {
+    # 5, 6
+    l <- 3
+  } else if (length(salyears) > 6) {
+    # To move further away, make l bigger
+    # 7
+    l <- 8
   }
 
   holder <- data.frame(matrix(0, nrow = length(dfROI2[,1]), l))
@@ -1974,12 +1993,15 @@ legend(
       ylab = " ",
       cex.names=0.8,
     )
+
+  string <- rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))]
+  strings <- wrapText(string=string, nchar=20)
   legend(
     "bottomright",
-    c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
+    c(strings, "Gap in funding"),
     col = c(j[which(!(j == "red"))], "red"),
     pch = rep(15, (length(salnamesFunding)+1)),
-    cex = 0.5
+    cex = 0.55
   )
 
 }
