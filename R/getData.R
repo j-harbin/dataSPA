@@ -524,7 +524,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     om$milestones[which(om$milestones == "")] <- 0 # This means there was no milestones
     om$deliverables[which(om$deliverables == "")] <- 0
-    return(om)
   }
 
   if(keep && type == "om"){
@@ -534,12 +533,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       file.rename(fn,
                   file.path(path,paste0("dataSPA_om_",date,".rds")))
       message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
-      return(om)
-
       }
 
     saveRDS(om,file = fn)
   }
+
+  if(type == "om") return(om)
 
   ## WORKING WITH SALARY DATA FRAME
   salaries <- NULL
