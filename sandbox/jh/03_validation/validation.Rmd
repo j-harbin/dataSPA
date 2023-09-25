@@ -1,0 +1,393 @@
+---
+output:
+  word_document: default
+  html_document: default
+  pdf_document: default
+---
+Validation checklist
+
+Disclaimer: Please use the reports from the test website found at http://glf-proxy:8018/mar-spa-test/.
+
+Save the checklist and answer the questions directly in this checklist. Please follow the following naming convention:
+
+*type_name.docx*, where type is either theme, functionalGroup, section, or division, and name is the name of your type. For example, if I am doing a validation of the “Marine Spatial Planning (MSP)” functional group, I would name the checklist functionalGroup_MarineSpatialPlanning(MSP).docx.  
+
+
+The same check list will be applied to all of the summary plots:
+
+1. Select which type of summary plot you are doing by bolding your choice.
+
+
+* Theme
+
+* Functional Group
+
+* Section
+
+* Division
+
+2. What is the name of your theme, functional group, section, or division?
+
+
+# Set Up
+
+The following code is used to help validate the plots of the summary reports created by the `dataSPA` package. All code should be copied and pasted into RStudio.
+
+Some points to note about the set up code below:
+
+1. You will need to manually change `load("../../../../../cookie")` to assigning your cookie
+
+2. Part B varies depending on if you're validating a theme, functional group, division, or section.
+
+3. You will need to manually enter in the value of your theme, functional group, division, or section.
+
+
+```{r, eval=FALSE}
+# The below code ensure you are looking at only approved projects in the Maritimes.
+# Part A
+library(dataSPA)
+library(stringr)
+load("../../../../../cookie")
+om <- getData(type="om", cookie=cookie, age=100)
+salary <- getData(type="salary", cookie=cookie, age=100)
+# Subset Maritimes region
+om <- om[which(str_trim(str_extract(om$section_display, "[^-]+")) == "Maritimes"),]
+salary <- salary[which(str_trim(str_extract(salary$section_display, "[^-]+")) == "Maritimes"),]
+# Subset only for approved projects
+om <- om[which(om$status == "Approved"),]
+salary <- salary[which(salary$status == "Approved"),]
+# looking for specific theme, functional group, or section division
+```
+
+```{r, eval=FALSE}
+# PART B:
+# IF YOU'RE DOING A THEME
+index <- om[which(om$theme == "YOUR THEME"),]
+index2 <- salary[which(salary$theme == "YOUR THEME"),]
+
+# IF YOU'RE DOING A FUNCTIONAL GROUP
+index <- om[which(om$functional_group == "YOUR FG"),]
+index2 <- salary[which(salary$functional_group == "YOUR FG"),]
+
+# IF YOU'RE DOING A SECTION
+index <- om[which(gsub(".*- ","",om$section_display) == "YOUR SECTION"),]
+index2 <- salary[which(gsub(".*- ","",salary$section_display) == "YOUR SECTION"),]
+
+# IF YOU'RE DOING A DIVISION
+index <- om[which(divisions == "YOUR DIVISION"),]
+index2 <- salary[which(divisions == "YOUR DIVISION"),]
+```
+
+
+# Check list
+
+Follow the check list below using the suggested code copy and pasted into RStudio. Please keep record of anything that does not seem to be plotted as it should.
+
+3. Does the statement "The project IDs included in this functional group are: " properly capture the IDs that is should. Use the code below, but note you will need to manually change "YOUR THEME", "YOUR FG", "YOUR SECTION" or "YOUR DIVISION" to the actual name of the theme, functional group, section, or division.
+
+```{r, eval=FALSE}
+t1 <- unique(index$project_id)
+t2 <- unique(index2$project_id)
+ids <- unique(c(t1,t2))
+sort(ids)
+```
+
+4. Is the correct theme, functional group, section, or division being printed out?
+
+5. Do you see Assumptions/Disclaimers? You should see this.
+
+6. Do you see an `omBar` plot? If no, ensure all `amount` values for om for that summary are 0 using the code below. If these are all 0, you are not expected to see an `omBar`, `omAllocation`, or `predictOM` plot.
+
+```{r, eval=FALSE}
+unique(index$amount)
+```
+
+7. Is the funding sources listed in the legend what you expect? Check using the code below. If no, check that any additional unexpected funding source in the legend have amount 0 (using part B of the code). If so, this is okay (and may be something we remove in the future).
+
+```{r, eval=FALSE}
+unique(index$funding_source_display)
+
+# Part B
+index[,c("funding_source_display","amount")]
+```
+
+
+8. Are the amount of each funding source what you were expect? Use the code below and then add up the amounts invested from each funding source for each year.
+
+```{r, eval=FALSE}
+dd <- index[,c("funding_source_display","amount", "fiscal_year")]
+
+o <- order(dd$fiscal_year)
+sorted <- dd[o, ]
+sorted
+```
+
+9. Does the above data frame show the same information at the O&M table in the PPT? (http://dmapps/en/ppt/projects/manage/). This will require you to look at each project ID in the PPT and add the sums.
+
+
+10. Are the years the correct years for approved projects only? Note that we only plot years up to and including the current fiscal year. This means in the PPT if there are investment amounts entered for the future, they will not be included. Use the code below.
+
+```{r, eval=FALSE}
+sort(unique(index$fiscal_year))
+```
+
+11. Is the legend covering/ overlapping any data?
+
+12. Is there anything else wrong worth noting about this figure?
+
+13. Do you see the `omAllocation` figure? If you determined in figure 6 that you should not see the `omBar` figure, it is okay to not see this figure.
+
+14. Do the drop down menu options match the data frame? The order does not matter. Use the code below.
+
+```{r, eval=FALSE}
+unique(index$category_display)
+```
+
+15. Does the O&M allocation amounts being plotted match what is being pulled from the API? Use the code below. Make sure to add your section, functional group, theme, or division argument and name. See example below.
+
+```{r, eval=FALSE}
+# Example
+# # df <- plotSPA(om=index, which="omAllocation", dataframe = TRUE, region="Maritimes", approved=TRUE, functionalGroup= "Marine Spatial Planning (MSP)")
+df <- plotSPA(om=index, which="omAllocation", dataframe = TRUE, region="Maritimes", approved=TRUE)
+df
+```
+
+16. Does the `df` data frame above match what's shown in the PPT? This would require you to look at the sums listed in all the projects.
+
+17. Is there anything else wrong worth noting about this figure?
+
+18. Do you see the `predictOM` plot? If you have determined that `omBar` does not need to be plotted and that `omAllocation` does not need to be plotted, this is okay not to see.
+
+19. Are the funding sources shown in the legend what you expect? If no, check that any additional unexpected funding source in the legend have amount 0. Use the code below. Note "Gap in funding" needs to be there.
+
+```{r, eval=FALSE}
+unique(index$funding_source_display)
+
+# If legend doesn't add up
+index[,c("funding_source_display","amount")]
+```
+
+20. Is the amounts plotted what you would expect? Use the code below and add the amounts for each funding source for each year.
+
+```{r, eval=FALSE}
+ddd <- index[,c("funding_source_display","amount", "fiscal_year")]
+o <- order(ddd$fiscal_year)
+sorted <- ddd[o, ]
+sorted
+
+```
+
+21. Is the amount gap what you expect? Use the following code and add the amounts for each inflation year. 
+
+```{r, eval=FALSE}
+i <- index[which(index$fiscal_year == max(sort(unique(index$fiscal_year)))),]
+d <- i[,c("funding_source_display","amount", "fiscal_year")]
+d$inflation <- d$amount*1.02
+d$inflation2 <- d$amount*1.04
+d$inflation3 <- d$amount*1.06
+o <- order(d$fiscal_year)
+sorted <- d[o, ]
+sorted
+
+# Find the gaps:
+sum(d$inflation)-sum(i$amount) # first gap
+sum(d$inflation2)-sum(i$amount) # second gap
+sum(d$inflation3)-sum(i$amount) # third gap
+
+```
+
+22. Is the legend covering actual data?
+
+23. Is there anything else wrong worth noting about this figure?
+
+24. Do you see the `salaryBar` plot? If no, ensure all `amount_total` values for salary for that summary are 0. Use the code below. If these are all 0, you are not expected to see an `salaryBar`, `salaryAllocation`, or `predictSalary` plot.
+
+```{r, eval=FALSE}
+unique(index2$amount_total)
+```
+
+25. Are the funding sources shown in the legend what you expect? If no, check that any additional unexpected funding source in the legend have `amount_total` 0. Note that this figure includes both regular and overtime hours. Use the code below.
+
+```{r, eval=FALSE}
+unique(index2$funding_source_display)
+
+# If legend doesn't add up
+i <- index2[,c("funding_source_display","amount_total", "fiscal_year")]
+o <- order(i$fiscal_year)
+sorted <- i[o, ]
+sorted
+```
+
+26. Is the amounts plotted what you would expect? Use the code below to then add totals for each funding source for each year.
+
+```{r, eval=FALSE}
+i <- index2[,c("funding_source_display","amount_total", "fiscal_year")]
+o <- order(i$fiscal_year)
+sorted <- i[o, ]
+sorted
+```
+
+27. Does the above data frame show the same information at the O&M table in the PPT? This would require you to add sums for every year for every project in this summary.
+
+
+28. Is the years shown what you would expect? Use the code below.
+
+```{r,eval=FALSE}
+sort(unique(index2$fiscal_year))
+```
+
+29. Is the legend covering actual data?
+
+30. Is there anything else wrong worth noting about this figure?
+
+31. Do you see the `salaryAllocation` figure? If you have determined that it is okay to not see `omBar`, you should not expect to see this figure.
+
+32. Do the drop down menu options match the data frame? The order does not matter. Use the code below.
+
+```{r, eval=FALSE}
+unique(index2$level_display)
+```
+
+33. Does the salary allocation amounts being plotted match what is being pulled from the API? Use the code below. Note you will need to add the `theme`, `functionalGroup`, `section`, or `division` argument below. See example.
+
+```{r, eval=FALSE}
+# Example
+# df <- plotSPA(salary=index2, which="salaryAllocation", dataframe = TRUE, region="Maritimes", approved=TRUE, functionalGroup= "Marine Spatial Planning (MSP)")
+df <- plotSPA(salary=index2, which="salaryAllocation", dataframe = TRUE, region="Maritimes", approved=TRUE)
+df
+```
+
+34. Does the `df` data frame above match what's shown in the PPT? This will need to be a manual calculation for all projects in this summary.
+
+35. Is there anything else wrong worth noting about this figure?
+
+36. Do you see the `predictSalary` plot? If you have determine that you should not see `salaryBar` and `salaryAllocation`, it is expected to not see this figure.
+
+37. Are the funding sources shown in the legend what you expect? If no, check that any additional unexpected funding source in the legend have `amount_weeks` 0. Note this does not include over time hours. Use the code below.
+
+```{r, eval=FALSE}
+unique(index2$funding_source_display)
+
+# If legend doesn't add up
+i <- index2[,c("funding_source_display","amount_week", "fiscal_year")]
+o <- order(i$fiscal_year)
+sorted <- i[o, ]
+sorted
+```
+
+38. Is the amounts plotted what you would expect? Note this does not include overtime hours, which is why `amount_week` isn't extracted and not `amount_total`.Use the code below to add funding amounts for each year.
+
+```{r, eval=FALSE}
+dd <- index2[,c("funding_source_display","amount_week", "fiscal_year")]
+o <- order(dd$fiscal_year)
+sorted <- dd[o, ]
+```
+
+38. Is the amount gap what you expect? Go to the attached excel sheet and use the code. Do these step by step.
+
+```{r, eval=FALSE}
+
+# Fill the following info into step one of your spreadsheet
+# Follow predictSalary_example tab for extra help
+
+# Step 1 LOOP ALL YEARS OF PROJECTS AND OBTAIN NUMBER OF WEEKS
+dd <- index2[,c("level_display", "median_salary", "duration_weeks", "fiscal_year")]
+o <- order(dd$fiscal_year)
+sorted <- dd[o, ]
+
+lastYear <- which(sorted$fiscal_year == max(unique(sorted$fiscal_year)))
+df <- sorted[lastYear,]
+df
+
+
+# Fill the following into step 2 of the excel sheet and manually do this calculation
+# Step 2 DETERMINE SALRIES FOR EACH YEAR FOR EACH LEVEL
+lastindex2 <- index2[which(index2$fiscal_year == max(unique(index2$fiscal_year))),]
+fundingLevel <- lastindex2$level_display
+      fundingLevel[which(fundingLevel == "IT--03")] <- "CS--03"
+      soi <- vector(mode = "list", length(unique(lastindex2$level_display)))
+      load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
+      for (i in seq_along(unique(fundingLevel))) {
+        s <-
+          salaries[which(grepl(unique(fundingLevel)[[i]], salaries$`Level and Step`)), ] # Find which salary spreadsheet to take median
+        eyears <-
+          as.numeric(sub('.* ', '', s$`Level and Step`)) # Extract everything after space to get year
+        message(paste0(unique(eyears), collapse=","))
+        EY <- sort(unique(as.numeric(eyears)))
+        for (j in seq_along(EY)) {
+          soi[[i]][j] <-
+            median(s[which(eyears %in% EY[j]), ]$`Annual Salary`, na.rm = TRUE)
+        }
+      }
+      names(soi) <- unique(fundingLevel) # This is the medians over the years
+soi
+      
+# Step 3 DETERMINE RATE OF INCREASE
+roi <- NULL
+      for (i in seq_along(soi)) {
+        x <- 1:length(soi[[i]])
+        y <- soi[[i]]
+        m <- lm(y ~ x)
+        roi[[i]] <- unname(m$coefficients[2]) # Approx 1500 every year
+      }
+      names(roi) <- unique(fundingLevel) # This is the rate of increase/year
+      roi
+
+
+# Step 5 CHANGE MEDIAN OF SALARIES BY ROI
+# Fill in spread sheet using the video
+
+# LAST 6: LOOK AT GAP
+# Look at Gap in the red print in the report.
+```
+
+
+40. Is the legend covering any actual data?
+
+41. Is there anything else wrong worth noting about this figure?
+
+42. Is there anything else worth noting that should be fixed for this report?
+
+43. Make a list of questions (identifying the tab you were testing) that had problems.
+
+Follow steps 6-41 again for each tab after doing the subset in the code shown below:
+
+```{r, eval=FALSE}
+
+# IF TAB RESEARCH
+index <- om[which(om$activity_type == "Research"),]
+index2 <- salary[which(salary$activity_type == "Research"),]
+# IF TAB MONITORING
+index <- om[which(om$activity_type == "Monitoring"),]
+index2 <- salary[which(salary$activity_type == "Monitoring"),]
+
+# IF TAB ASSESSMENT
+index <- om[which(om$activity_type == "Assessment"),]
+index2 <- salary[which(salary$activity_type == "Assessment"),]
+
+# IF TAB DATA MANAGEMENT
+index <- om[which(om$activity_type == "Data Management"),]
+index2 <- salary[which(salary$activity_type == "Data Management"),]
+
+# IF TAB OTHER (ADMIN + OUTREACH)
+index <- om[which(om$activity_type == "Other"),]
+index2 <- salary[which(salary$activity_type == "Other"),]
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

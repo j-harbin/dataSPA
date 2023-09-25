@@ -183,6 +183,15 @@ plotSPA <-
       funding_source_display <-
       fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <- NULL
 
+    # remove all of the amount = 0
+    if (!(is.null(om))) {
+    om <- om[-(which(om$amount == 0)),]
+    }
+
+    if (!(is.null(salary))) {
+      salary <- salary[-(which(salary$amount_total == 0)),]
+    }
+
     if (is.null(which)) {
       stop(
         "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', or 'predictOM'"
@@ -471,7 +480,6 @@ plotSPA <-
         barplot(
           as.matrix(df),
           col = col[which(sort(unique(om$funding_source_display)) %in% sort(namesFunding))],
-          #col = c(1:length(namesFunding)),
           ylab = " ",
           ylim = c(0, max(unlist(ylim))*1.5),
           xlab = " ",
