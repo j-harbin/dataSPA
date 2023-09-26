@@ -185,11 +185,15 @@ plotSPA <-
 
     # remove all of the amount = 0
     if (!(is.null(om))) {
+      if (any(om$amount == 0)) {
     om <- om[-(which(om$amount == 0)),]
+      }
     }
 
     if (!(is.null(salary))) {
+      if (any(salary$amount_total == 0)) {
       salary <- salary[-(which(salary$amount_total == 0)),]
+      }
     }
 
     if (is.null(which)) {
