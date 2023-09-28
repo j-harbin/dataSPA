@@ -58,6 +58,6 @@ DT::datatable(df,
               caption = 'Table 1: Table showing the project title, the link to the report created by the dataSPA package (with the associated project ID number), and the link to the homepage of the project on the PPT.',
               filter="top",
               escape=FALSE,
-              options=list(columnDefs = list(list(visible=FALSE, targets=c(4)))))
+              options=list(columnDefs = list(list(visible=FALSE, targets=c(Overview)))))
 ```
 
