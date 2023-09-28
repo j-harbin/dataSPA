@@ -303,12 +303,18 @@ cat(paste0(unique(index$lead_staff)))
   cat("  \n")
 
 if (!(unique(index$theme) == 0)) {
-  cat("<u>Theme</u>: ", unique(index$theme))
+  path <- "http://glf-proxy:8018/mar-spa/themes/"
+  link <- paste0(path, gsub(" ", "%20", unique(index$theme)), ".html")
+  LINK <- paste0('<a href="',link,'">',unique(index$theme),'</a>')
+  cat("<u>Theme</u>: ", LINK)
   cat("  \n")
   cat("  \n")
 }
 if (!(unique(index$functional_group) == "")) {
-  cat("<u>Functional Group</u>: ", unique(index$functional_group))
+  path <- "http://glf-proxy:8018/mar-spa/functionalGroup/"
+  link <- paste0(path, gsub(" ", "%20", unique(index$functional_group)), ".html")
+    LINK <- paste0('<a href="',link,'">',unique(index$functional_group),'</a>')
+  cat("<u>Functional Group</u>: ", LINK)
   cat("  \n")
   cat("  \n")
 
@@ -316,14 +322,19 @@ if (!(unique(index$functional_group) == "")) {
 
 ss <- unique(gsub(".*- ","",unique(index$section_display)))
 if (!(ss %in% c('""', 'Aquatic Biotechnology Laboratory ( TO BE DELETE)'))) {
-  cat("<u>Section</u>: ", ss)
+    path <- "http://glf-proxy:8018/mar-spa/sections/"
+  link <- paste0(path, gsub(" ", "%20", ss), ".html")
+    LINK <- paste0('<a href="',link,'">',ss,'</a>')
+  cat("<u>Section</u>: ", LINK)
   cat("  \n")
   cat("  \n")
 
 }
-
-
-cat("<u>Division</u>: ", strsplit(index$section_display[1], " - ", fixed=TRUE)[[1]][3])
+dddd <- strsplit(index$section_display[1], " - ", fixed=TRUE)[[1]][3]
+  path <- "http://glf-proxy:8018/mar-spa/divisions/"
+  link <- paste0(path, gsub(" ", "%20", dddd), ".html")
+    LINK <- paste0('<a href="',link,'">',dddd,'</a>')
+cat("<u>Division</u>: ", LINK)
 cat("  \n")
 cat("  \n")
 
