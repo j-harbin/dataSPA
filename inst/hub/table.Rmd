@@ -22,6 +22,7 @@ if(!exists("reportdir")){
 }
 
 ids <- str_extract(list.files(reportdir), "[^.]+")
+ids <- sort(as.numeric(ids))
 
 if(!exists("om")){
   # NOTE: NEED TO DEFINE COOKIE FOR THIS TO WORK
