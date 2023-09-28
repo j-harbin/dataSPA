@@ -34,17 +34,21 @@ if(!exists("om")){
 }
 
 titles <- NULL
+overviews <- NULL
 ppt <- NULL
+
 for (i in seq_along(ids)) {
     titles[[i]] <- unique(om$project_title[which(om$project_id == ids[i])])
+    overviews[[i]] <- unique(om$overview[which(om$project_id == ids[i])])
     ppt[[i]] <- paste0("http://dmapps/en/ppt/projects/",ids[i], "/view/")
 }
 titles <- unlist(titles)
 
 links <- paste0("reports/", str_extract(list.files(reportdir), "[^.]+"),".html")
-df <- data.frame(matrix(NA, ncol = 3, nrow = length(ids)))
-names(df) <- c("Title", "Fact Sheet", "PPT")
+df <- data.frame(matrix(NA, ncol = 4, nrow = length(ids)))
+names(df) <- c("Title", "Fact Sheet", "PPT","Overview")
 df$Title <- titles
+df$Overview <- unlist(overviews)
 
 df$`Fact Sheet` <- paste0('<a href="',links,'">',ids,'</a>')
 df$PPT <- paste0('<a href="', ppt,'">', ids, '</a>')
@@ -52,6 +56,7 @@ df$PPT <- paste0('<a href="', ppt,'">', ids, '</a>')
 DT::datatable(df,
               caption = 'Table 1: Table showing the project title, the link to the report created by the dataSPA package (with the associated project ID number), and the link to the homepage of the project on the PPT.',
               filter="top",
-              escape=FALSE)
+              escape=FALSE,
+              options=list(columnDefs = list(list(visible=FALSE, targets=c(4)))))
 ```
 
