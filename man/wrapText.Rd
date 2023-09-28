@@ -2,18 +2,13 @@
 % Please edit documentation in R/wrapText.R
 \name{wrapText}
 \alias{wrapText}
-\title{Create new line for long string
-This function identifies which strings have charaters greater than
-the specified \code{nchar} value. If the string is greater than the
-specified \code{nchar}, it checks if the nchar(th) character is a space.
-If it is, a new line is created. If it isn't, it looks for
-the next space and creates a new line there. This can be used
-in legends when funding source names are longer than desired.}
+\title{Create new line for long string}
 \usage{
 wrapText(string, nchar = 20, debug = 0)
 }
 \arguments{
-\item{string}{a character string or list of character strings}
+\item{string}{a character string or list of character strings
+to be dived by nchar times}
 
 \item{nchar}{the number indicating the position to create a
 new line in a string}
@@ -22,8 +17,10 @@ new line in a string}
 If this is less than 1, no debugging is done. Otherwise,
 some functions will print debugging information.}
 }
+\value{
+a string with line breaks every nchar characters
+}
 \description{
-Create new line for long string
 This function identifies which strings have charaters greater than
 the specified \code{nchar} value. If the string is greater than the
 specified \code{nchar}, it checks if the nchar(th) character is a space.
@@ -47,4 +44,7 @@ in legends when funding source names are longer than desired.
 and there is no space after
 cat(wrapText("ABCDEF GHIJHLMOPDSDABBBBAAAASASASJH"))
 }
+}
+\author{
+Jaimie Harbin
 }

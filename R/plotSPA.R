@@ -488,8 +488,8 @@ plotSPA <-
           ylim = c(0, max(unlist(ylim))*1.5),
           xlab = " ",
           las=2,
-          legend.text = TRUE,
-          args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7)
+          legend.text = TRUE, #JAIM
+          args.legend=list(x="bottomright", legend=wrapText(string=sort(namesFunding)), inset=c(-0.35,0), cex=0.7, bty="n")
         )
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
         combine <- c(unlist(unname(ms)), unlist(unname(dv)))
@@ -644,7 +644,7 @@ plotSPA <-
             )
           legend(
             "topleft",
-            c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding"),
+            wrapText(c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding")),
             col = c(j[which(!(j == "red"))], "red"),
             pch = rep(20, (length(namesFunding)+1)),
             cex = 0.7
@@ -1104,9 +1104,8 @@ plotSPA <-
           xlab = " ",
           las=2,
           legend.text = TRUE,
-          args.legend=list(x="bottomright", inset=c(-0.35,0), cex=0.7))
+          args.legend=list(x="bottomright", legend=wrapText(sort(salnamesFunding)), inset=c(-0.35,0), cex=0.7),bty="n")
         } else {
-          # JAIMIE LEE
           if (length(salyears) > 6) {
           holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 1))
           names(holder) <- c("  ")
@@ -1132,7 +1131,7 @@ plotSPA <-
             ylim = c(0, max(unlist(ylim))*2),
             legend.text = TRUE,
             xlab = " ",
-            args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5),
+            args.legend=list(x="topright", legend=wrapText(sort(salnamesFunding)),inset=c(-0.35,0), cex=0.5,bty="n"),
             las=2
           )
 
@@ -1966,10 +1965,11 @@ bp <-
   )
 legend(
   "topleft",
-  c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding"),
+  wrapText(c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding")),
   col = c(j[which(!(j == "red"))], "red"),
   pch = rep(20, (length(salnamesFunding)+1)),
-  cex = 0.7
+  cex = 0.7,
+  bty="n"
 )
 } else {
 
