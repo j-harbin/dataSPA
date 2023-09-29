@@ -11,7 +11,7 @@ output:
 <span style="color:#43C6DB">User Story: As a Science staff, I want to create a reliable reproducible report for Marine Conservation Targets (MCT) in the St. Ann's Bank. This report will summarize salary and o&m investment as well as milestones and deliverables. The data is obtained from the Project Planning Tool (PPT) and publicly available salary information to facilitate Principle Investigator's  (PI) to validate proposed projects and managers to review them.</span>
 
 Click on a Project ID to be directed to a fact sheet created by the `dataSPA` package or the PPT to be directed to the projects homepage
-on the project planning tool.
+on the project planning tool. Use the "search" bar to search for key words that may be in the overview.
 
 
 ```{r, echo=FALSE}
@@ -42,7 +42,7 @@ for (i in seq_along(ids)) {
 }
 titles <- unlist(titles)
 
-links <- paste0("reports/", str_extract(list.files(reportdir), "[^.]+"),".html")
+links <- paste0("reports/", ids,".html")
 df <- data.frame(matrix(NA, ncol = 3, nrow = length(ids)))
 names(df) <- c("Title", "Fact Sheet", "PPT")
 df$Title <- titles
