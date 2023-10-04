@@ -18,7 +18,7 @@ if (!(length(index$project_id) == 0)) {
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
 if(!exists("filedate")){
-  filedate <- getData(type="om_date", age=30, cookie=cookie)
+  filedate <- getData(type="om_date", age=4000, cookie=cookie)
 }
 cat(paste0("Data pulled for this report was obtained on ", filedate))
 ```
