@@ -4,7 +4,7 @@
 #' either the O&M or salary investment.
 #'
 #' @param type the type of data that is wished to be extracted
-#' (either `om`, `om_date`, `salary`, or `salary_date`).
+#' (either `om`, `om_date`, `salary`, `salary_date`, or `collaboration`).
 #' The types that end in `_date` will return the date of creation
 #' of a locally stored file.
 #'
@@ -62,15 +62,15 @@
 getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(type)) {
-    stop("Must provide a type argument of either 'om' or 'salary'")
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', or 'collaboration'")
   }
 
   if (is.null(cookie)) {
     stop("Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
-  if (!(type %in% c("om", "salary", "om_date", "salary_date"))) {
-    stop("Must provide a type argument of either 'om', 'salary', 'om_date', or 'salary_date'")
+  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration"))) {
+    stop("Must provide a type argument of either 'om', 'salary', 'om_date','salary_date', or 'collaboration'")
   }
   if (debug > 0) {
     message("type = ", type)
@@ -125,18 +125,22 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
     }
   }
+
+  # FIXME: can't yet cache for collaborations
+
   # 1. LISTING LINKS
 
   if (type %in% c("salary", "salary_date")) {
   links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff")
-  } else {
+  } else if (type %in% c("om", "om_date")) {
     links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/")
+  } else if (type == "collaboration") {
+    links <- c("http://dmapps/api/ppt/collaborations/")
   }
 
   API_DATA <- NULL
 
   for (i in seq_along(links)) {
-
     req <- httr2::request(links[i])
 
     # Add custom headers
@@ -155,8 +159,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     # Read the returned data as a JSON file
     page_data <- httr2::resp_body_json(resp)
+    if (type == "collaboration" && links[i] == "http://dmapps/api/ppt/collaborations/") {
+      api_data <- page_data
+    }
 
     # Create a list to hold the list of full API results
+    if (!(type == "collaboration" && links[i] == "http://dmapps/api/ppt/collaborations/")) {
     api_data <- page_data$results
 
     # Get the information about the next page in the API results
@@ -187,12 +195,14 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       next_page <- page_data$`next`
       cat(paste0(next_page, '\n'))
     }
+    }
 
     API_DATA[[i]] <- api_data
   }
   names(API_DATA) <- links
 
   # LINK 1: Dealing with "http://dmapps/api/ppt/om-costs"
+  if ("http://dmapps/api/ppt/om-costs" %in% names(API_DATA)) {
   api_data <- API_DATA[[1]]
 
   # Fix NULL descriptions
@@ -212,16 +222,22 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   if (type=="om") {
     om <- do.call(rbind, p)
   }
+  }
 
   ## LINK 2: Dealing with "http://dmapps/api/ppt/project-years"
+  if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
   api_data2 <- API_DATA[[2]]
+  }
 
 
   ## LINK 3: Dealing with "http://dmapps/api/ppt/activities-full/"
+  if ("http://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
   api_data3 <- API_DATA[[3]]
+  }
 
 
   ## Putting "http://dmapps/api/ppt/activities-full/" into a data frame
+  if ("http://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
 
   deliv <- lapply(api_data3, function(x) x[c("type_display", "description")])
   titles <- lapply(api_data3, function(x) x$project_year_obj)
@@ -256,10 +272,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
   names(DELIVERABLES) <- unique(DDF$title)
   names(MILESTONES) <- unique(DDF$title)
-
-
+  }
 
   ## Putting "http://dmapps/api/ppt/project-years" into a data frame
+  if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
 
   t <- lapply(api_data2, function(x) x$project$years)
 
@@ -365,20 +381,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     ppp$section_display[which(ppp$section_display == SD[i])] <- SS[i]
   }
 
-  ## end of fix
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   lov <- list()
   for (i in 1:length(p))  {
@@ -393,6 +395,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   tt <- lapply(listofvectors, function(x) as.data.frame(x[c("display_name", "id", "project_title", "status_display")]))
 
   ttt <- do.call(rbind, tt)
+  }
 
   # CONCLUSION: id from ttt is equal to project_year_id in om
   # All om$project_year_id are in ttt$id
@@ -430,6 +433,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   ## LINK 4: GETTING THEME DIFFERENTLY
   # Theme
   # Obtaining OM data from the API
+  if (type %in% c("om", "salary")) {
   req <- httr2::request("http://dmapps/api/ppt/themes/")
   # Add custom headers
   req <- req %>% httr2::req_headers("Cookie" = cookie)
@@ -494,6 +498,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
   }
   names(project_ids) <- themeNames
+  }
   if (type == "om") {
     om$theme <- 0
     for (i in seq_along(project_ids)) {
@@ -678,13 +683,13 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL <- SAL[-bad,]
   }
 
+  if (type == "salary") {
   SAL$theme <- 0
   for (i in seq_along(project_ids)) {
     for (j in seq_along(project_ids[[i]])) {
       SAL$theme[which(SAL$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
     }
   }
-  if (type == "salary") {
     SAL$activity_type <- 0
     SAL$functional_group <- 0
     SAL$section_display <- 0
@@ -702,9 +707,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
     SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
     SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
-  }
-
-
+  #JAIM HERE
 
   ## ADDING IN OVERVIEW/ OBJECTIVES
   # ppp has overview ppp$overview[which(ppp$id == om$project_id[i])][1]
@@ -767,6 +770,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     }
   }
+  return(SAL)
+  }
   if(keep && type == "salary") {
     #JAIM
     fn <- file.path(path,"dataSPA_SAL.rds")
@@ -778,6 +783,22 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
 
     saveRDS(SAL,file = fn)
+    return(SAL)
   }
-  return(SAL)
+
+  if (type == "collaboration") {
+    coll <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 5), row.names = NULL)
+    names(coll) <- c("project_id", "new_or_existing", "type", "critical", "organization")
+    coll$project_id <- lapply(API_DATA[[1]], function(x) x$project_id)
+    coll$new_or_existing <- unlist(lapply(API_DATA[[1]], function(x) x$new_or_existing_display))
+    coll$type <- unlist(lapply(API_DATA[[1]], function(x) x$type_display))
+    coll$critical <- unlist(lapply(API_DATA[[1]], function(x) x$critical))
+    for (i in seq_along(API_DATA[[i]])) {
+      if (is.null(API_DATA[[1]][[i]]$organization)) {
+        API_DATA[[1]][[i]]$organization <- 0
+      }
+    }
+    coll$organization <- unlist(lapply(API_DATA[[1]], function(x) x$organization))
+    return(coll)
+  }
 }

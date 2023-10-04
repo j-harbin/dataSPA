@@ -15,7 +15,7 @@ getData(
 }
 \arguments{
 \item{type}{the type of data that is wished to be extracted
-(either \code{om}, \code{om_date}, \code{salary}, or \code{salary_date}).
+(either \code{om}, \code{om_date}, \code{salary}, \code{salary_date}, or \code{collaboration}).
 The types that end in \verb{_date} will return the date of creation
 of a locally stored file.}
 
