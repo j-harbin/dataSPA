@@ -15,9 +15,9 @@ getData(
 }
 \arguments{
 \item{type}{the type of data that is wished to be extracted
-(either \code{om}, \code{om_date}, \code{salary}, \code{salary_date}, or \code{collaboration}).
-The types that end in \verb{_date} will return the date of creation
-of a locally stored file.}
+(either \code{om}, \code{om_date}, \code{salary}, \code{salary_date}, \code{collaboration},
+or \code{statusReport}).The types that end in \verb{_date} will return the
+date of creation of a locally stored file.}
 
 \item{cookie}{a sessionid and csrftoken from a Department of
 Fisheries and Oceans Canada (DFO) employee in the following

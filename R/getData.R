@@ -4,9 +4,9 @@
 #' either the O&M or salary investment.
 #'
 #' @param type the type of data that is wished to be extracted
-#' (either `om`, `om_date`, `salary`, `salary_date`, or `collaboration`).
-#' The types that end in `_date` will return the date of creation
-#' of a locally stored file.
+#' (either `om`, `om_date`, `salary`, `salary_date`, `collaboration`,
+#' or `statusReport`).The types that end in `_date` will return the
+#' date of creation of a locally stored file.
 #'
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
@@ -62,15 +62,15 @@
 getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(type)) {
-    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', or 'collaboration'")
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', or 'statusReport'")
   }
 
   if (is.null(cookie)) {
     stop("Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
-  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration"))) {
-    stop("Must provide a type argument of either 'om', 'salary', 'om_date','salary_date', or 'collaboration'")
+  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport"))) {
+    stop("Must provide a type argument of either 'om', 'salary', 'om_date','salary_date', 'collaboration', or 'statusReport'")
   }
   if (debug > 0) {
     message("type = ", type)
@@ -126,7 +126,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
   }
 
-  # FIXME: can't yet cache for collaborations
+  # FIXME: can't yet cache for collaborations or statusReport
 
   # 1. LISTING LINKS
 
@@ -136,6 +136,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/")
   } else if (type == "collaboration") {
     links <- c("http://dmapps/api/ppt/collaborations/")
+  } else if (type == "statusReport") {
+    links <- c("http://dmapps/api/ppt/status-reports/")
   }
 
   API_DATA <- NULL
@@ -163,8 +165,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       api_data <- page_data
     }
 
+    if (type == "statusReport" && links[i] == "http://dmapps/api/ppt/status-reports/") {
+      api_data <- page_data
+    }
+
     # Create a list to hold the list of full API results
-    if (!(type == "collaboration" && links[i] == "http://dmapps/api/ppt/collaborations/")) {
+    if (!(type %in% c("collaboration", "statusReport"))) {
     api_data <- page_data$results
 
     # Get the information about the next page in the API results
@@ -800,5 +806,18 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     coll$organization <- unlist(lapply(API_DATA[[1]], function(x) x$organization))
     return(coll)
+  }
+
+  if (type == "statusReport") {
+    for (i in seq_along(API_DATA[[1]])) {
+      if (is.null(API_DATA[[1]][[i]]$major_accomplishments)) {
+        API_DATA[[1]][[i]]$major_accomplishments <- 0
+      }
+    }
+    st <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 2), row.names = NULL)
+    names(st) <- c("project_id", "accomplishments")
+    st$project_id <- lapply(API_DATA[[1]], function(x) x$project_id)
+    st$accomplishments <- unlist(lapply(API_DATA[[1]], function(x) x$major_accomplishments))
+    return(st)
   }
 }
