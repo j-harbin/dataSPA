@@ -7,7 +7,7 @@
 subsetSPA(
   om = NULL,
   salary = NULL,
-  approved = TRUE,
+  approved = FALSE,
   region = NULL,
   theme = NULL,
   functionalGroup = NULL,

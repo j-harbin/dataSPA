@@ -137,7 +137,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   } else if (type == "collaboration") {
     links <- c("http://dmapps/api/ppt/collaborations/")
   } else if (type == "statusReport") {
-    links <- c("http://dmapps/api/ppt/status-reports/")
+    links <- c("http://dmapps/api/ppt/status-reports/", "http://dmapps/api/ppt/project-years/")
   }
 
   API_DATA <- NULL
@@ -170,7 +170,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
 
     # Create a list to hold the list of full API results
-    if (!(type %in% c("collaboration", "statusReport"))) {
+    if (!(type %in% c("collaboration"))) {
+      if (!(links[i] == "http://dmapps/api/ppt/status-reports/")) {
     api_data <- page_data$results
 
     # Get the information about the next page in the API results
@@ -202,6 +203,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       cat(paste0(next_page, '\n'))
     }
     }
+  }
 
     API_DATA[[i]] <- api_data
   }
@@ -713,7 +715,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
     SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
     SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
-  #JAIM HERE
 
   ## ADDING IN OVERVIEW/ OBJECTIVES
   # ppp has overview ppp$overview[which(ppp$id == om$project_id[i])][1]
@@ -779,7 +780,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   return(SAL)
   }
   if(keep && type == "salary") {
-    #JAIM
     fn <- file.path(path,"dataSPA_SAL.rds")
     if(file.exists(fn)){
       date <- as.Date(file.info(fn)$mtime)
@@ -809,15 +809,73 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   if (type == "statusReport") {
+    st <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 15), row.names = NULL)
+    names(st) <- c("project_id","target_completeion_date_display", "status_display", "supporting_resources",
+                   "major_accomplishments", "major_issues", "excess_funds_comment", "excess_funds_amt", "excess_funds",
+                   "insufficient_funds", "insufficient_funds_amt", "insufficient_funds_comment",
+                   "rationale_for_modified_completion_date", "general_comment", "project_year")
+
+
     for (i in seq_along(API_DATA[[1]])) {
-      if (is.null(API_DATA[[1]][[i]]$major_accomplishments)) {
-        API_DATA[[1]][[i]]$major_accomplishments <- 0
+      for (j in seq_along(names(st))) {
+        parameter <- API_DATA[[1]][[i]][[names(st[j])]]
+        if (is.null(parameter)) {
+          API_DATA[[1]][[i]][[names(st[j])]] <- 0
+        }
+        st[[names(st[j])]][[i]] <- API_DATA[[1]][[i]][[names(st[j])]]
       }
     }
-    st <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 2), row.names = NULL)
-    names(st) <- c("project_id", "accomplishments")
-    st$project_id <- lapply(API_DATA[[1]], function(x) x$project_id)
-    st$accomplishments <- unlist(lapply(API_DATA[[1]], function(x) x$major_accomplishments))
+    # Now add fiscal year in from the project_year id
+
+    # Dealing with [[2]]
+    # Dealing with project
+    df <- lapply(API_DATA[[2]], function(x) x$project)
+
+    for (i in seq_along(df)) {
+      for (j in seq_along(names(df[[1]]))) {
+        parameter <- df[[i]][[names(df[[1]][j])]]
+        if (is.null(parameter)) {
+          df[[i]][[names(df[[1]][j])]] <- 0
+        }
+      }
+    }
+    # Turning into data frames for project_id
+    DF <- data.frame(matrix(NA, nrow = length(API_DATA[[2]]), ncol = 2), row.names = NULL)
+    names(DF) <- c("title", "project_id")
+    DF$title <- unlist(lapply(df, function(x) x$title))
+    DF$project_id <- unlist(lapply(df, function(x) x$id))
+
+    # until here is what is expected (JAIM FRIDAY) - think tie df2 to project id from before
+
+    # Dealing with year
+    df2 <- lapply(API_DATA[[2]], function(x) x$project$years)
+    df22 <- do.call(c, df2)
+    for (i in seq_along(df22)) {
+      for (j in seq_along(names(df22[[1]]))) {
+        parameter <- df22[[i]][[names(df22[[1]][j])]]
+        if (is.null(parameter)) {
+          df22[[i]][[names(df22[[1]][j])]] <- 0
+        }
+      }
+    }
+    DF2 <- data.frame(matrix(NA, nrow = length(df22), ncol = 4), row.names = NULL)
+    names(DF2) <- c("year_id", "fiscal_year", "project_title", "project_id")
+    DF2$year_id <- unlist(lapply(df22, function(x) x$id))
+    DF2$project_title <- unlist(lapply(df22, function(x) x$project_title))
+    DF2$fiscal_year <- unlist(lapply(df22, function(x) x$display_name))
+    DF2$project_id <- unlist(lapply(df22, function(x) x$project))
+
+    st_id <- st$project_id
+    st$project_title <- 0
+    st$fiscal_year <- 0
+    for (i in seq_along(st_id)) {
+      st$project_title[i] <- unique(DF$title[which(DF$project_id == st_id[i])])
+    }
+    for (i in seq_along(st_id)) {
+      st$fiscal_year[i] <- unique(DF2$fiscal_year[which(DF2$year_id == st$project_year[i])])
+
+    }
+
     return(st)
   }
 }

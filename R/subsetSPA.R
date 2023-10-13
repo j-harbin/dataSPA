@@ -41,7 +41,7 @@
 #' section ="return")
 #' }
 
-subsetSPA <- function(om=NULL, salary=NULL, approved=TRUE, region=NULL, theme=NULL,
+subsetSPA <- function(om=NULL, salary=NULL, approved=FALSE, region=NULL, theme=NULL,
                       functionalGroup=NULL, section=NULL, division=NULL) {
   # Can only have om or salary
   if (!(is.null(om)) && (!(is.null(salary)))) {
