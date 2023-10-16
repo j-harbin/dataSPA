@@ -7,6 +7,7 @@
 createReport(
   om = NULL,
   salary = NULL,
+  statusReport = NULL,
   cookie = NULL,
   id = NULL,
   theme = NULL,
@@ -23,6 +24,8 @@ createReport(
 \item{om}{a data frame created by \code{getData(type='om')}}
 
 \item{salary}{a data frame created by \code{getData(type='salary')}}
+
+\item{statusReport}{a data frame created by \code{getData(type='statusReport')}}
 
 \item{cookie}{a sessionid and csrftoken from a Department of
 Fisheries and Oceans Canada (DFO) employee in the following

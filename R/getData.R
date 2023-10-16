@@ -810,7 +810,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   if (type == "statusReport") {
     st <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 15), row.names = NULL)
-    names(st) <- c("project_id","target_completeion_date_display", "status_display", "supporting_resources",
+    names(st) <- c("project_id","target_completion_date_display", "status_display", "supporting_resources",
                    "major_accomplishments", "major_issues", "excess_funds_comment", "excess_funds_amt", "excess_funds",
                    "insufficient_funds", "insufficient_funds_amt", "insufficient_funds_comment",
                    "rationale_for_modified_completion_date", "general_comment", "project_year")
@@ -825,6 +825,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         st[[names(st[j])]][[i]] <- API_DATA[[1]][[i]][[names(st[j])]]
       }
     }
+    st$general_comment <- unlist(lapply(API_DATA[[1]], function(x) x$general_comment))
+    st$rationale_for_modified_completion_date <- unlist(lapply(API_DATA[[1]], function(x) x$rationale_for_modified_completion_date))
     # Now add fiscal year in from the project_year id
 
     # Dealing with [[2]]

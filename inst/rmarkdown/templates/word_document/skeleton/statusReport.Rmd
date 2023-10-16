@@ -1,0 +1,136 @@
+---
+title: "Status Report for Approved Projects in the Maritimes"
+output:
+  html_document: default
+  pdf_document: default
+---
+
+<a href ="http://glf-proxy:8018/mar-spa/"><img src="home.png" width="2%"></a>
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+if(!exists("filedate")) {
+  filedate <- getData(type="om_date", age=4000, cookie=cookie)
+}
+cat(paste0("Data pulled for this report was obtained on ", filedate))
+```
+
+**Title**
+
+```{r, echo=FALSE, comment=NA, results='asis'}
+cat(paste0(unique(index$project_title)))
+```
+
+
+**Project ID**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+cat(paste0(unique(index$project_id)))
+```
+
+### Choose a year {.tabset .tabset-dropdown}
+
+```{r, results="asis", echo=FALSE,comment=NA}
+# index <- data.frame(
+#   Year = c(2021, 2022, 2023),
+#   Status = c("In Progress", "Completed", "Pending")
+# )
+
+for (j in 1:nrow(index)) {
+  cat(sprintf(
+    '\n\n#### %s {#year%s}\n',
+    index$fiscal_year[j],
+    index$fiscal_year[j]
+  ))
+  ## Status
+  cat(sprintf('**Status:** %s\n', index$status_display[j]))
+  
+  ## Major Accomplishments
+  cat("\n")
+  if (!(index$major_accomplishments[j] == 0)) {
+    cat(sprintf('**Major Accomplishments:** %s\n', index$major_accomplishments[j]))
+
+  } else {
+    cat(sprintf('**Major Accomplishments:** %s\n', "There are no major accomplishments mentioned for this project."))
+  }
+  
+  ## Major Issues
+  cat("\n")
+  if (!(index$major_issues[j] == 0)) {
+    cat(sprintf('**Major Issues:** %s\n', index$major_issues[j]))
+
+  } else {
+    cat(sprintf('**Major Issues:** %s\n', "There are no major issues mentioned for this project."))
+  }
+  
+  ## Supporting Resources
+  cat("\n")
+  if (!(index$supporting_resources[j] == 0)) {
+    cat(sprintf('**Supporting Resources:** %s\n', index$supporting_resources[j]))
+
+  } else {
+    cat(sprintf('**Supporting Resources:** %s\n', "There are no supporting resources mentioned for this project."))
+  }
+  
+  ## Target completion date
+  cat("\n")
+  if (!(index$target_completion_date_display[j] == 0)) {
+    cat(sprintf('**Target Completion Date:** %s\n', index$target_completion_date_display[j]))
+
+  } else {
+    cat(sprintf('**Target Completion Date:** %s\n', "There are no supporting resources mentioned for this project."))
+  }
+  
+  ## Excess Funds
+   cat("\n")
+  if (!(index$excess_funds_amt[j] == 0)) {
+    cat(sprintf('**Excess Funds:** %s\n', index$excess_funds_amt[j]))
+    cat("\n")
+  } else {
+    cat(sprintf('**Excess Funds:** %s\n', "There is no excess funds for this project."))
+    cat("\n")
+  }
+  cat("\n")
+  if (index$excess_funds_comment[j] == 0) {
+  cat("There is no reason given for this excess.")
+  cat("\n")
+} else {
+  cat(index$excess_funds_comment[j])
+  cat("\n")
+}
+   
+     ## Insufficient Funds
+   cat("\n")
+  if (!(index$insufficient_funds_amt[j] == 0)) {
+    cat(sprintf('**Insufficient Funds:** %s\n', index$insufficient_funds_amt[j]))
+    cat("\n")
+  } else {
+    cat(sprintf('**Insufficient Funds:** %s\n', "There is no insufficient funds for this project."))
+    cat("\n")
+  }
+      cat("\n")
+     if (index$insufficient_funds_comment[j] == 0) {
+  cat("There is no reason given for this insufficiency.")
+  cat("\n")
+} else {
+  cat(index$insufficient_funds_comment[j])
+  cat("\n")
+}
+  
+  ## General Comments
+   cat("\n")
+  if (!(index$general_comment[j] == 0)) {
+    cat(sprintf('**General Comments:** %s\n', index$general_comment[j]))
+
+  } else {
+    cat(sprintf('**General Comments:** %s\n', "There are no supporting resources mentioned for this project."))
+  }
+  
+  
+  
+  
+}
+
+
+```
+
+### {-}

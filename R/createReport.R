@@ -9,6 +9,7 @@
 #'
 #' @param om a data frame created by `getData(type='om')`
 #' @param salary a data frame created by `getData(type='salary')`
+#' @param statusReport a data frame created by `getData(type='statusReport')`
 #' @param id the project_id from the Project Planning Tool (PPT)
 #' @param theme theme classification of projects of either `Mitigation of Ecosystem Stressors`,
 #' `Marine Spatial Planning and Conservation`, `Ecosystem Assessment and Climate Change`,
@@ -47,8 +48,38 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, approved=TRUE, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, approved=TRUE, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+  Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
 
+  if(!(is.null(statusReport))) {
+    if (!(identical(c("project_id","target_completion_date_display","status_display","supporting_resources",
+                      "major_accomplishments","major_issues", "excess_funds_comment", "excess_funds_amt",
+                      "excess_funds","insufficient_funds", "insufficient_funds_amt","insufficient_funds_comment",
+                      "rationale_for_modified_completion_date", "general_comment", "project_year", "project_title",
+                      "fiscal_year"), names(statusReport)))) {
+      stop("Must obtain data for salary using getData(type='statusReport')")
+    }
+
+    if (is.null(id)) {
+      stop("Must provide an id for statusReport type")
+    }
+
+    for (i in seq_along(id)) {
+      index <- statusReport[which(statusReport$project_id == id[i]), ]
+      # Dealing with salary
+      if (length(index$project_id) == 0) {
+        stop("No statusReport projects have id = ", id)
+      }
+      ## Move into Rmd
+      rmarkdown::render(
+        file.path(Rmdpath, "statusReport.Rmd"),
+        output_dir = destdir,
+        output_file = paste0(id[i], "statusReport"),
+        output_format = "html_document"
+      )
+    }
+  }
+  if (is.null(statusReport)) {
   if (is.null(om)) {
     stop("In createReport() must provide an om argument")
   }
@@ -64,7 +95,6 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
                     "fiscal_year", "project_title", "status", "overview", "objectives","section_display", "lead_staff","functional_group","activity_type", "theme", "deliverables", "milestones"), names(om)))) {
     stop("Must obtain data for om using getData(type='om')")
   }
-  Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
 
   if (approved) {
     om <- om[which(om$status == "Approved"),]
@@ -209,5 +239,6 @@ createReport <- function(om=NULL, salary=NULL, cookie=NULL, id=NULL, theme=NULL,
       }
 }
 
+  }
   }
 }
