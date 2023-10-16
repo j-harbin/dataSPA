@@ -777,20 +777,22 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         }
       }
     }
-    return(SAL)
-  }
-  if(keep && type == "salary") {
-    fn <- file.path(path,"dataSPA_SAL.rds")
-    if(file.exists(fn)){
-      date <- as.Date(file.info(fn)$mtime)
-      file.rename(fn,
-                  file.path(path,paste0("dataSPA_SAL_",date,".rds")))
-      message(paste0("Renaming the pre-existing dataSPA_SAL.rds to: ",paste0("dataSPA_SAL_",date,".rds")))
+
+    if(keep && type == "salary") {
+      fn <- file.path(path,"dataSPA_SAL.rds")
+      if(file.exists(fn)){
+        date <- as.Date(file.info(fn)$mtime)
+        file.rename(fn,
+                    file.path(path,paste0("dataSPA_SAL_",date,".rds")))
+        message(paste0("Renaming the pre-existing dataSPA_SAL.rds to: ",paste0("dataSPA_SAL_",date,".rds")))
+      }
+
+      saveRDS(SAL,file = fn)
     }
 
-    saveRDS(SAL,file = fn)
     return(SAL)
   }
+
 
   if (type == "collaboration") {
     coll <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 5), row.names = NULL)
