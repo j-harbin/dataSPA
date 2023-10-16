@@ -131,7 +131,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # 1. LISTING LINKS
 
   if (type %in% c("salary", "salary_date")) {
-  links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff")
+    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff")
   } else if (type %in% c("om", "om_date")) {
     links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/")
   } else if (type == "collaboration") {
@@ -172,38 +172,38 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     # Create a list to hold the list of full API results
     if (!(type %in% c("collaboration"))) {
       if (!(links[i] == "http://dmapps/api/ppt/status-reports/")) {
-    api_data <- page_data$results
+        api_data <- page_data$results
 
-    # Get the information about the next page in the API results
-    next_page <- page_data$`next`
-    cat(paste0(next_page, '\n'))
+        # Get the information about the next page in the API results
+        next_page <- page_data$`next`
+        cat(paste0(next_page, '\n'))
 
-    cat(paste0('Number of API records = ', length(api_data), '\n'))
+        cat(paste0('Number of API records = ', length(api_data), '\n'))
 
-    # Check if the next page is not null (end of pages) before extract the data from
-    # next page.
-    while (!is.null(next_page)) {
-      # Modifying API Call
-      req <- httr2::request(next_page)
-      # Add custom headers
-      req <- req %>% httr2::req_headers("Cookie" = cookie)
-      req <- req %>% httr2::req_headers("Accept" = "application/json")
-      # Automatically retry if the request fails
-      req <- req %>% httr2::req_retry(max_tries = 5)
-      # Get the requested data by querying the API
-      resp <- httr2::req_perform(req)
-      # Read the returned data as a JSON file
-      page_data <- httr2::resp_body_json(resp)
-      # Add current page data to full list
-      api_data <- c(api_data, page_data$results)
-      cat(paste0('Number of API records = ', length(api_data), '\n'))
+        # Check if the next page is not null (end of pages) before extract the data from
+        # next page.
+        while (!is.null(next_page)) {
+          # Modifying API Call
+          req <- httr2::request(next_page)
+          # Add custom headers
+          req <- req %>% httr2::req_headers("Cookie" = cookie)
+          req <- req %>% httr2::req_headers("Accept" = "application/json")
+          # Automatically retry if the request fails
+          req <- req %>% httr2::req_retry(max_tries = 5)
+          # Get the requested data by querying the API
+          resp <- httr2::req_perform(req)
+          # Read the returned data as a JSON file
+          page_data <- httr2::resp_body_json(resp)
+          # Add current page data to full list
+          api_data <- c(api_data, page_data$results)
+          cat(paste0('Number of API records = ', length(api_data), '\n'))
 
-      # Get the information about the next page in the API results
-      next_page <- page_data$`next`
-      cat(paste0(next_page, '\n'))
+          # Get the information about the next page in the API results
+          next_page <- page_data$`next`
+          cat(paste0(next_page, '\n'))
+        }
+      }
     }
-    }
-  }
 
     API_DATA[[i]] <- api_data
   }
@@ -211,198 +211,198 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   # LINK 1: Dealing with "http://dmapps/api/ppt/om-costs"
   if ("http://dmapps/api/ppt/om-costs" %in% names(API_DATA)) {
-  api_data <- API_DATA[[1]]
+    api_data <- API_DATA[[1]]
 
-  # Fix NULL descriptions
-  for (i in seq_along(api_data)) {
-    if (length(api_data[[i]]$description) == 0) {
-      api_data[[i]]$description <- 0
-    } else if (is.na(api_data[[i]]$description)) {
-      api_data[[i]]$description <- 0
+    # Fix NULL descriptions
+    for (i in seq_along(api_data)) {
+      if (length(api_data[[i]]$description) == 0) {
+        api_data[[i]]$description <- 0
+      } else if (is.na(api_data[[i]]$description)) {
+        api_data[[i]]$description <- 0
+      }
     }
-  }
 
-  p <- NULL
-  for (i in seq_along(api_data)) {
-    p[[i]] <- as.data.frame(api_data[[i]][c("project_id", "category_display", "project_year_id", "amount", "funding_source_display", "id", "category_type", "description")])
-  }
+    p <- NULL
+    for (i in seq_along(api_data)) {
+      p[[i]] <- as.data.frame(api_data[[i]][c("project_id", "category_display", "project_year_id", "amount", "funding_source_display", "id", "category_type", "description")])
+    }
 
-  if (type=="om") {
-    om <- do.call(rbind, p)
-  }
+    if (type=="om") {
+      om <- do.call(rbind, p)
+    }
   }
 
   ## LINK 2: Dealing with "http://dmapps/api/ppt/project-years"
   if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
-  api_data2 <- API_DATA[[2]]
+    api_data2 <- API_DATA[[2]]
   }
 
 
   ## LINK 3: Dealing with "http://dmapps/api/ppt/activities-full/"
   if ("http://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
-  api_data3 <- API_DATA[[3]]
+    api_data3 <- API_DATA[[3]]
   }
 
 
   ## Putting "http://dmapps/api/ppt/activities-full/" into a data frame
   if ("http://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
 
-  deliv <- lapply(api_data3, function(x) x[c("type_display", "description")])
-  titles <- lapply(api_data3, function(x) x$project_year_obj)
-  Dyears <- lapply(titles, function(x) x$display_name)
-  titles <- lapply(titles, function(x) x$project_title)
-  names <- lapply(api_data3, function(x) x$name)
-  ddf <- NULL
-  for (i in seq_along(deliv)){
-    if (is.null(deliv[[i]]$description)) {
-      deliv[[i]]$description <- 0
+    deliv <- lapply(api_data3, function(x) x[c("type_display", "description")])
+    titles <- lapply(api_data3, function(x) x$project_year_obj)
+    Dyears <- lapply(titles, function(x) x$display_name)
+    titles <- lapply(titles, function(x) x$project_title)
+    names <- lapply(api_data3, function(x) x$name)
+    ddf <- NULL
+    for (i in seq_along(deliv)){
+      if (is.null(deliv[[i]]$description)) {
+        deliv[[i]]$description <- 0
+      }
+      DF <- c(deliv[[i]], titles[[i]], Dyears[[i]], names[[i]])
+      names(DF) <- c("type", "description", "title", "year", "name")
+      ddf[[i]] <- as.data.frame(DF)
     }
-    DF <- c(deliv[[i]], titles[[i]], Dyears[[i]], names[[i]])
-    names(DF) <- c("type", "description", "title", "year", "name")
-    ddf[[i]] <- as.data.frame(DF)
-  }
-  DDF <- do.call(rbind, ddf)
-  # If no description, fill in name
-  DDF$description[which(DDF$description == "")] <- DDF$name[which(DDF$description == "")]
-  #1. isolate specific title. #2. isolate year. #3. Combine deliverables. #4. Combine milestones
-  DELIVERABLES <- vector(mode = "list", length(unique(DDF$title)))
-  MILESTONES <- vector(mode = "list", length(unique(DDF$title)))
+    DDF <- do.call(rbind, ddf)
+    # If no description, fill in name
+    DDF$description[which(DDF$description == "")] <- DDF$name[which(DDF$description == "")]
+    #1. isolate specific title. #2. isolate year. #3. Combine deliverables. #4. Combine milestones
+    DELIVERABLES <- vector(mode = "list", length(unique(DDF$title)))
+    MILESTONES <- vector(mode = "list", length(unique(DDF$title)))
 
-  for (i in seq_along(unique(DDF$title))) {
-    d <- DDF[which(DDF$title == unique(DDF$title)[[i]]),] #1
-    for (j in seq_along(unique(d$year))) {
-      d2 <- d[which(d$year == unique(d$year)[[j]]),] #2
-      DELIV <- d2[which(d2$type == "Deliverable"),] #3
-      MS <- d2[which(d2$type == "Milestone"),] #4
-      DELIVERABLES[[i]][j] <- paste0(unique(DELIV$description), collapse="|-----|")
-      MILESTONES[[i]][j] <- paste0(MS$description, collapse="|-----|")
+    for (i in seq_along(unique(DDF$title))) {
+      d <- DDF[which(DDF$title == unique(DDF$title)[[i]]),] #1
+      for (j in seq_along(unique(d$year))) {
+        d2 <- d[which(d$year == unique(d$year)[[j]]),] #2
+        DELIV <- d2[which(d2$type == "Deliverable"),] #3
+        MS <- d2[which(d2$type == "Milestone"),] #4
+        DELIVERABLES[[i]][j] <- paste0(unique(DELIV$description), collapse="|-----|")
+        MILESTONES[[i]][j] <- paste0(MS$description, collapse="|-----|")
+      }
     }
-  }
-  names(DELIVERABLES) <- unique(DDF$title)
-  names(MILESTONES) <- unique(DDF$title)
+    names(DELIVERABLES) <- unique(DDF$title)
+    names(MILESTONES) <- unique(DDF$title)
   }
 
   ## Putting "http://dmapps/api/ppt/project-years" into a data frame
   if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
 
-  t <- lapply(api_data2, function(x) x$project$years)
+    t <- lapply(api_data2, function(x) x$project$years)
 
-  # Add objectives and overview
-  p <- lapply(api_data2, function(x) x$project)
-  j <- lapply(api_data2, function(x) x$project$lead_staff)
+    # Add objectives and overview
+    p <- lapply(api_data2, function(x) x$project)
+    j <- lapply(api_data2, function(x) x$project$lead_staff)
 
-  for (i in seq_along(p)) {
-    if (length(p[[i]]$overview) == 0) {
-      p[[i]]$overview <- 0
-    } else if (is.na(p[[i]]$overview)) {
-      p[[i]]$overview <- 0
+    for (i in seq_along(p)) {
+      if (length(p[[i]]$overview) == 0) {
+        p[[i]]$overview <- 0
+      } else if (is.na(p[[i]]$overview)) {
+        p[[i]]$overview <- 0
+      }
+
+      if (length(p[[i]]$objectives) == 0) {
+        p[[i]]$objectives <- as.numeric(0)
+      } else if (is.na(p[[i]]$objectives)) {
+        p[[i]]$objectives <- as.numeric(0)
+      }
+
+      if (length(p[[i]]$activity_type) == 0) {
+        p[[i]]$activity_type <- as.numeric(0)
+      } else if (is.na(p[[i]]$activity_type)) {
+        p[[i]]$activity_type <- as.numeric(0)
+      }
     }
 
-    if (length(p[[i]]$objectives) == 0) {
-      p[[i]]$objectives <- as.numeric(0)
-    } else if (is.na(p[[i]]$objectives)) {
-      p[[i]]$objectives <- as.numeric(0)
+    lov <- list()
+    for (i in 1:length(p))  {
+      lov <- c(lov, p[[i]])
     }
 
-    if (length(p[[i]]$activity_type) == 0) {
-      p[[i]]$activity_type <- as.numeric(0)
-    } else if (is.na(p[[i]]$activity_type)) {
-      p[[i]]$activity_type <- as.numeric(0)
+    for (i in seq_along(p)) {
+      if (length(j[[i]]) == 0) {
+        j[[i]] <- 0
+      } else if (is.na(j[[i]])) {
+        j[[i]]
+      }
     }
-  }
+    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group", "activity_type")]))
 
-  lov <- list()
-  for (i in 1:length(p))  {
-    lov <- c(lov, p[[i]])
-  }
-
-  for (i in seq_along(p)) {
-    if (length(j[[i]]) == 0) {
-      j[[i]] <- 0
-    } else if (is.na(j[[i]])) {
-      j[[i]]
+    for (i in seq_along(pp)) {
+      pp[[i]]$lead_staff <- j[[i]]
     }
-  }
-  pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group", "activity_type")]))
+    ppp <- do.call(rbind, pp)
 
-  for (i in seq_along(pp)) {
-    pp[[i]]$lead_staff <- j[[i]]
-  }
-  ppp <- do.call(rbind, pp)
+    ## Fixing section_display for sections
 
-  ## Fixing section_display for sections
-
-  sd <- unique(ppp$section_display[which(!(str_count(ppp$section_display,"\\-") == 3))])
-  SD <- sd
-  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
-  # AND REMOVE THE -
-  bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
-  if (!(length(bad2) == 0)) {
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
-    sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
-  }
-
-  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
-  # AND REMOVE THE -
-  bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
-  if (!(length(bad2) == 0)) {
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
-    sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
-  }
-
-  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
-  # AND REMOVE THE -
-  bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
-  if (!(length(bad2) == 0)) {
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
-    sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
-  }
-
-  # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
-  # AND REMOVE THE -
-  bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
-  if (!(length(bad2) == 0)) {
-    bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
-    sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
-  }
-
-
-  # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
-  ss <- NULL
-  for (i in seq_along(sd)) {
-    if (!(grepl("Regional Director Science Office", sd[i]))) {
-      ss[[i]] <- unique(strsplit(sd[i], " - ", fixed=TRUE)[[1]])
-    } else {
-      ss[[i]] <- strsplit(sd[i], " - ", fixed=TRUE)[[1]]
-
+    sd <- unique(ppp$section_display[which(!(str_count(ppp$section_display,"\\-") == 3))])
+    SD <- sd
+    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS CENTRE FOR SCIENCE ADVICE - SCIENCE
+    # AND REMOVE THE -
+    bad2 <- sd[which(grepl("Centre for Science Advice -  Maritimes", sd))]
+    if (!(length(bad2) == 0)) {
+      bad2 <- paste0(sub('-[^-]*$', '', bad2), "Maritimes")
+      sd[which(grepl("Centre for Science Advice -  Maritimes", sd))] <- bad2
     }
-  }
-  ss <- unique(ss)
-  SS <- NULL
-  for (i in seq_along(ss)) {
-    SS[[i]] <- toString(paste0(ss[[i]], collapse=" - "))
-  }
-  SS <- unlist(SS)
 
-  # NEXT STEP: REDEFINE THE SECTION_DISPLAY IN THE OM DATAFRAME
-  for (i in seq_along(sd)) {
-    ppp$section_display[which(ppp$section_display == SD[i])] <- SS[i]
-  }
+    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS REGIONAL DIRECTOR SCIENCE - OFFICE
+    # AND REMOVE THE -
+    bad2 <- sd[which(grepl("Regional Director Science - Office", sd))]
+    if (!(length(bad2) == 0)) {
+      bad2 <- paste0(sub('-[^-]*$', '', bad2), "Office")
+      sd[which(grepl("Regional Director Science - Office", sd))] <- bad2
+    }
+
+    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - SUPPORT SECTION
+    # AND REMOVE THE -
+    bad2 <- sd[which(grepl("Atlantic  - Support Section", sd))]
+    if (!(length(bad2) == 0)) {
+      bad2 <- paste0(sub('-[^-]*$', '', bad2), "Support Section")
+      sd[which(grepl("Atlantic  - Support Section", sd))] <- bad2
+    }
+
+    # NEXT STEP: IDENTIFY WHICH SECTION_DISPLAY HAS ATLANTIC - Field Survey
+    # AND REMOVE THE -
+    bad2 <- sd[which(grepl("Atlantic  - Field Surveys", sd))]
+    if (!(length(bad2) == 0)) {
+      bad2 <- paste0(sub('-[^-]*$', '', bad2), "Field Surveys")
+      sd[which(grepl("Atlantic  - Field Surveys", sd))] <- bad2
+    }
 
 
-  lov <- list()
-  for (i in 1:length(p))  {
-    lov <- c(lov, p[[i]])
-  }
+    # NEXT STEP: IDENTIFY WHEN DIVISIONS ARE ENTERED TWICE AND REMOVE THE DUPLICATE
+    ss <- NULL
+    for (i in seq_along(sd)) {
+      if (!(grepl("Regional Director Science Office", sd[i]))) {
+        ss[[i]] <- unique(strsplit(sd[i], " - ", fixed=TRUE)[[1]])
+      } else {
+        ss[[i]] <- strsplit(sd[i], " - ", fixed=TRUE)[[1]]
 
-  listofvectors <- list()
-  for (i in 1:length(t))  {
-    listofvectors <- c(listofvectors, t[[i]])
-  }
+      }
+    }
+    ss <- unique(ss)
+    SS <- NULL
+    for (i in seq_along(ss)) {
+      SS[[i]] <- toString(paste0(ss[[i]], collapse=" - "))
+    }
+    SS <- unlist(SS)
 
-  tt <- lapply(listofvectors, function(x) as.data.frame(x[c("display_name", "id", "project_title", "status_display")]))
+    # NEXT STEP: REDEFINE THE SECTION_DISPLAY IN THE OM DATAFRAME
+    for (i in seq_along(sd)) {
+      ppp$section_display[which(ppp$section_display == SD[i])] <- SS[i]
+    }
 
-  ttt <- do.call(rbind, tt)
+
+    lov <- list()
+    for (i in 1:length(p))  {
+      lov <- c(lov, p[[i]])
+    }
+
+    listofvectors <- list()
+    for (i in 1:length(t))  {
+      listofvectors <- c(listofvectors, t[[i]])
+    }
+
+    tt <- lapply(listofvectors, function(x) as.data.frame(x[c("display_name", "id", "project_title", "status_display")]))
+
+    ttt <- do.call(rbind, tt)
   }
 
   # CONCLUSION: id from ttt is equal to project_year_id in om
@@ -442,49 +442,25 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # Theme
   # Obtaining OM data from the API
   if (type %in% c("om", "salary")) {
-  req <- httr2::request("http://dmapps/api/ppt/themes/")
-  # Add custom headers
-  req <- req %>% httr2::req_headers("Cookie" = cookie)
-  req <- req %>% httr2::req_headers("Accept" = "application/json")
-
-  # Automatically retry if the request fails
-  req <- req %>% httr2::req_retry(max_tries = 5)
-  # Get the requested data by querying the API
-  resp <- httr2::req_perform(req)
-  # Read the returned data as a JSON file
-  page_data <- httr2::resp_body_json(resp)
-  themeNumbers <- unlist(lapply(page_data, function(x) x$id))
-  themeNames <- unlist(lapply(page_data, function(x) x$name))
-
-  # Now obtain which project_ids have each theme
-  # Obtaining OM data from the API
-  project_ids <- NULL
-  for (i in seq_along(themeNumbers)) {
-    req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
+    req <- httr2::request("http://dmapps/api/ppt/themes/")
     # Add custom headers
     req <- req %>% httr2::req_headers("Cookie" = cookie)
     req <- req %>% httr2::req_headers("Accept" = "application/json")
+
     # Automatically retry if the request fails
     req <- req %>% httr2::req_retry(max_tries = 5)
     # Get the requested data by querying the API
     resp <- httr2::req_perform(req)
-
     # Read the returned data as a JSON file
     page_data <- httr2::resp_body_json(resp)
+    themeNumbers <- unlist(lapply(page_data, function(x) x$id))
+    themeNames <- unlist(lapply(page_data, function(x) x$name))
 
-    # Create a list to hold the list of full API results
-    api_data <- page_data$results
-
-    # Get the information about the next page in the API results
-    next_page <- page_data$`next`
-    cat(paste0(next_page, '\n'))
-    cat(paste0('Number of API records = ', length(api_data), '\n'))
-
-    # Check if the next page is not null (end of pages) before extract the data from
-    # next page.
-    while (!is.null(next_page)) {
-      # Modifying API Call
-      req <- httr2::request(next_page)
+    # Now obtain which project_ids have each theme
+    # Obtaining OM data from the API
+    project_ids <- NULL
+    for (i in seq_along(themeNumbers)) {
+      req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
       # Add custom headers
       req <- req %>% httr2::req_headers("Cookie" = cookie)
       req <- req %>% httr2::req_headers("Accept" = "application/json")
@@ -492,20 +468,44 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       req <- req %>% httr2::req_retry(max_tries = 5)
       # Get the requested data by querying the API
       resp <- httr2::req_perform(req)
+
       # Read the returned data as a JSON file
       page_data <- httr2::resp_body_json(resp)
 
-      # Add current page data to full list
-      api_data <- c(api_data, page_data$results)
-      cat(paste0('Number of API records = ', length(api_data), '\n'))
+      # Create a list to hold the list of full API results
+      api_data <- page_data$results
 
       # Get the information about the next page in the API results
       next_page <- page_data$`next`
       cat(paste0(next_page, '\n'))
+      cat(paste0('Number of API records = ', length(api_data), '\n'))
+
+      # Check if the next page is not null (end of pages) before extract the data from
+      # next page.
+      while (!is.null(next_page)) {
+        # Modifying API Call
+        req <- httr2::request(next_page)
+        # Add custom headers
+        req <- req %>% httr2::req_headers("Cookie" = cookie)
+        req <- req %>% httr2::req_headers("Accept" = "application/json")
+        # Automatically retry if the request fails
+        req <- req %>% httr2::req_retry(max_tries = 5)
+        # Get the requested data by querying the API
+        resp <- httr2::req_perform(req)
+        # Read the returned data as a JSON file
+        page_data <- httr2::resp_body_json(resp)
+
+        # Add current page data to full list
+        api_data <- c(api_data, page_data$results)
+        cat(paste0('Number of API records = ', length(api_data), '\n'))
+
+        # Get the information about the next page in the API results
+        next_page <- page_data$`next`
+        cat(paste0(next_page, '\n'))
+      }
+      project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
     }
-    project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
-  }
-  names(project_ids) <- themeNames
+    names(project_ids) <- themeNames
   }
   if (type == "om") {
     om$theme <- 0
@@ -546,7 +546,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       file.rename(fn,
                   file.path(path,paste0("dataSPA_om_",date,".rds")))
       message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
-      }
+    }
 
     saveRDS(om,file = fn)
   }
@@ -559,34 +559,34 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   ## DEALING WITH "http://dmapps/api/ppt/staff"
   if (type == "salary") {
-  api_data3 <- API_DATA[[4]]
+    api_data3 <- API_DATA[[4]]
 
-  j <- lapply(api_data3, function(x) x[c('id', 'overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
+    j <- lapply(api_data3, function(x) x[c('id', 'overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
 
-  for (i in seq_along(j)) {
-    if (length(j[[i]]$overtime_hours) == 0) {
-      j[[i]]$overtime_hours <- 0
-    } else if (!(is.finite(j[[i]]$overtime_hours))) {
-      j[[i]]$overtime_hours <- 0
+    for (i in seq_along(j)) {
+      if (length(j[[i]]$overtime_hours) == 0) {
+        j[[i]]$overtime_hours <- 0
+      } else if (!(is.finite(j[[i]]$overtime_hours))) {
+        j[[i]]$overtime_hours <- 0
+      }
+
+      if (length(j[[i]]$duration_weeks) == 0) {
+        j[[i]]$duration_weeks <- 0
+      } else if (!(is.finite(j[[i]]$duration_weeks))) {
+        j[[i]]$duration_weeks_weeks <- 0
+      }
+      if (length(j[[i]]$level_display) == 0) {
+        j[[i]]$level_display <- 0
+      } else if (is.na(j[[i]]$level_display)) {
+        j[[i]]$level_display <- 0
+      }
     }
 
-    if (length(j[[i]]$duration_weeks) == 0) {
-      j[[i]]$duration_weeks <- 0
-    } else if (!(is.finite(j[[i]]$duration_weeks))) {
-      j[[i]]$duration_weeks_weeks <- 0
+    list <- NULL
+    for (i in seq_along(j)) {
+      #message("This is for ",i)
+      list[[i]] <- as.data.frame(j[[i]])
     }
-    if (length(j[[i]]$level_display) == 0) {
-      j[[i]]$level_display <- 0
-    } else if (is.na(j[[i]]$level_display)) {
-      j[[i]]$level_display <- 0
-    }
-  }
-
-  list <- NULL
-  for (i in seq_along(j)) {
-    #message("This is for ",i)
-    list[[i]] <- as.data.frame(j[[i]])
-  }
 
     SAL <- do.call(rbind, list)
 
@@ -692,12 +692,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   if (type == "salary") {
-  SAL$theme <- 0
-  for (i in seq_along(project_ids)) {
-    for (j in seq_along(project_ids[[i]])) {
-      SAL$theme[which(SAL$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
+    SAL$theme <- 0
+    for (i in seq_along(project_ids)) {
+      for (j in seq_along(project_ids[[i]])) {
+        SAL$theme[which(SAL$project_id == project_ids[[i]][[j]])] <- themeNames[[i]]
+      }
     }
-  }
     SAL$activity_type <- 0
     SAL$functional_group <- 0
     SAL$section_display <- 0
@@ -716,68 +716,68 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
     SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
 
-  ## ADDING IN OVERVIEW/ OBJECTIVES
-  # ppp has overview ppp$overview[which(ppp$id == om$project_id[i])][1]
-  SAL$overview <- 0
-  SAL$objectives <- 0
-  for (i in seq_along(ppp$id)) {
-    SAL$overview[which(SAL$project_id == ppp$id[i])] <- ppp$overview[i]
-    SAL$objectives[which(SAL$project_id == ppp$id[i])] <- ppp$objectives[i]
-    SAL$activity_type[which(SAL$project_id == ppp$id[i])] <- ppp$activity_type[i]
-  }
-  SAL$activity_type[which(SAL$activity_type == 1)] <- "Monitoring"
-  SAL$activity_type[which(SAL$activity_type == 2)] <- "Research"
-  SAL$activity_type[which(SAL$activity_type == 3)] <- "Other"
-  SAL$activity_type[which(SAL$activity_type == 4)] <- "Data Management"
-  SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
-  SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
-  SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
-
-  ## STATUS
-  # status display is in ttt
-
-  ## LEAD STAFF
-  # j HAS THIS
-
-  SAL$status <- 0
-  SAL$lead_staff <- 0
-  for (i in seq_along(SAL$smart_name)) {
-    replace3 <- ttt$status_display[which(ttt$id == SAL$project_year_id[i])][1]
-    replace7 <- ppp$lead_staff[which(ppp$id == SAL$project_id[i])][1]
-    replace8 <- ppp$section_display[which(ppp$id == SAL$project_id[i])][1]
-    replace2 <- ppp$functional_group[which(ppp$id == SAL$project_id[i])][1]
-
-    SAL$status[i] <- replace3
-    SAL$lead_staff[i] <- replace7
-    SAL$section_display[i] <- replace8
-    SAL$functional_group[i] <- replace2
-  }
-
-  ## ADDING IN DELIVERABLES / MILESTONES
-  # DDF activities_full
-  SAL$deliverables <- 0
-  SAL$milestones <- 0
-
-  for (j in seq_along(unique(DDF$title))) {
-    value <-
-      SAL[which(SAL$project_title == unique(DDF$title)[j]),] # Look at one project
-    d <- DDF[which(DDF$title == unique(DDF$title)[j]),]
-    if (!(length(value$id) == 0)) {
-    for (k in seq_along(unique(d$year))) {
-      value2 <-
-        value[which(value$fiscal_year == unique(d$year)[k]),] # Look at one year
-      SAL$deliverables[which(
-        SAL$project_title == unique(value2$project_title) &
-          SAL$fiscal_year == unique(d$year)[k]
-      )] <- DELIVERABLES[[j]][k]
-      SAL$milestones[which(
-        SAL$project_title == unique(value2$project_title) &
-          SAL$fiscal_year == unique(d$year)[k]
-      )] <- MILESTONES[[j]][k]
+    ## ADDING IN OVERVIEW/ OBJECTIVES
+    # ppp has overview ppp$overview[which(ppp$id == om$project_id[i])][1]
+    SAL$overview <- 0
+    SAL$objectives <- 0
+    for (i in seq_along(ppp$id)) {
+      SAL$overview[which(SAL$project_id == ppp$id[i])] <- ppp$overview[i]
+      SAL$objectives[which(SAL$project_id == ppp$id[i])] <- ppp$objectives[i]
+      SAL$activity_type[which(SAL$project_id == ppp$id[i])] <- ppp$activity_type[i]
     }
+    SAL$activity_type[which(SAL$activity_type == 1)] <- "Monitoring"
+    SAL$activity_type[which(SAL$activity_type == 2)] <- "Research"
+    SAL$activity_type[which(SAL$activity_type == 3)] <- "Other"
+    SAL$activity_type[which(SAL$activity_type == 4)] <- "Data Management"
+    SAL$activity_type[which(SAL$activity_type == 5)] <- "Assessment"
+    SAL$activity_type[which(is.na(SAL$activity_type))] <- "0"
+    SAL$activity_type[which(is.null(SAL$activity_type))] <- "0"
+
+    ## STATUS
+    # status display is in ttt
+
+    ## LEAD STAFF
+    # j HAS THIS
+
+    SAL$status <- 0
+    SAL$lead_staff <- 0
+    for (i in seq_along(SAL$smart_name)) {
+      replace3 <- ttt$status_display[which(ttt$id == SAL$project_year_id[i])][1]
+      replace7 <- ppp$lead_staff[which(ppp$id == SAL$project_id[i])][1]
+      replace8 <- ppp$section_display[which(ppp$id == SAL$project_id[i])][1]
+      replace2 <- ppp$functional_group[which(ppp$id == SAL$project_id[i])][1]
+
+      SAL$status[i] <- replace3
+      SAL$lead_staff[i] <- replace7
+      SAL$section_display[i] <- replace8
+      SAL$functional_group[i] <- replace2
     }
-  }
-  return(SAL)
+
+    ## ADDING IN DELIVERABLES / MILESTONES
+    # DDF activities_full
+    SAL$deliverables <- 0
+    SAL$milestones <- 0
+
+    for (j in seq_along(unique(DDF$title))) {
+      value <-
+        SAL[which(SAL$project_title == unique(DDF$title)[j]),] # Look at one project
+      d <- DDF[which(DDF$title == unique(DDF$title)[j]),]
+      if (!(length(value$id) == 0)) {
+        for (k in seq_along(unique(d$year))) {
+          value2 <-
+            value[which(value$fiscal_year == unique(d$year)[k]),] # Look at one year
+          SAL$deliverables[which(
+            SAL$project_title == unique(value2$project_title) &
+              SAL$fiscal_year == unique(d$year)[k]
+          )] <- DELIVERABLES[[j]][k]
+          SAL$milestones[which(
+            SAL$project_title == unique(value2$project_title) &
+              SAL$fiscal_year == unique(d$year)[k]
+          )] <- MILESTONES[[j]][k]
+        }
+      }
+    }
+    return(SAL)
   }
   if(keep && type == "salary") {
     fn <- file.path(path,"dataSPA_SAL.rds")
