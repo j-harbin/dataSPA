@@ -17,7 +17,7 @@ plotSPA(
   item = NULL,
   funding = NULL,
   fundingChange = NULL,
-  approved = TRUE,
+  status = NULL,
   dataframe = FALSE,
   year = NULL,
   endDate = NULL,
@@ -29,11 +29,7 @@ plotSPA(
 
 \item{salary}{a data frame likely from \code{getData(type='salary')}}
 
-\item{which}{indicates which plot to plot (See Details). The
-options to use include: \code{omBar}, \code{omPie}, \code{omAllocation},
-\code{omAllocationGeneral}, \code{salaryBar}, \code{salaryAllocation},
-\code{weekAllocation},\code{indeterminate}, \code{predictSummary},\code{predict},
-or \code{predictSalary}}
+\item{which}{indicates which plot to plot (See Details).}
 
 \item{id}{the project_id from the Project Planning Tool}
 
@@ -71,9 +67,9 @@ or \code{which=predict} used to indicate by how much the funding
 specified in \code{funding} will change by. If \code{endDate} is provided,
 this argument is ignored.}
 
-\item{approved}{a boolean indicating if the plots should only include
-the approved projects. If FALSE, projects of all status (Approved,
-Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
+\item{status}{a character string indicating indicating which project
+status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
+Recommended, and Cancelled). If NULL, all projects are included.
 are included}
 
 \item{dataframe}{a Boolean indicating if the user wants the data frame
@@ -99,7 +95,7 @@ None (invisible NULL).
 This function plots specific graphs using the data
 frames returned by \code{\link[=getData]{getData()}}. Note: by default, only
 the approved projects are included (this can be changed
-using the approved argument).
+using the status argument).
 }
 \details{
 The various plot types are as follows:
@@ -139,6 +135,9 @@ not include amount of overtime as that is hard to predict.
 \item For \verb{which="predictOM} a bar chart showing the trends of om
 increasing while funding amoutn remains the same. This plot
 assumes an inflation rate of 2\%.
+\item For \code{which="overviewStatus"} a pie chart is created that shows the
+number of projects for each of the following status': Approved,
+Draft, Submitted, and Reviews for the specified parameters.
 }
 }
 \examples{
@@ -163,9 +162,11 @@ fundingChange=c(-25, -5, -75, -100))
 # Example 3: Bar plot predicting of the change in
 number of stations impact as a result of a certain funding
 ending
-
 plotSPA(om=data, salary=data2, which='predict', id=1093,
 funding= "NCP (A-base)", endDate="2026-2027")
+
+# Example 4: Pie Chart showing number of projects by status
+plotSPA(om=data, salary=data2, which="overviewStatus")
 
 }
 }

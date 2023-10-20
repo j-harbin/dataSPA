@@ -5,16 +5,16 @@ output: html_document
 
 ```{r, echo=FALSE, fig.cap="Line graphs representing changes in O&M investment for categories over the years for approved projects in the Maritimes. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
 if (!(is.null(theme))) {
-df <- try(plotSPA(om=index, which="omAllocation", theme=theme[i], dataframe = TRUE, approved=approved), silent=TRUE)
-res <- try(plotSPA(index, which="omAllocation", theme=unique(index$theme), item=names(df)[j], approved=approved), silent=TRUE)
+df <- try(plotSPA(om=index, which="omAllocation", theme=theme[i], dataframe = TRUE, status = "Approved"), silent=TRUE)
+res <- try(plotSPA(index, which="omAllocation", theme=unique(index$theme), item=names(df)[j], status = "Approved"), silent=TRUE)
 } else if (!(is.null(functionalGroup))) {
-  df <- try(plotSPA(om=index, which="omAllocation", functionalGroup=functionalGroup[i], dataframe = TRUE, approved=approved), silent=TRUE)
-res <- try(plotSPA(index, which="omAllocation", functionalGroup=unique(index$functional_group), item=names(df)[j], approved=approved), silent=TRUE)
+  df <- try(plotSPA(om=index, which="omAllocation", functionalGroup=functionalGroup[i], dataframe = TRUE, status = "Approved"), silent=TRUE)
+res <- try(plotSPA(index, which="omAllocation", functionalGroup=unique(index$functional_group), item=names(df)[j], status = "Approved"), silent=TRUE)
 } else if (!(is.null(section))) {
-    df <- try(plotSPA(om=index, which="omAllocation", section=section[i], dataframe = TRUE, approved=approved), silent=TRUE)
-res <- try(plotSPA(index, which="omAllocation", section=SEC, item=names(df)[j], approved=approved), silent = TRUE)
+    df <- try(plotSPA(om=index, which="omAllocation", section=section[i], dataframe = TRUE, status = "Approved"), silent=TRUE)
+res <- try(plotSPA(index, which="omAllocation", section=SEC, item=names(df)[j], status = "Approved"), silent = TRUE)
 } else if (!(is.null(division))) {
-      df <- try(plotSPA(om=index, which="omAllocation", division=division[i], dataframe = TRUE, approved=approved), silent=TRUE)
-res <- try(plotSPA(index, which="omAllocation", division= DIV, item=names(df)[j], approved=approved), silent=TRUE)
+      df <- try(plotSPA(om=index, which="omAllocation", division=division[i], dataframe = TRUE, status = "Approved"), silent=TRUE)
+res <- try(plotSPA(index, which="omAllocation", division= DIV, item=names(df)[j], status = "Approved"), silent=TRUE)
 }
 ```

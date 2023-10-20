@@ -123,6 +123,10 @@ not include amount of overtime as that is hard to predict.
 increasing while funding amoutn remains the same. This plot
 assumes an inflation rate of 2%.
 
+* For `which="overviewStatus"` a pie chart is created that shows the
+number of projects for each of the following status': Approved,
+Draft, Submitted, and Reviews for the specified parameters.
+
 To plot the amount of money invested in O&M per funding type for the Snow crab project, for example, the code is as follows:
 
 ```{r, eval=FALSE}

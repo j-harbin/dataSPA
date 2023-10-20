@@ -3,7 +3,7 @@
 #' This function plots specific graphs using the data
 #' frames returned by [getData()]. Note: by default, only
 #' the approved projects are included (this can be changed
-#' using the approved argument).
+#' using the status argument).
 #'
 #' The various plot types are as follows:
 #'
@@ -57,13 +57,13 @@
 #' increasing while funding amoutn remains the same. This plot
 #' assumes an inflation rate of 2%.
 #'
+#' * For `which="overviewStatus"` a pie chart is created that shows the
+#' number of projects for each of the following status': Approved,
+#' Draft, Submitted, and Reviews for the specified parameters.
+#'
 #' @param om a data frame likely from `getData(type='om')`
 #' @param salary a data frame likely from `getData(type='salary')`
-#' @param which indicates which plot to plot (See Details). The
-#' options to use include: `omBar`, `omPie`, `omAllocation`,
-#' `omAllocationGeneral`, `salaryBar`, `salaryAllocation`,
-#' `weekAllocation`,`indeterminate`, `predictSummary`,`predict`,
-#' or `predictSalary`
+#' @param which indicates which plot to plot (See Details).
 #' @param id the project_id from the Project Planning Tool
 #' @param theme theme classification of projects of either `Mitigation of Ecosystem Stressors`,
 #' `Marine Spatial Planning and Conservation`, `Ecosystem Assessment and Climate Change`,
@@ -80,9 +80,9 @@
 #' @param region parameter to specific specific region of either `Gulf`, `Maritimes`,
 #' `Pacific`, `Quebec`, or `Ontario and Prairie`. If no region is given, a summary plot
 #' of all regions is given.
-#' @param approved a boolean indicating if the plots should only include
-#' the approved projects. If FALSE, projects of all status (Approved,
-#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
+#' @param status a character string indicating indicating which project
+#' status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
+#' Recommended, and Cancelled). If NULL, all projects are included.
 #' are included
 #' @param funding a variable used when `which='predictSummary'` or
 #' `which='predict'` used to indicate which funding source will
@@ -147,9 +147,11 @@
 #' # Example 3: Bar plot predicting of the change in
 #' number of stations impact as a result of a certain funding
 #' ending
-#'
 #' plotSPA(om=data, salary=data2, which='predict', id=1093,
 #' funding= "NCP (A-base)", endDate="2026-2027")
+#'
+#' # Example 4: Pie Chart showing number of projects by status
+#' plotSPA(om=data, salary=data2, which="overviewStatus")
 #'
 #' }
 #' @export
@@ -171,7 +173,7 @@ plotSPA <-
            item = NULL,
            funding = NULL,
            fundingChange = NULL,
-           approved = TRUE,
+           status = NULL,
            dataframe = FALSE,
            year = NULL,
            endDate = NULL,
@@ -198,9 +200,76 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', or 'predictOM'"
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', or 'overviewStatus'"
       )
     }
+
+    if (is.null(om) && is.null(salary)) {
+      stop("Must provide either an om or salary argument depending on your plot choice.")
+    }
+
+
+    if (which == "overviewStatus") {
+      if (is.null(om)) {
+        stop("must provide om and salary argument.")
+
+      }
+      if (is.null(salary)) {
+        stop("must provide om and salary argument.")
+
+      }
+      if (is.null(om) && is.null(salary)) {
+        stop("must provide om and salary argument.")
+      }
+      om <- subsetSPA(om=om, theme=theme, functionalGroup=functionalGroup, section=section, division=division, year=year, status=status)
+      salary <- subsetSPA(salary=salary, theme=theme, functionalGroup=functionalGroup, section=section, division=division, year=year, status=status)
+
+      o <- subset(om, select=c("project_id", "status"))
+      s <- subset(salary, select=c("project_id", "status"))
+
+      ss <- s[which(!(s$project_id %in% o$project_id)),]
+
+      df <- rbind(o, ss)
+      unique_rows <- !duplicated(df)
+      df2 <- subset(df, unique_rows)
+      status_counts <- table(df2$status)
+      titleNames <- c("theme", "functionalGroup", "section", "division", "year", "status")
+      dt <- data.frame(matrix(NA, nrow = 1, ncol = length(titleNames)))
+      names(dt) <- titleNames
+      if (is.null(theme)) {
+        theme <- 0
+      }
+      if (is.null(functionalGroup)) {
+        functionalGroup <- 0
+      }
+
+      if (is.null(section)) {
+        section <- 0
+      }
+      if (is.null(division)) {
+        division <- 0
+      }
+      if (is.null(year)) {
+        year <- 0
+      }
+      if (is.null(status)) {
+        status <- 0
+      }
+
+      titles <- c(theme, functionalGroup, section, division, year, status)
+      for (i in seq_along(titles)) {
+        if (is.null(titles[i])) {
+          titles[i] <- 0
+        }
+          dt[,i] <- titles[i]
+      }
+      items <- titleNames[which(!(titles == "0"))]
+      items2 <- titles[which(!(titles == "0"))]
+      mainTitle <- paste(items, items2, sep=": ")
+      PIE <- pie(status_counts, labels = paste0(names(status_counts), " (", status_counts, ")"), main = mainTitle, col=1:length(names(status_counts)))
+      return()
+      }
+
 
     color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
     set.seed(1)
@@ -230,11 +299,26 @@ plotSPA <-
       }
     }
 
-    if (approved) {
-      om <- om[which(om$status == "Approved"),]
-      salary <- salary[which(salary$status == "Approved"),]
-      if (length(om) == 0 && length(salary) == 0) {
-        stop("No projects for this subset in this region.")
+    if (!(is.null(status))) {
+      if (length(status) > 1) {
+        stop("Can only give one status at a time.")
+      }
+      if (!(status %in% c("Reviewed", "Approved", "Draft", "Cancelled", "Submitted", "Not Approved", "Recommended"))) {
+        stop("status must be either Reviewed, Approved, Draft, Cancelled, Submitted, Not Approved, or Recommended")
+      } else {
+        if (!(is.null(om))) {
+          om <- om[which(om$status == status),]
+          if (length(om) == 0) {
+            stop("No projects for this subset in this region.")
+          }
+        } else {
+          salary <- salary[which(salary$status == status),]
+          if (length(salary) == 0) {
+            stop("No projects for this subset in this region.")
+          }
+
+        }
+
       }
     }
 
@@ -251,14 +335,15 @@ plotSPA <-
         'predictSummary',
         'predict',
         'predictSalary',
-        'predictOM'
+        'predictOM',
+        'overviewStatus'
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', or 'predictOM")
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', or 'overviewStatus'")
     }
 
-    if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
+    if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
       stop("Must provide an id,theme, functionalGroup, section, or division argument")
     }
 
@@ -2039,7 +2124,7 @@ text(
 if (dataframe == TRUE) {
   return(dfROI2)
 }
-}
+    }
 }
 
 

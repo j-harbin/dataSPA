@@ -7,12 +7,13 @@
 subsetSPA(
   om = NULL,
   salary = NULL,
-  approved = FALSE,
+  status = NULL,
   region = NULL,
   theme = NULL,
   functionalGroup = NULL,
   section = NULL,
-  division = NULL
+  division = NULL,
+  year = NULL
 )
 }
 \arguments{
@@ -20,12 +21,12 @@ subsetSPA(
 
 \item{salary}{a data frame likely from \code{getData(type='salary')}}
 
-\item{approved}{a boolean indicating if the plots should only include
-the approved projects. If FALSE, projects of all status (Approved,
-Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
+\item{status}{a character string indicating indicating which project
+status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
+Recommended, and Cancelled). If NULL, all projects are included.
 are included}
 
-\item{region}{parameter to specific specific region of either \code{Gulf}, \code{Maritimes},
+\item{region}{parameter to specify specific region of either \code{Gulf}, \code{Maritimes},
 \code{Pacific}, \code{Quebec}, or \verb{Ontario and Prairie}.}
 
 \item{theme}{theme classification of projects. This could be set to \code{return}
@@ -39,6 +40,8 @@ This could be set to \code{return} to see a list of possibilities. See examples 
 
 \item{division}{classification of projects referring to the divisions at DFO.
 This could be set to \code{return} to see a list of possibilities. See examples below.}
+
+\item{year}{parameter to specify a specific fiscal year, e.g. "2023-2024".}
 }
 \description{
 This function either A) retusn a subset data frame of O&M or salary
@@ -54,13 +57,13 @@ mentioned arguments are set to "return"
 # for the Coastal Exosystem Science Division
 library(dataSPA)
 om <- getData(type="om", cookie=cookie, age=100)
-d <- subsetSPA(om=om, approved=TRUE, region="Maritimes",
+d <- subsetSPA(om=om, status="Approved", region="Maritimes",
 division ="Coastal Ecosystem Science Division")
 head(d)
 
 # Example 2: Get a list of the sections that contain approved projects
 # in the Maritimes Region
-d <- subsetSPA(om=om, approved=TRUE, region="Maritimes",
+d <- subsetSPA(om=om, status="Approved", region="Maritimes",
 section ="return")
 }
 }

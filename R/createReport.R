@@ -28,9 +28,9 @@
 #' `getData(type="om")`
 #' @param region parameter to specific specific region of either `Gulf`, `Maritimes`,
 #' `Pacific`, `Quebec`, or `Ontario and Prairie`
-#' @param approved a boolean indicating if the plots should only include
-#' the approved projects. If FALSE, projects of all status (Approved,
-#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
+#' @param status a character string indicating indicating which project
+#' status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
+#' Recommended, and Cancelled). If NULL, all projects are included.
 #' are included
 #' @param cookie a sessionid and csrftoken from a Department of
 #' Fisheries and Oceans Canada (DFO) employee in the following
@@ -48,7 +48,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, approved=TRUE, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, status="Approved", destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
   Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
 
   if(!(is.null(statusReport))) {
@@ -96,15 +96,28 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
     stop("Must obtain data for om using getData(type='om')")
   }
 
-  if (approved) {
-    om <- om[which(om$status == "Approved"),]
-    salary <- salary[which(salary$status == "Approved"),]
+    if (!(is.null(status))) {
+      if (length(status) > 1) {
+        stop("Can only give one status at a time.")
+      }
+      if (!(status %in% c("Reviewed", "Approved", "Draft", "Cancelled", "Submitted", "Not Approved", "Recommended"))) {
+        stop("status must be either Reviewed, Approved, Draft, Cancelled, Submitted, Not Approved, or Recommended")
+      } else {
+        if (!(is.null(om))) {
+          om <- om[which(om$status == status),]
+          if (length(om) == 0) {
+            stop("No projects for this subset in this region.")
+          }
+        } else {
+          salary <- salary[which(salary$status == status),]
+          if (length(salary) == 0) {
+            stop("No projects for this subset in this region.")
+          }
 
-    if (length(om) == 0 && length(salary) == 0) {
-      stop("No projects have approved projects.")
+        }
+
+      }
     }
-
-  }
 
   if (!(is.null(region))) {
     regions <- unique(str_extract(om$section_display, "[^-]+"))

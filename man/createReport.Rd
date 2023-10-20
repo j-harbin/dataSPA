@@ -15,7 +15,7 @@ createReport(
   section = NULL,
   division = NULL,
   region = NULL,
-  approved = TRUE,
+  status = "Approved",
   destdir = ".",
   path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
 )
@@ -52,9 +52,9 @@ more details do \code{unique(om$section_display)}, where \code{om}is the output 
 \item{region}{parameter to specific specific region of either \code{Gulf}, \code{Maritimes},
 \code{Pacific}, \code{Quebec}, or \verb{Ontario and Prairie}}
 
-\item{approved}{a boolean indicating if the plots should only include
-the approved projects. If FALSE, projects of all status (Approved,
-Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
+\item{status}{a character string indicating indicating which project
+status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
+Recommended, and Cancelled). If NULL, all projects are included.
 are included}
 
 \item{destdir}{parameter indicating where to save the html report}

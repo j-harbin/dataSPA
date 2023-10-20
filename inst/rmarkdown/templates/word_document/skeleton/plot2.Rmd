@@ -4,6 +4,6 @@ output: html_document
 ---
 
 ```{r, echo=FALSE, fig.cap="Line graphs representing changes in salary investment for categories over the years for the approved projects in the Maritimes. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
-df <- try(plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), dataframe = TRUE, approved = approved), silent=TRUE)
-res <- try(plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), item=names(df)[j], approved = approved), silent=TRUE)
+df <- try(plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), dataframe = TRUE, status = "Approved"), silent=TRUE)
+res <- try(plotSPA(salary=index2, which="salaryAllocation", theme=unique(index2$theme), item=names(df)[j], status = "Approved"), silent=TRUE)
 ```

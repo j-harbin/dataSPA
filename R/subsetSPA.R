@@ -17,11 +17,12 @@
 #' This could be set to `return` to see a list of possibilities. See examples below.
 #' @param division classification of projects referring to the divisions at DFO.
 #' This could be set to `return` to see a list of possibilities. See examples below.
-#' @param region parameter to specific specific region of either `Gulf`, `Maritimes`,
+#' @param region parameter to specify specific region of either `Gulf`, `Maritimes`,
 #' `Pacific`, `Quebec`, or `Ontario and Prairie`.
-#' @param approved a boolean indicating if the plots should only include
-#' the approved projects. If FALSE, projects of all status (Approved,
-#' Reviewed, Draft, Submitted, Not Approved, Recommended, and Canceled)
+#' @param year parameter to specify a specific fiscal year, e.g. "2023-2024".
+#' @param status a character string indicating indicating which project
+#' status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
+#' Recommended, and Cancelled). If NULL, all projects are included.
 #' are included
 #' @importFrom stringr str_extract
 #' @export
@@ -31,21 +32,34 @@
 #' # for the Coastal Exosystem Science Division
 #' library(dataSPA)
 #' om <- getData(type="om", cookie=cookie, age=100)
-#' d <- subsetSPA(om=om, approved=TRUE, region="Maritimes",
+#' d <- subsetSPA(om=om, status="Approved", region="Maritimes",
 #' division ="Coastal Ecosystem Science Division")
 #' head(d)
 #'
 #' # Example 2: Get a list of the sections that contain approved projects
 #' # in the Maritimes Region
-#' d <- subsetSPA(om=om, approved=TRUE, region="Maritimes",
+#' d <- subsetSPA(om=om, status="Approved", region="Maritimes",
 #' section ="return")
 #' }
 
-subsetSPA <- function(om=NULL, salary=NULL, approved=FALSE, region=NULL, theme=NULL,
-                      functionalGroup=NULL, section=NULL, division=NULL) {
+subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL,
+                      functionalGroup=NULL, section=NULL, division=NULL, year=NULL) {
   # Can only have om or salary
   if (!(is.null(om)) && (!(is.null(salary)))) {
     stop("Can only do either om or salary. Cannot do them at the same time.")
+  }
+
+  # remove all of the amount = 0
+  if (!(is.null(om))) {
+    if (any(om$amount == 0)) {
+      om <- om[-(which(om$amount == 0)),]
+    }
+  }
+
+  if (!(is.null(salary))) {
+    if (any(salary$amount_total == 0)) {
+      salary <- salary[-(which(salary$amount_total == 0)),]
+    }
   }
 
   # OM
@@ -80,18 +94,27 @@ subsetSPA <- function(om=NULL, salary=NULL, approved=FALSE, region=NULL, theme=N
   }
   }
 
-  # APPROVED
-  if (approved) {
-    if (!(is.null(om))) {
-    om <- om[which(om$status == "Approved"),]
-    if (length(om) == 0) {
-      stop("No projects for this subset in this region.")
+  # STATUS
+  if (!(is.null(status))) {
+    if (length(status) > 1) {
+      stop("Can only give one status at a time.")
     }
+    if (!(status %in% c("Reviewed", "Approved", "Draft", "Cancelled", "Submitted", "Not Approved", "Recommended"))) {
+      stop("status must be either Reviewed, Approved, Draft, Cancelled, Submitted, Not Approved, Recommended")
     } else {
-    salary <- salary[which(salary$status == "Approved"),]
-    if (length(salary) == 0) {
-      stop("No projects for this subset in this region.")
-    }
+      if (!(is.null(om))) {
+      om <- om[which(om$status == status),]
+      if (length(om) == 0) {
+        stop("No projects for this subset in this region.")
+      }
+      } else {
+        salary <- salary[which(salary$status == status),]
+        if (length(salary) == 0) {
+          stop("No projects for this subset in this region.")
+        }
+
+      }
+
     }
   }
 
@@ -125,17 +148,53 @@ subsetSPA <- function(om=NULL, salary=NULL, approved=FALSE, region=NULL, theme=N
   }
 
 
+
+  # YEAR
+  if (!(is.null(year))) {
+    if (!(is.null(om))) {
+      if (!(year %in% unique(om$fiscal_year))) {
+        stop("No projects in year = ", year, " . Try ", paste0(unique(om$fiscal_year), collapse=","), " instead.")
+      }
+
+      om <- om[which(om$fiscal_year == year),]
+      if (length(om) == 0 ) {
+        stop("No projects for this subset in this year.")
+      }
+    } else {
+      if (!(year %in% unique(salary$fiscal_year))) {
+        stop("No projects in year = ", year, " . Try ", paste0(unique(salary$fiscal_year), collapse=","), " instead.")
+      }
+      salary <- salary[which(salary$fiscal_year == year),]
+      if (length(salary) == 0 ) {
+        stop("No projects for this subset in this year.")
+      }
+    }
+  }
+
+
   # THEME
   if (!(is.null(theme))) {
   if (length(theme) > 1) {
     stop("Can only provide 1 theme at a time, not ", length(theme))
   }
-  if (theme == "return") {
+  if (theme == "return" && (!(is.null(om)))) {
       return(unique(om$theme))
   }
-  if (!(theme %in% unique(om$theme))) {
-    stop("No projects have theme ", theme, " try ", paste0(unique(om$theme), collapse=","), " instead.")
+
+  if (theme == "return" && (!(is.null(salary)))) {
+      return(unique(salary$theme))
   }
+    if (!(is.null(om))) {
+      THEMES <- unique(om$theme)
+    } else {
+      THEMES <- unique(salary$theme)
+    }
+
+  if (!(theme %in% THEMES)) {
+    stop("No projects have theme ", theme, " try ", paste0(THEMES, collapse=","), " instead.")
+  }
+
+
   if (!(is.null(om))) {
   index <- om[which(om$theme == theme),]
   } else {
@@ -156,12 +215,17 @@ subsetSPA <- function(om=NULL, salary=NULL, approved=FALSE, region=NULL, theme=N
     stop("Can only provide 1 functionalGroup at a time, not ", length(theme))
   }
 
+  if (!(is.null(om))) {
+    FGS <- unique(om$functional_group)
+  } else {
+    FGS <-  unique(salary$functional_group)
+  }
   if (functionalGroup == "return") {
-    return(unique(om$functional_group))
+    return(FGS)
   }
 
-  if (!(functionalGroup %in% unique(om$functional_group))) {
-    stop("No projects have functionalGroup ", functionalGroup, " try ", paste0(unique(om$functional_group), collapse=","), " instead.")
+  if (!(functionalGroup %in% FGS)) {
+    stop("No projects have functionalGroup ", functionalGroup, " try ", paste0(FGS, collapse=","), " instead.")
   }
 
   if (!(is.null(om))) {
