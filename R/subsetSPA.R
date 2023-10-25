@@ -131,6 +131,10 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
     }
     regions <- str_trim(regions)
 
+    if (region == "return") {
+      return(sort(regions))
+    }
+
     if (!(region %in% regions)) {
       stop("No projects in region = ", region, " . Try ", paste0(regions, collapse=","), " instead.")
     }
@@ -178,11 +182,15 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
     stop("Can only provide 1 theme at a time, not ", length(theme))
   }
   if (theme == "return" && (!(is.null(om)))) {
-      return(unique(om$theme))
+    the <- unique(om$theme)
+    if (any(the == "0")) {
+      the <- the[-(which(the == "0"))]
+    }
+      return(sort(the))
   }
 
   if (theme == "return" && (!(is.null(salary)))) {
-      return(unique(salary$theme))
+      return(sort(unique(salary$theme)))
   }
     if (!(is.null(om))) {
       THEMES <- unique(om$theme)
@@ -221,7 +229,10 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
     FGS <-  unique(salary$functional_group)
   }
   if (functionalGroup == "return") {
-    return(FGS)
+    if (any(FGS == "")) {
+      FGS <- FGS[-(which(FGS == ""))]
+    }
+    return(sort(FGS))
   }
 
   if (!(functionalGroup %in% FGS)) {
@@ -256,7 +267,7 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
   }
 
   if (section == "return") {
-    return(unique(sec))
+    return(sort(unique(sec)))
   }
 
   if (!(section %in% unique(sec))) {
@@ -288,7 +299,7 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
   }
   div <- unlist(unique(div))
   if (division == "return") {
-    return(unique(div))
+    return(sort(unique(div)))
   }
   if (!(division %in% unique(div))) {
     stop("No projects have division ",division, " try ", paste0(div, collapse=","), " instead.")
@@ -301,7 +312,7 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
     }
     div <- unlist(unique(div))
     if (division == "return") {
-      return(unique(div))
+      return(sort(unique(div)))
     }
     if (!(division %in% unique(div))) {
       stop("No projects have division ",division, " try ", paste0(div, collapse=","), " instead.")

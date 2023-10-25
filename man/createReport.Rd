@@ -15,7 +15,7 @@ createReport(
   section = NULL,
   division = NULL,
   region = NULL,
-  status = "Approved",
+  status = NULL,
   destdir = ".",
   path = "//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/"
 )

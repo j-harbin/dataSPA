@@ -14,40 +14,40 @@ if(!exists("filedate")) {
 cat(paste0("Data pulled for this report was obtained on ", filedate))
 ```
 
+# {.tabset}
+
+## Status Report
+
 **Title**
 
 ```{r, echo=FALSE, comment=NA, results='asis'}
-cat(paste0(unique(index$project_title)))
+cat(paste0(unique(indexS$project_title)))
 ```
 
 
 **Project ID**
 
 ```{r, echo=FALSE, comment=NA,results='asis'}
-cat(paste0(unique(index$project_id)))
+cat(paste0(unique(indexS$project_id)))
 ```
 
 ### Choose a year {.tabset .tabset-dropdown}
 
 ```{r, results="asis", echo=FALSE,comment=NA}
-# index <- data.frame(
-#   Year = c(2021, 2022, 2023),
-#   Status = c("In Progress", "Completed", "Pending")
-# )
 
-for (j in 1:nrow(index)) {
+for (j in 1:nrow(indexS)) {
   cat(sprintf(
     '\n\n#### %s {#year%s}\n',
-    index$fiscal_year[j],
-    index$fiscal_year[j]
+    indexS$fiscal_year[j],
+    indexS$fiscal_year[j]
   ))
   ## Status
-  cat(sprintf('**Status:** %s\n', index$status_display[j]))
+  cat(sprintf('**Status:** %s\n', indexS$status_display[j]))
   
   ## Major Accomplishments
   cat("\n")
-  if (!(index$major_accomplishments[j] == 0)) {
-    cat(sprintf('**Major Accomplishments:** %s\n', index$major_accomplishments[j]))
+  if (!(indexS$major_accomplishments[j] == 0)) {
+    cat(sprintf('**Major Accomplishments:** %s\n', indexS$major_accomplishments[j]))
 
   } else {
     cat(sprintf('**Major Accomplishments:** %s\n', "There are no major accomplishments mentioned for this project."))
@@ -55,8 +55,8 @@ for (j in 1:nrow(index)) {
   
   ## Major Issues
   cat("\n")
-  if (!(index$major_issues[j] == 0)) {
-    cat(sprintf('**Major Issues:** %s\n', index$major_issues[j]))
+  if (!(indexS$major_issues[j] == 0)) {
+    cat(sprintf('**Major Issues:** %s\n', indexS$major_issues[j]))
 
   } else {
     cat(sprintf('**Major Issues:** %s\n', "There are no major issues mentioned for this project."))
@@ -64,8 +64,8 @@ for (j in 1:nrow(index)) {
   
   ## Supporting Resources
   cat("\n")
-  if (!(index$supporting_resources[j] == 0)) {
-    cat(sprintf('**Supporting Resources:** %s\n', index$supporting_resources[j]))
+  if (!(indexS$supporting_resources[j] == 0)) {
+    cat(sprintf('**Supporting Resources:** %s\n', indexS$supporting_resources[j]))
 
   } else {
     cat(sprintf('**Supporting Resources:** %s\n', "There are no supporting resources mentioned for this project."))
@@ -73,8 +73,8 @@ for (j in 1:nrow(index)) {
   
   ## Target completion date
   cat("\n")
-  if (!(index$target_completion_date_display[j] == 0)) {
-    cat(sprintf('**Target Completion Date:** %s\n', index$target_completion_date_display[j]))
+  if (!(indexS$target_completion_date_display[j] == 0)) {
+    cat(sprintf('**Target Completion Date:** %s\n', indexS$target_completion_date_display[j]))
 
   } else {
     cat(sprintf('**Target Completion Date:** %s\n', "There are no supporting resources mentioned for this project."))
@@ -82,51 +82,48 @@ for (j in 1:nrow(index)) {
   
   ## Excess Funds
    cat("\n")
-  if (!(index$excess_funds_amt[j] == 0)) {
-    cat(sprintf('**Excess Funds:** %s\n', index$excess_funds_amt[j]))
+  if (!(indexS$excess_funds_amt[j] == 0)) {
+    cat(sprintf('**Excess Funds:** %s\n', indexS$excess_funds_amt[j]))
     cat("\n")
   } else {
     cat(sprintf('**Excess Funds:** %s\n', "There is no excess funds for this project."))
     cat("\n")
   }
   cat("\n")
-  if (index$excess_funds_comment[j] == 0) {
+  if (indexS$excess_funds_comment[j] == 0) {
   cat("There is no reason given for this excess.")
   cat("\n")
 } else {
-  cat(index$excess_funds_comment[j])
+  cat(indexS$excess_funds_comment[j])
   cat("\n")
 }
    
      ## Insufficient Funds
    cat("\n")
-  if (!(index$insufficient_funds_amt[j] == 0)) {
-    cat(sprintf('**Insufficient Funds:** %s\n', index$insufficient_funds_amt[j]))
+  if (!(indexS$insufficient_funds_amt[j] == 0)) {
+    cat(sprintf('**Insufficient Funds:** %s\n', indexS$insufficient_funds_amt[j]))
     cat("\n")
   } else {
     cat(sprintf('**Insufficient Funds:** %s\n', "There is no insufficient funds for this project."))
     cat("\n")
   }
       cat("\n")
-     if (index$insufficient_funds_comment[j] == 0) {
+     if (indexS$insufficient_funds_comment[j] == 0) {
   cat("There is no reason given for this insufficiency.")
   cat("\n")
 } else {
-  cat(index$insufficient_funds_comment[j])
+  cat(indexS$insufficient_funds_comment[j])
   cat("\n")
 }
   
   ## General Comments
    cat("\n")
-  if (!(index$general_comment[j] == 0)) {
-    cat(sprintf('**General Comments:** %s\n', index$general_comment[j]))
+  if (!(indexS$general_comment[j] == 0)) {
+    cat(sprintf('**General Comments:** %s\n', indexS$general_comment[j]))
 
   } else {
     cat(sprintf('**General Comments:** %s\n', "There are no supporting resources mentioned for this project."))
   }
-  
-  
-  
   
 }
 
@@ -134,3 +131,408 @@ for (j in 1:nrow(index)) {
 ```
 
 ### {-}
+
+## Fact Sheet
+
+**Overview**
+
+```{r, echo=FALSE}
+if (!(length(index$project_id) == 0)) {
+  years <- unique(index$fiscal_year)
+} else if (!(length(index2$fiscal_year)== 0)) {
+    years <- unique(index2$fiscal_year)
+}
+```
+
+
+```{r, echo=FALSE, comment=NA, results='asis'}
+if (!(length(index$project_id) == 0)) {
+  ID <- unique(index$project_id)
+} else if (!(length(index2$fiscal_year)== 0)) {
+  ID <- unique(index2$project_id)
+}
+
+  if (file.exists("//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx")){
+    file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+  } else {
+    file <- "/home/mar-spa/Ecological Pillar Objectives 20 April 2023.docx"
+  }
+if (!(length(index$project_id) == 0) | (!(length(index2$project_id) == 0))) {
+if (file.exists(file)) {
+  cat(highlightOverview(om=index, salary=index2, id=ID, file=file))
+} else {
+  cat(paste0(ifelse(!(length(index$project_id) == 0), unique(index$overview), unique(index2$overview))))
+}}
+```
+
+<center>
+```{r pressure, echo=FALSE, fig.cap=" ", out.width = '70%'}
+if (!(length(index$project_id) == 0)) {
+  if (file.exists(file)) {
+    highlightOverview(om=index, id=unique(index$project_id), legend=TRUE, file=file)
+  }
+}
+```
+</img></center>
+
+**Deliverables**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(index$project_id) == 0)) {
+  test <- index
+} else if (!(length(index2$project_id) == 0)) {
+  test <- index2
+}
+
+if (!(length(test$project_id) == 0)) {
+d <- unique(test$deliverables)
+if (length(unique(d)) == 1 && unique(d) == 0) {
+  cat(paste0("There are no identified deliverables for this project."))
+  #print(paste0(unlist(strsplit(unique(index$milestones)[1], "|-----|", fixed=TRUE))))
+} else {
+    deliverables <- NULL
+    if (!(length(unique(d))) == 1) {
+      for (Y in seq_along(years)) {
+        ii <- test[which(test$fiscal_year == years[Y]), ]
+        deliverables[[Y]] <- unique(ii$deliverables)
+      }
+      deliverables <- unlist(deliverables)
+      if (length(d) == length(deliverables)) {
+      for (Y in seq_along(years)) {
+      if (deliverables[Y] == 0) {
+        deliverables[Y] <- "No identified deliverables for this year."
+      }
+      cat(paste0(years[Y], ": \n"))
+      cat(paste0(unlist(strsplit(deliverables[Y], "|-----|", fixed=TRUE)), "\n\n"))
+      #cat(paste0(years[i], " : ", deliverables[i]))
+      cat("  \n")
+      cat("  \n") 
+
+      }
+      
+      } else {
+       # Some are identified to be the same
+        
+        for (D in seq_along(d)) {
+          dd <- which(deliverables == d[D])
+          
+          if (length(dd) == 1) {
+            years <- unique(test$fiscal_year[which(test$deliverables == deliverables[dd])])
+            cat(paste0(years, ": \n"))
+            if (!(deliverables[dd] == 0)) {
+            cat(paste0(unlist(
+              strsplit(deliverables[dd], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            } else {
+              cat(paste0("There are no milestones identified for this year."))
+            }
+            cat("  \n")
+            cat("  \n")
+          } else {
+            # This is where the change occurs
+            YEARS <-
+              unique(test$fiscal_year[which(test$deliverables == deliverables[dd[1]])])
+            
+            if (!(deliverables[dd[1]] == 0)) {
+
+            cat(paste0(paste0(YEARS, collapse = " and "), " have the same deliverables(s): \n"))
+            
+             cat(paste0(unlist(
+              strsplit(deliverables[dd[1]], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            } else {
+              # More than one year has no deliverables
+               cat(paste0(paste0(YEARS, collapse = " and "), " have no identified deliverables(s) \n"))
+              
+            }
+            cat("  \n")
+            cat("  \n")
+
+          }
+        }
+        
+    }
+    } else {
+      
+      if (grepl("\t\t\t\t", d)) {
+        d <- sub("\t\t\t\t", "", d) # Remove first tab
+        if (grepl("\t\t\t\t\t\t",d)) {
+          d <- sub("[\t]+","", d)
+        }
+      }
+      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same deliverable(s):"))
+      cat("  \n")
+      cat("  \n")
+      cat(paste0(d))
+    }
+}
+}
+```
+
+**Milestones**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(test$project_id) == 0)) {
+years <- unique(test$fiscal_year)
+m <- unique(test$milestones)
+if (length(unique(m)) == 1 && unique(m) == 0) {
+  cat(paste0("There are no identified milestones for this project."))
+} else {
+    milestones <- NULL
+    if (!(length(unique(m))) == 1) {
+      for (Y in seq_along(years)) {
+        ii <- test[which(test$fiscal_year == years[Y]), ]
+        milestones[[Y]] <- unique(ii$milestones)
+      }
+      milestones <- unlist(milestones)
+      if (length(m) == length(milestones)) {
+      for (M in seq_along(years)) {
+      if (milestones[M] == 0) {
+        milestones[M] <- "No identified milestones for this year."
+      }
+      cat(paste0(years[M], ": \n"))
+      cat(paste0(unlist(strsplit(milestones[M], "|-----|", fixed=TRUE)), "\n\n"))
+      cat("  \n")
+      cat("  \n") 
+      }
+      } else {
+        # At least one year has the same milestone, but not all
+        for (M in seq_along(m)) {
+          mm <- which(milestones == m[M])
+          if (length(mm) == 1) {
+            years <- unique(test$fiscal_year[which(test$milestones == milestones[mm])])
+            cat(paste0(years, ": \n"))
+            if (!(milestones[mm] == 0)) {
+            cat(paste0(unlist(
+              strsplit(milestones[mm], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            } else {
+              cat(paste0("There are no milestones identified for this year."))
+            }
+            cat("  \n")
+            cat("  \n")
+          } else {
+            # This is where the change occurs
+            YEARSM <-
+              unique(test$fiscal_year[which(test$milestones == milestones[mm[1]])])
+            
+            if (!(milestones[mm[1]] == 0)) {
+
+            cat(paste0(paste0(YEARSM, collapse = " and "), " have the same milestone(s): \n"))
+            
+             cat(paste0(unlist(
+              strsplit(milestones[mm[1]], "|-----|", fixed = TRUE)
+            ), "\n\n"))
+            } else {
+              # More than one year has no milestones
+               cat(paste0(paste0(YEARSM, collapse = " and "), " have no identified milestone(s) \n"))
+              
+            }
+            cat("  \n")
+            cat("  \n")
+          }
+        }
+      }
+      
+    } else {
+      # Right now, this only does this for 1 milestone
+      if (grepl("\t\t\t\t", m)) {
+        m <- sub("\t\t\t\t", "", m) # Remove first tab
+        if (grepl("\t\t\t\t\t\t",m)) {
+          m <- sub("[\t]+","", m)
+        }
+      }
+      cat(paste0("All years (", paste0(years, collapse = ","), ") have the same milestone(s):"))
+      cat("  \n")
+      cat("  \n")
+      cat(paste0(m))
+    }
+}
+}
+```
+
+
+**Objectives**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(test$project_id) == 0)) {
+if (unique(test$objectives) == 0) {
+  cat(paste0("There are no identified objectives for this project."))
+} else {
+cat(paste0(unique(test$objectives)))
+}
+}
+
+```
+
+**Status**
+
+```{r, echo=FALSE, comment=NA, results='asis'}
+if (!(length(test) == 0)) {
+years <- unique(test$fiscal_year)
+stat <- NULL
+if (!(length(unique(test$status)) == 1)) {
+  for (Y in seq_along(years)) {
+    ii <- test[which(test$fiscal_year == years[Y]),]
+    stat[[Y]] <- unique(ii$status)
+  }
+  stat <- unlist(stat)
+  cat(paste0(years," : ", stat, collapse=", "))
+} else {
+  cat(paste0(unique(test$status)), " for all project years")
+}
+}
+```
+
+**Lead Contact (s)**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+if (!(length(index$project_id) == 0)) {
+cat(paste0(unique(index$lead_staff)))
+} else if (!(length(index2$project_id) == 0)) {
+  cat(paste0(unique(index2$lead_staff)))
+}
+```
+
+
+**About**
+
+```{r, echo=FALSE, comment=NA,results='asis'}
+  cat("  \n")
+  cat("  \n")
+  if (!(length(index$project_id) == 0)) {
+    IND <- index
+  } else {
+    IND <- index2
+  }
+
+if (!(unique(IND$theme) == 0)) {
+  path <- "http://glf-proxy:8018/mar-spa/themes/"
+  link <- paste0(path, gsub(" ", "%20", unique(IND$theme)), ".html")
+  LINK <- paste0('<a href="',link,'">',unique(IND$theme),'</a>')
+  cat("<u>Theme</u>: ", LINK)
+  cat("  \n")
+  cat("  \n")
+}
+if (!(unique(IND$functional_group) == "")) {
+  path <- "http://glf-proxy:8018/mar-spa/functionalGroup/"
+  link <- paste0(path, gsub(" ", "%20", unique(IND$functional_group)), ".html")
+    LINK <- paste0('<a href="',link,'">',unique(IND$functional_group),'</a>')
+  cat("<u>Functional Group</u>: ", LINK)
+  cat("  \n")
+  cat("  \n")
+
+}
+
+ss <- unique(gsub(".*- ","",unique(IND$section_display)))
+if (!(ss %in% c('""', 'Aquatic Biotechnology Laboratory ( TO BE DELETE)'))) {
+    path <- "http://glf-proxy:8018/mar-spa/sections/"
+  link <- paste0(path, gsub(" ", "%20", ss), ".html")
+    LINK <- paste0('<a href="',link,'">',ss,'</a>')
+  cat("<u>Section</u>: ", LINK)
+  cat("  \n")
+  cat("  \n")
+
+}
+dddd <- strsplit(IND$section_display[1], " - ", fixed=TRUE)[[1]][3]
+  path <- "http://glf-proxy:8018/mar-spa/divisions/"
+  link <- paste0(path, gsub(" ", "%20", dddd), ".html")
+    LINK <- paste0('<a href="',link,'">',dddd,'</a>')
+cat("<u>Division</u>: ", LINK)
+cat("  \n")
+cat("  \n")
+
+```
+
+
+**Assumptions/ Disclaimers**
+
+1. The calculated salaries use the median salaries, not exact salaries of staff
+2. If a classification level is not given in the Project Planning Tool (PPT), a level of PC-02 is assumed.
+3. If the salary for a given year of the project is not available in the public DFO pay scale website, the closest year is used.
+4. When overtime amounts are considered, it does not take into account that overtime can sometimes be 1.5 or 2X the pay. It assumes regular salary.
+5. When a staff member has a job classification EX, they are not included in total salary.
+6. For salary predictions, overtime is not accounted for and it is assumed that each classification level worked the same amount of hours as the previous year
+7. The PPT was only mandated in the Maritime region 2 years ago and therefore all relevant information may not be included
+8. The investment amounts are based on what was PLANNED to be spent on each project. The actual amounts may vary
+9. Individuals who have level IT--03 use the salary of CS-03 due to the name change in level
+
+**Plots** 
+
+```{r, echo=FALSE}
+if (!(length(index$project_id) == 0)) {
+  ID <- unique(index$project_id)
+} else if (!(length(index2$fiscal_year)== 0)) {
+  ID <- unique(index2$project_id)
+}
+
+```
+
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
+res <- try(plotSPA(om=index, id=ID, which="omBar", status=status))
+cat(paste0("length index = ", length(index$project_id), " and ID = ", unique(ID), " and status = ", unique(status)))
+```
+
+```{r, echo=FALSE, fig.cap="Figure 2: Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
+res <- try(plotSPA(om=index, id=ID, which="omAllocation",status=status), silent=TRUE)
+```
+
+
+```{r, echo=FALSE, fig.cap="Figure 3: Bar graph showing gap in funding (red) if funding stayed the same and an inflation rate of 2% was applied to O&M costs. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+
+res <- try(plotSPA(om=index, which="predictOM", id=ID,status=status), silent=TRUE)
+
+```
+
+
+```{r, echo=FALSE, fig.cap="Figure 4: Bar graph representing amount of salary money ($) planned to be spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
+res <- try(plotSPA(salary=index2, id=ID, which="salaryBar",status=status), silent=TRUE)
+```
+
+```{r, echo=FALSE, fig.cap="Figure 5: Line graphs representing changes in salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}
+
+res <- try(plotSPA(salary=index2, id=ID, which="salaryAllocation",status=status), silent=TRUE)
+```
+
+```{r, echo=FALSE, fig.cap="Figure 6: Bar graph representing percentage (%) of Indeterminate vs Non-indeterminate employees for project years.Number of staff shown on the figure in red"}
+res <- try(plotSPA(om=index, salary=index2, id=ID, which="indeterminate",status=status), silent=TRUE)
+```
+
+
+```{r, echo=FALSE, fig.cap="Figure 7: Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
+
+res <- try(plotSPA(salary=index2, which="predictSalary", id=ID,status=status), silent=TRUE)
+
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# {-}
+
+

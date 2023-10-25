@@ -48,7 +48,7 @@
 #' }
 #' @export
 
-createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, status="Approved", destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
+createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, id=NULL, theme=NULL,functionalGroup=NULL, section=NULL, division=NULL, region=NULL, status=NULL, destdir=".", path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
   Rmdpath <- file.path(system.file(package="dataSPA"),"rmarkdown","templates","word_document","skeleton")
 
   if(!(is.null(statusReport))) {
@@ -64,10 +64,20 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
       stop("Must provide an id for statusReport type")
     }
 
+    if (is.null(om)) {
+      stop("Must provide an om for statusReport type")
+    }
+
+    if (is.null(salary)) {
+      stop("Must provide an salary for statusReport type")
+    }
+
     for (i in seq_along(id)) {
-      index <- statusReport[which(statusReport$project_id == id[i]), ]
+      index <- om[which(om$project_id == id[i]), ]
+      index2 <- salary[which(salary$project_id == id[i]), ]
+      indexS <- statusReport[which(statusReport$project_id == id[i]), ]
       # Dealing with salary
-      if (length(index$project_id) == 0) {
+      if (length(indexS$project_id) == 0) {
         stop("No statusReport projects have id = ", id)
       }
       ## Move into Rmd
@@ -233,7 +243,6 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
       }
 
     } else if (!(is.null(division))) {
-      #browser()
       for (i in seq_along(division)) {
         index <- om[which(unlist(lapply(strsplit(om$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
         index2 <- salary[which(unlist(lapply(strsplit(salary$section_display, " - ", fixed=TRUE), function(x) x[3])) == division[i]),]
