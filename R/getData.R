@@ -5,7 +5,7 @@
 #'
 #' @param type the type of data that is wished to be extracted
 #' (either `om`, `om_date`, `salary`, `salary_date`, `collaboration`,
-#' or `statusReport`).The types that end in `_date` will return the
+#' `statusReport`, or `tags`).The types that end in `_date` will return the
 #' date of creation of a locally stored file.
 #'
 #' @param cookie a sessionid and csrftoken from a Department of
@@ -62,15 +62,15 @@
 getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(type)) {
-    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', or 'statusReport'")
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', or 'tags'")
   }
 
   if (is.null(cookie)) {
     stop("Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
-  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport"))) {
-    stop("Must provide a type argument of either 'om', 'salary', 'om_date','salary_date', 'collaboration', or 'statusReport'")
+  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport", "tags"))) {
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', or 'tags'")
   }
   if (debug > 0) {
     message("type = ", type)
@@ -138,6 +138,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     links <- c("http://dmapps/api/ppt/collaborations/")
   } else if (type == "statusReport") {
     links <- c("http://dmapps/api/ppt/status-reports/", "http://dmapps/api/ppt/project-years/")
+  } else if (type == "tags") {
+    links <- c("http://dmapps/api/ppt/tags/")
   }
 
   API_DATA <- NULL
@@ -167,6 +169,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     if (type == "statusReport" && links[i] == "http://dmapps/api/ppt/status-reports/") {
       api_data <- page_data
+    }
+
+    if (type == "tags" && links[i] == "http://dmapps/api/ppt/tags/") {
+      return(data.frame(Reduce(rbind,page_data),row.names = NULL))
     }
 
     # Create a list to hold the list of full API results
