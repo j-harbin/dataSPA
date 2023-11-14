@@ -44,7 +44,7 @@ This could be set to \code{return} to see a list of possibilities. See examples 
 \item{year}{parameter to specify a specific fiscal year, e.g. "2023-2024".}
 }
 \description{
-This function either A) retusn a subset data frame of O&M or salary
+This function either A) return a subset data frame of O&M or salary
 data frame by region, approved projects, theme,
 functional group, section, or division or B)
 returns a list of theme, functional group, section,

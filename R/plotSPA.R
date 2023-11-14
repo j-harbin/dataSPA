@@ -343,9 +343,9 @@ plotSPA <-
         "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', or 'overviewStatus'")
     }
 
-    if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
-      stop("Must provide an id,theme, functionalGroup, section, or division argument")
-    }
+    # if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
+    #   stop("Must provide an id,theme, functionalGroup, section, or division argument")
+    # }
 
     if (debug > 0) {
       message("which= ", which, " and id = ", id)
@@ -464,6 +464,8 @@ plotSPA <-
           if (length(crab) == 0) {
             stop("No projects have division ", division, " try ", paste0(div, collapse=","), " instead.")
           }
+        } else {
+          crab <- om
         }
 
       if (length(crab$amount) == 0) {
@@ -538,14 +540,14 @@ plotSPA <-
 
           # Deliverables
           if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
-          if (unique(value$deliverables) == 0) {
+            if (all(value$deliverables == 0)) {
             dv[[i]] <- 0
           } else {
           dv[[i]] <- length(unlist(strsplit(unique(value$deliverables), "|-----|", fixed=TRUE)))
           }
 
           # Milestones
-          if (unique(value$milestones) == 0) {
+          if (all(value$milestones == 0)) {
             ms[[i]] <- 0
           } else {
             ms[[i]] <- length(unlist(strsplit(unique(value$milestones), "|-----|", fixed=TRUE)))
@@ -901,7 +903,7 @@ plotSPA <-
         }
 
         # Setting layout
-        if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
+        if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && !(is.null(id))) {
         if (length(amounty) == 1) {
           par(mfrow = c(1, 1), mar = c(2, 4, 2, 0.5))
         } else {
@@ -1119,6 +1121,8 @@ plotSPA <-
           stop("No projects have division ", division, " try ", paste0(div, collapse=","), " instead.")
         }
 
+      } else {
+        salaryKeep <- salary
       }
 
       if (is.null(year)) {
@@ -1296,7 +1300,7 @@ plotSPA <-
 
         par(mar = c(2, 4, 2, 0.5))
         # Setting layout
-        if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
+        if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && !(is.null(id))) {
         if (length(amounty) == 1) {
           par(mfrow = c(1, 1))
         } else {
@@ -1354,36 +1358,6 @@ plotSPA <-
         if (dataframe == TRUE) {
           return(amounty)
         }
-
-        # par(mfrow = c(1, length(salyears)))
-        # DFL <- NULL
-        # for (i in seq_along(salyears)) {
-        #   value <-
-        #     salaryKeep[which(salaryKeep$fiscal_year == salyears[i]), ] # Look at one year
-        #   ml <- matrix(0, nrow = 1, ncol = length(unique(value$level_display)))
-        #   dfl <- as.data.frame(ml, col.names = unique(value$level_display))
-        #   names(dfl) <- unique(value$level_display)
-        #
-        #   for (j in seq_along(unique(value$level_display))) {
-        #     dfl[j] <-
-        #       sum(value$amount_total[which(value$level_display == unique(value$level_display)[j])], na.rm =
-        #             TRUE)
-        #   }
-        #   # Fill in values
-        #   barplot(
-        #     as.matrix(dfl),
-        #     col = 1,
-        #     ylab = ifelse(i==1, "Salary Cost ($)"," "),
-        #     xlab = " ",
-        #     las=2,
-        #     cex.names=0.9
-        #   )
-        #   title(paste0(salyears[i]))
-        #   DFL[[i]] <- dfl
-        # }
-        # if (dataframe == TRUE) {
-        #   return(DFL)
-        # }
 
       } else if (which %in% c("weekAllocation", "predictSalary")) {
         # STEP ONE (PREDICTSALARY): LOOP ALL YEARS TO OBTAIN WEEKS FOR LEVEL CLASSIFICATION

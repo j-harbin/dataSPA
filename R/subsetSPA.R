@@ -1,6 +1,6 @@
 #' Subset O&M and salary data frames
 #'
-#' This function either A) retusn a subset data frame of O&M or salary
+#' This function either A) return a subset data frame of O&M or salary
 #' data frame by region, approved projects, theme,
 #' functional group, section, or division or B)
 #' returns a list of theme, functional group, section,
