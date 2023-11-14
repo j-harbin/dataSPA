@@ -279,7 +279,6 @@ plotSPA <-
       items2 <- titles[which(!(titles == "0"))]
       mainTitle <- paste(items, items2, sep=": ")
       PIE <- pie(status_counts, labels = paste0(names(status_counts), " (", status_counts, ")"), main = mainTitle, col=1:length(names(status_counts)))
-      browser()
       return()
       }
 
