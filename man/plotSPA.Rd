@@ -138,6 +138,11 @@ assumes an inflation rate of 2\%.
 \item For \code{which="overviewStatus"} a pie chart is created that shows the
 number of projects for each of the following status': Approved,
 Draft, Submitted, and Reviews for the specified parameters.
+\item For \code{which="overviewInvestment"} a bar chart indicating how much
+money was spent on A) OM investment (if an om argument is provided),
+B) Salary investment (if a salary argument is provided), or C)
+OM and Salary investment (if both om & salary argument given).
+Note: This includes overtime salary amount.
 }
 }
 \examples{

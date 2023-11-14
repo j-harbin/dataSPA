@@ -61,6 +61,12 @@
 #' number of projects for each of the following status': Approved,
 #' Draft, Submitted, and Reviews for the specified parameters.
 #'
+#' * For `which="overviewInvestment"` a bar chart indicating how much
+#' money was spent on A) OM investment (if an om argument is provided),
+#' B) Salary investment (if a salary argument is provided), or C)
+#' OM and Salary investment (if both om & salary argument given).
+#' Note: This includes overtime salary amount.
+#'
 #' @param om a data frame likely from `getData(type='om')`
 #' @param salary a data frame likely from `getData(type='salary')`
 #' @param which indicates which plot to plot (See Details).
@@ -200,14 +206,20 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', or 'overviewStatus'"
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', 'overviewStatus', or 'overviewInvestment'"
       )
     }
 
     if (is.null(om) && is.null(salary)) {
       stop("Must provide either an om or salary argument depending on your plot choice.")
     }
-
+      color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
+      set.seed(1)
+      if (is.null(salary)) {
+        col <- sample(color, length(unique(om$funding_source_display)))
+      } else {
+        col <- sample(color, length(unique(salary$funding_source_display)))
+      }
 
     if (which == "overviewStatus") {
       if (is.null(om)) {
@@ -267,17 +279,10 @@ plotSPA <-
       items2 <- titles[which(!(titles == "0"))]
       mainTitle <- paste(items, items2, sep=": ")
       PIE <- pie(status_counts, labels = paste0(names(status_counts), " (", status_counts, ")"), main = mainTitle, col=1:length(names(status_counts)))
+      browser()
       return()
       }
 
-
-    color = grDevices::colors()[grep('gr(a|e)y', grDevices::colors(), invert = T)] # Getting random colors
-    set.seed(1)
-    if (is.null(salary)) {
-    col <- sample(color, length(unique(om$funding_source_display)))
-    } else {
-    col <- sample(color, length(unique(salary$funding_source_display)))
-    }
     if (!(is.null(region))) {
       if (!(is.null(om)) && (!(length(om$project_id) == 0))) {
         regions <- unique(str_extract(om$section_display, "[^-]+"))
@@ -336,11 +341,12 @@ plotSPA <-
         'predict',
         'predictSalary',
         'predictOM',
-        'overviewStatus'
+        'overviewStatus',
+        'overviewInvestment'
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', or 'overviewStatus'")
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', 'overviewStatus', or 'overviewInvestment'")
     }
 
     # if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
@@ -365,7 +371,8 @@ plotSPA <-
       "omAllocationGeneral",
       'predictSummary',
       'predict',
-      'predictOM'
+      'predictOM',
+      'overviewInvestment'
     )) {
       if (debug > 0) {
         message("om has been identified")
@@ -412,6 +419,7 @@ plotSPA <-
       }
 
         if (!(is.null(id))) {
+          # JAIM HERE 2
         crab <- om[which(om$project_id == id),]
         } else if (!(is.null(theme))) {
           if (length(theme) > 1) {
@@ -521,6 +529,7 @@ plotSPA <-
           df[paste0(namesFunding[j]), paste0(years[i])] <- value
         }
       }
+
       # omBar
       if (which %in% c("omBar", "predictOM")) {
         if (length(unique(keep$amount)) == 1 && unique(keep$amount == 0) == TRUE) {
@@ -575,7 +584,7 @@ plotSPA <-
           ylim = c(0, max(unlist(ylim))*1.5),
           xlab = " ",
           las=2,
-          legend.text = TRUE, #JAIM
+          legend.text = TRUE,
           args.legend=list(x="bottomright", legend=wrapText(string=sort(namesFunding)), inset=c(-0.35,0), cex=0.7, bty="n")
         )
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
@@ -1014,7 +1023,8 @@ plotSPA <-
       "indeterminate",
       "predictSummary",
       "predict",
-      'predictSalary'
+      'predictSalary',
+      'overviewInvestment'
     )) {
       if (debug > 0) {
         message("salary has been identified")
@@ -1669,7 +1679,6 @@ plotSPA <-
         }
       } else if (which == "predict") {
         if (is.null(endDate)) {
-          #fundingChange <- -100
           par(mar = c(5, 5, 4, 4) + 0.3)
           ny2 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", newyear))
           newyear2 <- paste0(ny2, "-", ny2 + 1)
@@ -2098,6 +2107,61 @@ text(
 if (dataframe == TRUE) {
   return(dfROI2)
 }
+    } else if (which == "overviewInvestment") {
+      if (which == "overviewInvestment") {
+        if (!(is.null(om)) && (!(is.null(salary)))) {
+          om <- crab
+          salary <- salaryKeep
+          # Both om and salary are given
+          statuses <- sort(unique(c(unique(om$status), unique(salary$status))))
+        } else if (!(is.null(om))) {
+          om <- crab
+          statuses <- sort(unique(om$status))
+        } else if (!(is.null(salary))) {
+          salary <- salaryKeep
+          # salary is given
+          statuses <- sort(unique(salary$status))
+        }
+        sdf <- data.frame(matrix(NA, nrow = 1, ncol = length(statuses)))
+        names(sdf) <- statuses
+
+        for (i in seq_along(statuses)) {
+          if (!(is.null(om))) {
+            value <- om[which(om$status == statuses[i]),] # Isolating specific status
+            if (is.null(salary)) {
+              sdf[,i] <- sum(value$amount)
+            }
+          }
+          if (!(is.null(salary))) {
+            value2 <- salary[which(salary$status == statuses[i]),] # Isolating specific status
+            if (is.null(om)) {
+              sdf[,i] <- sum(value2$amount_total)
+            }
+          }
+          if (!(is.null(om)) && !(is.null(salary))) {
+            sdf[,i] <- sum(value2$amount_total) + sum(value$amount)
+          }
+        }
+        if (!(is.null(om)) && is.null(salary)) {
+          ylab <- "Amount of O&M Investment ($)"
+        } else if (!(is.null(salary)) && is.null(om)) {
+          ylab <- "Amount of Salary Investment ($)"
+        } else if (!(is.null(om)) && !(is.null(salary))) {
+          ylab <- "Amount of O&M & Salary Investment ($)"
+        }
+        barplot(
+          unlist(unname(sdf)),
+          col = 1:(length(statuses)),
+          names.arg = statuses,
+          ylab = ylab,
+          ylim = c(0, max(unlist(sdf))*1.5),
+          xlab = " ",
+          las=2
+        )
+      }
+
+
+
     }
 }
 
