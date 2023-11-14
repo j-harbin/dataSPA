@@ -24,7 +24,7 @@
 #'
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
-#'  some functions will print debugging information.
+#'  the function will limit the page count to the value of `debug`.
 #'
 #' @return dataframe
 #'
@@ -206,6 +206,18 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
           # Get the information about the next page in the API results
           next_page <- page_data$`next`
+          if(debug>0){
+            if(exists("debug_page")){
+              debug_page <- debug_page-1
+            } else {
+              debug_page <- debug-1
+            }
+
+            if(debug_page==1) {
+              debug_page <- debug
+              next_page <- NULL
+              }
+          }
           cat(paste0(next_page, '\n'))
         }
       }
@@ -507,6 +519,18 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
         # Get the information about the next page in the API results
         next_page <- page_data$`next`
+        if(debug>0){
+          if(exists("debug_page")){
+            debug_page <- debug_page-1
+          } else {
+            debug_page <- debug-1
+          }
+
+          if(debug_page==1) {
+            debug_page <- debug
+            next_page <- NULL
+          }
+        }
         cat(paste0(next_page, '\n'))
       }
       project_ids[[i]] <- unlist(lapply(api_data, function(x) x$project$id))
