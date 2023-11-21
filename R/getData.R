@@ -69,8 +69,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     stop("Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
-  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport", "tags"))) {
-    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', or 'tags'")
+  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport", "tags","functional-groups"))) {
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', 'tags', or 'functional-groups'")
   }
   if (debug > 0) {
     message("type = ", type)
@@ -175,6 +175,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       return(data.frame(Reduce(rbind,page_data),row.names = NULL))
     }
 
+      return(data.frame(Reduce(rbind,page_data),row.names = NULL))
     # Create a list to hold the list of full API results
     if (!(type %in% c("collaboration"))) {
       if (!(links[i] == "http://dmapps/api/ppt/status-reports/")) {
@@ -327,6 +328,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       } else if (is.na(p[[i]]$activity_type)) {
         p[[i]]$activity_type <- as.numeric(0)
       }
+
+      if (length(p[[i]]$tags) == 0) {
     }
 
     lov <- list()
