@@ -140,7 +140,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     links <- c("http://dmapps/api/ppt/status-reports/", "http://dmapps/api/ppt/project-years/")
   } else if (type == "tags") {
     links <- c("http://dmapps/api/ppt/tags/")
+  } else if (type == "functional-groups") {
+    links <- c("http://dmapps/api/ppt/functional-groups/")
   }
+
+
 
   API_DATA <- NULL
 
@@ -175,7 +179,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       return(data.frame(Reduce(rbind,page_data),row.names = NULL))
     }
 
+    if (type == "functional-groups" && links[i] == "http://dmapps/api/ppt/functional-groups/") {
       return(data.frame(Reduce(rbind,page_data),row.names = NULL))
+    }
+
     # Create a list to hold the list of full API results
     if (!(type %in% c("collaboration"))) {
       if (!(links[i] == "http://dmapps/api/ppt/status-reports/")) {
@@ -329,7 +336,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         p[[i]]$activity_type <- as.numeric(0)
       }
 
-      if (length(p[[i]]$tags) == 0) {
     }
 
     lov <- list()
