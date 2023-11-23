@@ -25,7 +25,7 @@ format: csrftoken=YOURTOKEN; sessionid=YOURSESSIONID}
 
 \item{debug}{integer value indicating level of debugging.
 If this is less than 1, no debugging is done. Otherwise,
-some functions will print debugging information.}
+the function will limit the page count to the value of \code{debug}.}
 
 \item{keep}{logical value to optionally keep \code{om} data on the hard disk.
 Default is FALSE and will not save data on the hard disk. Value of TRUE

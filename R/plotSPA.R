@@ -381,28 +381,16 @@ plotSPA <-
 
       }
       if (!(identical(
-        c(
-          "project_id",
-          "category_display",
-          "project_year_id",
-          "amount",
-          "funding_source_display",
-          "id",
-          "category_type",
-          "description",
-          "fiscal_year",
-          "project_title",
-          "status",
-          "overview",
-          "objectives",
-          "section_display",
-          "lead_staff",
-          "functional_group",
-          "activity_type",
-          "theme",
-          "deliverables",
-          "milestones"
-        ),
+        c("project_id","category_display","project_year_id",
+          "amount","funding_source_display", "id",
+          "category_type",  "description", "tags",
+          "tag_id", "fiscal_year", "project_title",
+          "status","overview","objectives",
+          "section_display","lead_staff","functional_group",
+          "activity_type","theme", "deliverables",
+          "milestones", "section_id","division_id",
+          "region_id", "funding_id","theme_id",
+          "om_id"),
         names(om)
       ))) {
         stop("Must obtain data for x using getData(type='om')")
@@ -1037,34 +1025,18 @@ plotSPA <-
         message("The names of salary is ", paste0(names(salary), sep = ","))
       }
       if (!(identical(
-        c(
-          "id",
-          "overtime_hours",
-          "smart_name",
-          "duration_weeks",
-          "level_display",
-          "funding_source_display",
-          "employee_type_display",
-          "project_year_id",
-          "project_id",
-          "fiscal_year",
-          "project_title",
-          "median_salary",
-          "salary_per_week",
-          "amount_week",
-          "amount_overtime",
-          "amount_total",
-          "theme",
-          "activity_type",
-          "functional_group",
-          "section_display",
-          "overview",
-          "objectives",
-          "status",
-          "lead_staff",
-          "deliverables",
-          "milestones"
-        ),
+        c("id", "overtime_hours","smart_name",
+          "duration_weeks", "level_display", "funding_source_display",
+          "employee_type_display",  "project_year_id","project_id",
+          "fiscal_year", "project_title", "median_salary",
+          "salary_per_week","amount_week","amount_overtime",
+          "amount_total", "theme", "activity_type",
+          "functional_group","section_display","overview",
+          "objectives","tag", "tag_id",
+          "status","lead_staff", "deliverables",
+          "milestones","section_id","division_id",
+          "region_id", "funding_id","theme_id",
+          "staff_id"),
         names(salary)
       ))) {
         stop("Must obtain data for x using getData(type='salary')")

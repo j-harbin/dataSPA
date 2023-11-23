@@ -3,8 +3,8 @@ namesSal <- c("id","overtime_hours","smart_name","duration_weeks",
 "level_display","funding_source_display","employee_type_display",
 "project_year_id","project_id","fiscal_year","project_title","median_salary",
 "salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme", "activity_type", "functional_group",
-"section_display", "overview", "objectives", "status", "lead_staff", "deliverables",
-"milestones")
+"section_display", "overview", "objectives","tag", "tag_id", "status", "lead_staff", "deliverables",
+"milestones","section_id", "division_id", "region_id", "funding_id","theme_id","staff_id" )
 
 
 salary <- data.frame(matrix(NA, nrow = 8, ncol = length(namesSal)))
@@ -39,6 +39,16 @@ salary$objectives <- "Test objectives"
 salary$milestones <- "Test milestones"
 salary$status <- "Approved"
 salary$lead_staff <- "Test"
+
+salary$section_id <- 1:8
+salary$division_id <- 1:8
+salary$region_id <- 1:8
+salary$funding_id <- 1:8
+salary$theme_id <- 1:8
+salary$tag_id <- 1:8
+salary$tag <- "test"
+salary$staff_id <- 1:8
+
 
 save(salary, file="salary.rda")
 tools::resaveRdaFiles('salary.rda')
