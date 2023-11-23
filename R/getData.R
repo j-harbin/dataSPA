@@ -640,18 +640,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     om$deliverables[which(om$deliverables == "")] <- 0
   }
 
-  if(keep && type == "om"){
-    fn <- file.path(path,"dataSPA_om.rds")
-    if(file.exists(fn)){
-      date <- as.Date(file.info(fn)$mtime)
-      file.rename(fn,
-                  file.path(path,paste0("dataSPA_om_",date,".rds")))
-      message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
-    }
-
-    saveRDS(om,file = fn)
-  }
-
   #if(type == "om") return(om)
   ## WORKING WITH SALARY DATA FRAME
   salaries <- NULL
@@ -885,18 +873,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     #JAIM
     staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$id))
     staff_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$smart_name))
-
-    if(keep && type == "salary") {
-      fn <- file.path(path,"dataSPA_SAL.rds")
-      if(file.exists(fn)){
-        date <- as.Date(file.info(fn)$mtime)
-        file.rename(fn,
-                    file.path(path,paste0("dataSPA_SAL_",date,".rds")))
-        message(paste0("Renaming the pre-existing dataSPA_SAL.rds to: ",paste0("dataSPA_SAL_",date,".rds")))
-      }
-
-      saveRDS(SAL,file = fn)
-    }
   }
 
 
@@ -1026,11 +1002,42 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   if (type == "salary") {
     SAL <- index
-    return(SAL)
+    #return(SAL)
   } else if (type == "om") {
     om <- index
+    #return(om)
+  }
+
+  if(keep && type == "om"){
+    fn <- file.path(path,"dataSPA_om.rds")
+    if(file.exists(fn)){
+      date <- as.Date(file.info(fn)$mtime)
+      file.rename(fn,
+                  file.path(path,paste0("dataSPA_om_",date,".rds")))
+      message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
+    }
+
+    saveRDS(om,file = fn)
+  }
+
+  if(keep && type == "salary") {
+    fn <- file.path(path,"dataSPA_SAL.rds")
+    if(file.exists(fn)){
+      date <- as.Date(file.info(fn)$mtime)
+      file.rename(fn,
+                  file.path(path,paste0("dataSPA_SAL_",date,".rds")))
+      message(paste0("Renaming the pre-existing dataSPA_SAL.rds to: ",paste0("dataSPA_SAL_",date,".rds")))
+    }
+
+    saveRDS(SAL,file = fn)
+  }
+
+  if (type == "salary") {
+    return(SAL)
+  } else if (type == "om") {
     return(om)
   }
+
 
 
 
