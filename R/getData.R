@@ -890,12 +890,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     if (section_name[i] %in% duplicatedNamesSection) {
       # find what region is the section display for the identified
       # SAL and see what SECTION_NAME has that region and then fill in relevant section_id
-      keep <- which(grepl(section_name[i], index$section_display))
-      if (!(length(keep)) == 0) {
-      r <- index$section_display[keep]
+      KEEP <- which(grepl(section_name[i], index$section_display))
+      if (!(length(KEEP)) == 0) {
+      r <- index$section_display[KEEP]
       r <- trimws(strsplit(r, "-")[[1]][1], "right")
       if (grepl(r, SECTION_NAME[i])) {
-        index$section_id[keep] <- section_id[i]
+        index$section_id[KEEP] <- section_id[i]
       }
       }
     } else {
@@ -908,17 +908,19 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   for (i in seq_along(division_name)) {
     # Account for duplicated names
     if (division_name[i] %in% duplicatedNamesDivision) {
-      keep <- which(grepl(division_name[i], index$section_display))
-      r <- index$section_display[keep]
+      if (!(length(KEEP) == 0)) {
+      KEEP <- which(grepl(division_name[i], index$section_display))
+      r <- index$section_display[KEEP]
       r <- trimws(strsplit(r, "-")[[1]][3], "right")
       r <- trimws(r, "left")
       if (grepl(r, DIVISION_NAME[i])) {
-        index$division_id[keep] <- division_id[i]
+        index$division_id[KEEP] <- division_id[i]
       }
+    }
     } else {
-      keep <- which(grepl(division_name[i], index$section_display))
-      if (!(length(keep) == 0)) {
-      index$division_id[keep] <- division_id[i]
+      KEEP <- which(grepl(division_name[i], index$section_display))
+      if (!(length(KEEP) == 0)) {
+      index$division_id[KEEP] <- division_id[i]
       } else {
         # Find if any division names end in (Pacific)
         # Find if there is a ( in the string
@@ -928,8 +930,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           k2 <- strsplit(division_name[i], " \\(")[[1]][2]
           k2 <- strsplit(k2, "\\)")[[1]][1]
           k3 <- paste0(k1, " \\(", k2, "\\)")
-          keep <- which(grepl(k3, index$section_display))
-          index$division_id[keep] <- division_id[i]
+          KEEP <- which(grepl(k3, index$section_display))
+          index$division_id[KEEP] <- division_id[i]
         }
       }
     }
@@ -945,22 +947,22 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # fs_id (DONE)
   index$funding_id <- 0
   for (i in seq_along(fs_name)) {
-    keep <- which(grepl(fs_name[i], index$funding_source_display))
-    if (!(length(keep) == 0)) {
-    index$funding_id[keep] <- fs_id[i]
+    KEEP <- which(grepl(fs_name[i], index$funding_source_display))
+    if (!(length(KEEP) == 0)) {
+    index$funding_id[KEEP] <- fs_id[i]
     } else {
       # Look to see if there is B-base at the end (see issue 1)
-      keep <- which(index$funding_source_display == paste0(fs_name[i], " (B-base)"))
-      index$funding_id[keep] <- fs_id[i]
+      KEEP <- which(index$funding_source_display == paste0(fs_name[i], " (B-base)"))
+      index$funding_id[KEEP] <- fs_id[i]
     }
   }
 
   # theme_id
   index$theme_id <- 0
   for (i in seq_along(themeNumbers)) {
-    keep <- which(index$theme == themeNames[i])
-    if (!(length(keep) == 0)) {
-    index$theme_id[keep] <- themeNumbers[i]
+    KEEP <- which(index$theme == themeNames[i])
+    if (!(length(KEEP) == 0)) {
+    index$theme_id[KEEP] <- themeNumbers[i]
     }
   }
 
@@ -1037,9 +1039,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   } else if (type == "om") {
     return(om)
   }
-
-
-
 
   if (type == "collaboration") {
     coll <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 5), row.names = NULL)
