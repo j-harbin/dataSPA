@@ -445,9 +445,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # CONCLUSION: id from ttt is equal to project_year_id in om
   # All om$project_year_id are in ttt$id
   # Adding fiscal year to om data
-  om$tags <- 0
-  om$tag_id <- 0
   if (type == "om") {
+    om$tags <- 0
+    om$tag_id <- 0
     for (i in seq_along(om$project_year_id)) {
       replace <- ttt$display_name[which(ttt$id == om$project_year_id[i])][1]
       replace2 <- ttt$project_title[which(ttt$id == om$project_year_id[i])][1]
@@ -910,13 +910,15 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     if (division_name[i] %in% duplicatedNamesDivision) {
       if (!(length(KEEP) == 0)) {
       KEEP <- which(grepl(division_name[i], index$section_display))
+      if (!(length(KEEP) == 0)) {
       r <- index$section_display[KEEP]
       r <- trimws(strsplit(r, "-")[[1]][3], "right")
       r <- trimws(r, "left")
       if (grepl(r, DIVISION_NAME[i])) {
         index$division_id[KEEP] <- division_id[i]
       }
-    }
+      }
+      }
     } else {
       KEEP <- which(grepl(division_name[i], index$section_display))
       if (!(length(KEEP) == 0)) {
