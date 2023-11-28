@@ -5,7 +5,7 @@ if (!FALSE) {
                "amount","funding_source_display", "id", "category_type", "description", "tags", "tag_id", "fiscal_year",
                "project_title","status", "overview", "objectives", "section_display", "lead_staff","functional_group","activity_type", "theme", "deliverables", "milestones",
                 "section_id","division_id", "region_id", "funding_id",
-               "theme_id","om_id")
+               "theme_id","om_id", "branch_id")
 
   om <- data.frame(matrix(NA, nrow = 10, ncol = length(namesOM)))
   names(om) <- namesOM
@@ -47,6 +47,7 @@ if (!FALSE) {
   om$tag_id <- 1:10
   om$tags <- "test"
   om$om_id <- 1:10
+  om$branch_id <- 1:10
 
   save(om, file="om.rda")
   tools::resaveRdaFiles('om.rda')

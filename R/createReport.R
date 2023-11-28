@@ -110,7 +110,7 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
                     "activity_type","theme", "deliverables",
                     "milestones", "section_id","division_id",
                     "region_id", "funding_id","theme_id",
-                    "om_id"), names(om)))) {
+                    "om_id", "branch_id"), names(om)))) {
     stop("Must obtain data for om using getData(type='om')")
   }
 
@@ -164,7 +164,7 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
                      "status","lead_staff", "deliverables",
                      "milestones","section_id","division_id",
                      "region_id", "funding_id","theme_id",
-                     "staff_id"), names(salary)))) {
+                     "staff_id", "branch_id"), names(salary)))) {
    stop("Must obtain data for salary using getData(type='salary')")
   }
 

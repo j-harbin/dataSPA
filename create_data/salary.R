@@ -4,7 +4,7 @@ namesSal <- c("id","overtime_hours","smart_name","duration_weeks",
 "project_year_id","project_id","fiscal_year","project_title","median_salary",
 "salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme", "activity_type", "functional_group",
 "section_display", "overview", "objectives","tag", "tag_id", "status", "lead_staff", "deliverables",
-"milestones","section_id", "division_id", "region_id", "funding_id","theme_id","staff_id" )
+"milestones","section_id", "division_id", "region_id", "funding_id","theme_id","staff_id", "branch_id")
 
 
 salary <- data.frame(matrix(NA, nrow = 8, ncol = length(namesSal)))
@@ -48,6 +48,7 @@ salary$theme_id <- 1:8
 salary$tag_id <- 1:8
 salary$tag <- "test"
 salary$staff_id <- 1:8
+salary$branch_id <- 1:8
 
 
 save(salary, file="salary.rda")

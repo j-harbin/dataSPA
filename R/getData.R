@@ -131,9 +131,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # 1. LISTING LINKS
 
   if (type %in% c("salary", "salary_date")) {
-    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/", "http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/")
+    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/", "http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/")
   } else if (type %in% c("om", "om_date")) {
-    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/", "http://dmapps/api/ppt/divisions/","http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/")
+    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/", "http://dmapps/api/ppt/divisions/","http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/")
   } else if (type == "collaboration") {
     links <- c("http://dmapps/api/ppt/collaborations/")
   } else if (type == "statusReport") {
@@ -171,7 +171,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       api_data <- page_data
     }
 
-    if (type %in% c("om", "salary") && links[i] %in% c("http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/")) {
+    if (type %in% c("om", "salary") && links[i] %in% c("http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/")) {
       api_data <- page_data
     }
 
@@ -181,7 +181,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     # Create a list to hold the list of full API results
     if (!(type %in% c("collaboration"))) {
-      if (!(links[i] %in% c("http://dmapps/api/ppt/status-reports/", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/","http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/"))) {
+      if (!(links[i] %in% c("http://dmapps/api/ppt/status-reports/", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/","http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/","http://dmapps/api/shared/branches/"))) {
         api_data <- page_data$results
 
         # Get the information about the next page in the API results
@@ -524,8 +524,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
    fs_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/funding-sources/")]], function(x) x$id))
    fs_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/funding-sources/")]], function(x) x$name))
 
-
-
+   ## branch_id
+   branch_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$id))
+   branch_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$name))
+   region_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$sector_obj$region_obj$name))
 
   ## LINK 4: GETTING THEME DIFFERENTLY
   # Theme
@@ -987,6 +989,13 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     index$om_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$category_display == category_display[p] & index$amount == om_amount[p])] <- om_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & category_display == category_display[p] & om_amount == om_amount[p])]
   }
   }
+  ## branch_id
+index$branch_id <- 0
+  for (b in seq_along(branch_id)) {
+    index$branch_id[which(grepl(branch_name[b], index$section_display) & grepl(region_name[b], index$section_display))] <- branch_id[b]
+
+  }
+
 
   if (type == "salary") {
     staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$id))

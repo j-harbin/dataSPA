@@ -74,7 +74,8 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
       "activity_type","theme", "deliverables",
       "milestones", "section_id","division_id",
       "region_id", "funding_id","theme_id",
-      "om_id"),
+      "om_id",
+      "branch_id"),
     names(om)
   ))) {
 
@@ -97,7 +98,7 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
       "status","lead_staff", "deliverables",
       "milestones","section_id","division_id",
       "region_id", "funding_id","theme_id",
-      "staff_id"),
+      "staff_id", "branch_id"),
     names(salary)
   ))) {
     stop("Must obtain data for x using getData(type='salary')")
