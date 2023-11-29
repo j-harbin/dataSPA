@@ -1,5 +1,5 @@
 if (!FALSE) {
-namesSal <- c("id","overtime_hours","smart_name","duration_weeks",
+namesSal <- c("overtime_hours","smart_name","duration_weeks",
 "level_display","funding_source_display","employee_type_display",
 "project_year_id","project_id","fiscal_year","project_title","median_salary",
 "salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme", "activity_type", "functional_group",
@@ -9,7 +9,6 @@ namesSal <- c("id","overtime_hours","smart_name","duration_weeks",
 
 salary <- data.frame(matrix(NA, nrow = 8, ncol = length(namesSal)))
 names(salary) <- namesSal
-salary$id <- 1:8
 salary$overtime_hours <- c(0,550,550, 0,225,0,0,0)
 salary$smart_name <- c("John1", "John2", "John3", "John4", "Jane1", "Jane2", "Jane3", "Jane4")
 salary$duration_weeks <- c(10.0, 30.0, 30.0,  0.1, 15.0 ,1.0,  0.0,  1.0)

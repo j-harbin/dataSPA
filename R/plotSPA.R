@@ -1025,7 +1025,7 @@ plotSPA <-
         message("The names of salary is ", paste0(names(salary), sep = ","))
       }
       if (!(identical(
-        c("id", "overtime_hours","smart_name",
+        c("overtime_hours","smart_name",
           "duration_weeks", "level_display", "funding_source_display",
           "employee_type_display",  "project_year_id","project_id",
           "fiscal_year", "project_title", "median_salary",

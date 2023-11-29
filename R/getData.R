@@ -653,7 +653,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   if (type == "salary") {
     api_data3 <- API_DATA[[4]]
 
-    j <- lapply(api_data3, function(x) x[c('id', 'overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
+    j <- lapply(api_data3, function(x) x[c('overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
 
     for (i in seq_along(j)) {
       if (length(j[[i]]$overtime_hours) == 0) {
@@ -739,11 +739,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     # Now sub the excel sheet
 
-    SAL$median_salary <- rep(NA, length(SAL$id))
-    SAL$salary_per_week <- rep(NA, length(SAL$id))
-    SAL$amount_week <- rep(NA, length(SAL$id))
-    SAL$amount_overtime <- rep(NA, length(SAL$id))
-    SAL$amount_total <- rep(NA, length(SAL$id))
+    SAL$median_salary <- rep(NA, length(SAL$project_id))
+    SAL$salary_per_week <- rep(NA, length(SAL$project_id))
+    SAL$amount_week <- rep(NA, length(SAL$project_id))
+    SAL$amount_overtime <- rep(NA, length(SAL$project_id))
+    SAL$amount_total <- rep(NA, length(SAL$project_id))
     fundingLevel[which(fundingLevel == "IT--03")] <- "CS--03"
 
     for (i in seq_along(fundingLevel)) {

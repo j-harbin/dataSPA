@@ -153,7 +153,7 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
       stop("No projects for this subset in this region.")
     }
   }
-  if (!(identical( c("id", "overtime_hours","smart_name",
+  if (!(identical( c("overtime_hours","smart_name",
                      "duration_weeks", "level_display", "funding_source_display",
                      "employee_type_display",  "project_year_id","project_id",
                      "fiscal_year", "project_title", "median_salary",
