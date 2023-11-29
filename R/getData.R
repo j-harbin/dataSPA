@@ -233,7 +233,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   # LINK 1: Dealing with "http://dmapps/api/ppt/om-costs"
   if ("http://dmapps/api/ppt/om-costs" %in% names(API_DATA)) {
-    api_data <- API_DATA[[1]]
+    #api_data <- API_DATA[[1]]
+    api_data <- API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]]
 
     # Fix NULL descriptions
     for (i in seq_along(api_data)) {
@@ -246,23 +247,24 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     p <- NULL
     for (i in seq_along(api_data)) {
-      p[[i]] <- as.data.frame(api_data[[i]][c("project_id", "category_display", "project_year_id", "amount", "funding_source_display", "id", "category_type", "description")])
+      p[[i]] <- as.data.frame(api_data[[i]][c("project_id", "category_display", "project_year_id", "amount", "funding_source_display", "category_type", "description")])
     }
 
     if (type=="om") {
       om <- do.call(rbind, p)
     }
   }
-
   ## LINK 2: Dealing with "http://dmapps/api/ppt/project-years"
   if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
-    api_data2 <- API_DATA[[2]]
+    api_data2 <- API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/project-years")]]
+    #api_data2 <- API_DATA[[2]]
   }
 
 
   ## LINK 3: Dealing with "http://dmapps/api/ppt/activities-full/"
   if ("http://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
-    api_data3 <- API_DATA[[3]]
+    #api_data3 <- API_DATA[[3]]
+    api_data3 <- API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/activities-full/")]]
   }
 
 
@@ -352,7 +354,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         j[[i]]
       }
     }
-    pp <- lapply(p, function(x) as.data.frame(x[c("id","objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")]))
+    pp <- lapply(p, function(x) as.data.frame(x[c("objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")]))
 
     for (i in seq_along(pp)) {
       pp[[i]]$lead_staff <- j[[i]]
@@ -872,7 +874,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       }
     }
     ## Dealing with staff_id
-    #JAIM
     staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$id))
     staff_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$smart_name))
   }

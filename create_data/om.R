@@ -2,7 +2,7 @@
 if (!FALSE) {
   #library(dataSPA)
   namesOM <- c("project_id","category_display","project_year_id",
-               "amount","funding_source_display", "id", "category_type", "description", "tags", "tag_id", "fiscal_year",
+               "amount","funding_source_display","category_type", "description", "tags", "tag_id", "fiscal_year",
                "project_title","status", "overview", "objectives", "section_display", "lead_staff","functional_group","activity_type", "theme", "deliverables", "milestones",
                 "section_id","division_id", "region_id", "funding_id",
                "theme_id","om_id", "branch_id")
@@ -26,10 +26,6 @@ if (!FALSE) {
   om$fiscal_year <- "2014-2015"
   om$functional_group <- rep("Test functional group", length(om$project_id))
   om$theme <- rep("Test theme", length(om$project_id))
-
-  for (i in seq_along(om$id)) {
-    om$id[i] <- i
-  }
   om$activity_type <- "Research"
   om$project_title <- "Fake project"
   om$status <- "Approved"

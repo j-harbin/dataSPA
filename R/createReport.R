@@ -102,7 +102,7 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
   }
 
   if (!(identical(c("project_id","category_display","project_year_id",
-                    "amount","funding_source_display", "id",
+                    "amount","funding_source_display",
                     "category_type",  "description", "tags",
                     "tag_id", "fiscal_year", "project_title",
                     "status","overview","objectives",
