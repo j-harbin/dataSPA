@@ -247,11 +247,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     p <- NULL
     for (i in seq_along(api_data)) {
-      p[[i]] <- as.data.frame(api_data[[i]][c("project_id", "category_display", "project_year_id", "amount", "funding_source_display", "category_type", "description")])
+      p[[i]] <- as.data.frame(api_data[[i]][c("id","project_id", "category_display", "project_year_id", "amount", "funding_source_display", "category_type", "description")])
     }
 
     if (type=="om") {
       om <- do.call(rbind, p)
+      om <- om[, -which(names(om) == "id")]
     }
   }
   ## LINK 2: Dealing with "http://dmapps/api/ppt/project-years"
@@ -354,7 +355,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         j[[i]]
       }
     }
-    pp <- lapply(p, function(x) as.data.frame(x[c("objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")]))
+    pp <- lapply(p, function(x) as.data.frame(x[c("id", "objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")]))
 
     for (i in seq_along(pp)) {
       pp[[i]]$lead_staff <- j[[i]]
@@ -443,7 +444,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     ttt <- do.call(rbind, tt)
   }
-
   # CONCLUSION: id from ttt is equal to project_year_id in om
   # All om$project_year_id are in ttt$id
   # Adding fiscal year to om data
@@ -451,30 +451,17 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     om$tags <- 0
     om$tag_id <- 0
     for (i in seq_along(om$project_year_id)) {
-      replace <- ttt$display_name[which(ttt$id == om$project_year_id[i])][1]
-      replace2 <- ttt$project_title[which(ttt$id == om$project_year_id[i])][1]
-      replace3 <- ttt$status_display[which(ttt$id == om$project_year_id[i])][1]
-      replace4 <- ppp$overview[which(ppp$id == om$project_id[i])][1]
-      replace5 <- ppp$objectives[which(ppp$id == om$project_id[i])][1]
-      replace7 <- ppp$lead_staff[which(ppp$id == om$project_id[i])][1]
-      replace8 <- ppp$section_display[which(ppp$id == om$project_id[i])][1]
-      replace9 <- ppp$functional_group[which(ppp$id == om$project_id[i])][1]
-      replace10 <- ppp$activity_type[which(ppp$id == om$project_id[i])][1]
-      replace11 <- unique(ppp$tags_display[which(ppp$id == om$project_id[i])][1])
-      replace12 <- unique(unlist(tag_id[which(ppp$id == om$project_id[i])][1]))
-
-
-      om$fiscal_year[i] <- replace
-      om$project_title[i] <- replace2
-      om$status[i] <- replace3
-      om$overview[i] <- replace4
-      om$objectives[i] <- replace5
-      om$section_display[i] <- replace8
-      om$lead_staff[i] <- replace7
-      om$functional_group[i] <- replace9
-      om$activity_type[i] <- replace10
-      om$tags[i] <- replace11
-      om$tag_id[i] <- replace12
+      om$fiscal_year[i] <- ttt$display_name[which(ttt$id == om$project_year_id[i])][1]
+      om$project_title[i] <- ttt$project_title[which(ttt$id == om$project_year_id[i])][1]
+      om$status[i] <- ttt$status_display[which(ttt$id == om$project_year_id[i])][1]
+      om$overview[i] <- ppp$overview[which(ppp$id == om$project_id[i])][1]
+      om$objectives[i] <- ppp$objectives[which(ppp$id == om$project_id[i])][1]
+      om$lead_staff[i] <- ppp$lead_staff[which(ppp$id == om$project_id[i])][1]
+      om$section_display[i] <- ppp$section_display[which(ppp$id == om$project_id[i])][1]
+      om$functional_group[i] <- ppp$functional_group[which(ppp$id == om$project_id[i])][1]
+      om$activity_type[i] <- ppp$activity_type[which(ppp$id == om$project_id[i])][1]
+      om$tags[i] <- unique(ppp$tags_display[which(ppp$id == om$project_id[i])][1])
+      om$tag_id[i] <- unique(unlist(tag_id[which(ppp$id == om$project_id[i])][1]))
     }
 
     om$activity_type[which(om$activity_type == 1)] <- "Monitoring"
@@ -529,7 +516,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
    ## branch_id
    branch_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$id))
    branch_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$name))
-   region_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$sector_obj$region_obj$name))
+   Region_Name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$sector_obj$region_obj$name))
 
   ## LINK 4: GETTING THEME DIFFERENTLY
   # Theme
@@ -945,10 +932,13 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # region_id (DONE)
   regions <- unlist(lapply(index$section_display, function(x) trimws(strsplit(x, "-")[[1]][1], "right")))
   index$region_id <- 0
-  for (i in seq_along(region_name)) {
-    index$region_id[which(region_name[i] == regions)] <- region_id[i]
-  }
 
+  for (i in seq_along(region_name)) {
+    KEEPID <- which(regions == region_name[i])
+    if (!(length(KEEPID) == 0)) {
+    index$region_id[KEEPID] <- region_id[i]
+    }
+  }
   # fs_id (DONE)
   index$funding_id <- 0
   for (i in seq_along(fs_name)) {
@@ -993,7 +983,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   ## branch_id
 index$branch_id <- 0
   for (b in seq_along(branch_id)) {
-    index$branch_id[which(grepl(branch_name[b], index$section_display) & grepl(region_name[b], index$section_display))] <- branch_id[b]
+    index$branch_id[which(grepl(branch_name[b], index$section_display) & grepl(Region_Name[b], index$section_display))] <- branch_id[b]
 
   }
 
