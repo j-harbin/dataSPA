@@ -106,11 +106,11 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
                     "category_type",  "description", "tags",
                     "tag_id", "fiscal_year", "project_title",
                     "status","overview","objectives",
-                    "section_display","lead_staff","functional_group",
+                    "lead_staff","section_display","functional_group",
                     "activity_type","theme", "deliverables",
                     "milestones", "section_id","division_id",
                     "region_id", "funding_id","theme_id",
-                    "om_id", "branch_id"), names(om)))) {
+                    "om_id","branch_id"), names(om)))) {
     stop("Must obtain data for om using getData(type='om')")
   }
 
@@ -153,18 +153,18 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
       stop("No projects for this subset in this region.")
     }
   }
-  if (!(identical( c("overtime_hours","smart_name",
-                     "duration_weeks", "level_display", "funding_source_display",
-                     "employee_type_display",  "project_year_id","project_id",
-                     "fiscal_year", "project_title", "median_salary",
-                     "salary_per_week","amount_week","amount_overtime",
-                     "amount_total", "theme", "activity_type",
-                     "functional_group","section_display","overview",
-                     "objectives","tag", "tag_id",
-                     "status","lead_staff", "deliverables",
-                     "milestones","section_id","division_id",
-                     "region_id", "funding_id","theme_id",
-                     "staff_id", "branch_id"), names(salary)))) {
+  if (!(identical(c("overtime_hours",         "smart_name",             "duration_weeks"
+                     ,"level_display",          "funding_source_display", "employee_type_display"
+                     ,"project_year_id",        "project_id",             "fiscal_year"
+                     ,"project_title",          "median_salary",          "salary_per_week"
+                     ,"amount_week",            "amount_overtime",        "amount_total"
+                     ,"theme",                  "activity_type",          "functional_group"
+                     ,"section_display",        "overview",               "objectives"
+                     ,"tag",                    "tag_id",                 "status"
+                     ,"lead_staff",             "deliverables",           "milestones"
+                     ,"section_id",             "division_id",            "region_id"
+                     ,"funding_id",             "theme_id",               "branch_id"
+                     ,"staff_id"), names(salary)))) {
    stop("Must obtain data for salary using getData(type='salary')")
   }
 

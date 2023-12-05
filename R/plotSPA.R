@@ -131,6 +131,13 @@
 #' @importFrom stringr str_count
 #' @importFrom stringr str_trim
 #' @importFrom grDevices extendrange
+#' @importFrom dplyr arrange
+#' @importFrom tidytext bind_tf_idf
+#' @importFrom dplyr count
+#' @importFrom dplyr desc
+#' @importFrom dplyr inner_join
+#' @importFrom dplyr select
+#' @importFrom dplyr summarize
 #' @examples
 #' \dontrun{
 #' # Example 1: Plot Bar graph of O&M Allocations
@@ -189,7 +196,7 @@ plotSPA <-
       project_year_id <-
       amount <-
       funding_source_display <-
-      fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <- NULL
+      fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <- subpoint <- words <- tf_idf <- overview <- stop_words <- tf_idf_sum <-    NULL
 
     # remove all of the amount = 0
     if (!(is.null(om))) {
@@ -206,7 +213,7 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', 'overviewStatus', or 'overviewInvestment'"
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm"
       )
     }
 
@@ -235,7 +242,6 @@ plotSPA <-
       }
       om <- subsetSPA(om=om, theme=theme, functionalGroup=functionalGroup, section=section, division=division, year=year, status=status)
       salary <- subsetSPA(salary=salary, theme=theme, functionalGroup=functionalGroup, section=section, division=division, year=year, status=status)
-
       o <- subset(om, select=c("project_id", "status"))
       s <- subset(salary, select=c("project_id", "status"))
 
@@ -341,11 +347,12 @@ plotSPA <-
         'predictSalary',
         'predictOM',
         'overviewStatus',
-        'overviewInvestment'
+        'overviewInvestment',
+        'ebfm'
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', 'overviewStatus', or 'overviewInvestment'")
+        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm'")
     }
 
     # if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
@@ -371,7 +378,8 @@ plotSPA <-
       'predictSummary',
       'predict',
       'predictOM',
-      'overviewInvestment'
+      'overviewInvestment',
+      'ebfm'
     )) {
       if (debug > 0) {
         message("om has been identified")
@@ -386,12 +394,11 @@ plotSPA <-
           "category_type",  "description", "tags",
           "tag_id", "fiscal_year", "project_title",
           "status","overview","objectives",
-          "section_display","lead_staff","functional_group",
+          "lead_staff","section_display","functional_group",
           "activity_type","theme", "deliverables",
           "milestones", "section_id","division_id",
           "region_id", "funding_id","theme_id",
-          "om_id",
-          "branch_id"),
+          "om_id","branch_id"),
         names(om)
       ))) {
         stop("Must obtain data for x using getData(type='om')")
@@ -407,7 +414,6 @@ plotSPA <-
       }
 
         if (!(is.null(id))) {
-          # JAIM HERE 2
         crab <- om[which(om$project_id == id),]
         } else if (!(is.null(theme))) {
           if (length(theme) > 1) {
@@ -1011,7 +1017,8 @@ plotSPA <-
       "predictSummary",
       "predict",
       'predictSalary',
-      'overviewInvestment'
+      'overviewInvestment',
+      'ebfm'
     )) {
       if (debug > 0) {
         message("salary has been identified")
@@ -1025,19 +1032,18 @@ plotSPA <-
         message("The names of salary is ", paste0(names(salary), sep = ","))
       }
       if (!(identical(
-        c("overtime_hours","smart_name",
-          "duration_weeks", "level_display", "funding_source_display",
-          "employee_type_display",  "project_year_id","project_id",
-          "fiscal_year", "project_title", "median_salary",
-          "salary_per_week","amount_week","amount_overtime",
-          "amount_total", "theme", "activity_type",
-          "functional_group","section_display","overview",
-          "objectives","tag", "tag_id",
-          "status","lead_staff", "deliverables",
-          "milestones","section_id","division_id",
-          "region_id", "funding_id","theme_id",
-          "staff_id",
-          "branch_id"),
+        c("overtime_hours",         "smart_name",             "duration_weeks"
+          ,"level_display",          "funding_source_display", "employee_type_display"
+          ,"project_year_id",        "project_id",             "fiscal_year"
+          ,"project_title",          "median_salary",          "salary_per_week"
+          ,"amount_week",            "amount_overtime",        "amount_total"
+          ,"theme",                  "activity_type",          "functional_group"
+          ,"section_display",        "overview",               "objectives"
+          ,"tag",                    "tag_id",                 "status"
+          ,"lead_staff",             "deliverables",           "milestones"
+          ,"section_id",             "division_id",            "region_id"
+          ,"funding_id",             "theme_id",               "branch_id"
+          ,"staff_id"),
         names(salary)
       ))) {
         stop("Must obtain data for x using getData(type='salary')")
@@ -2132,7 +2138,129 @@ if (dataframe == TRUE) {
         )
       }
 
+    } else if (which == "ebfm") {
+      EBFMFILE <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+      if (!(file.exists(EBFMFILE))) {
+        stop("Must have access to the EBFM frame work pillar file for this plot type")
+      } else {
+        if (exists("crab")) {
+          om <- crab
+        }
+        if (exists("salaryKeep")) {
+          salary <- salaryKeep
+        }
+        docx <-
+          (read_docx(EBFMFILE) %>%
+             docx_summary())[-c(1:4, 18), ]
+        pillars <- data.frame()
 
+        for (i in seq_along(docx$text)) {
+          if (is.na(docx$level[i])) {
+            pillar <- docx$text[i]
+          } else if (docx$level[i] == 1) {
+            subpillar <- docx$text[i]
+          } else if (docx$level[i] == 2) {
+            point <- docx$text[i]
+            if (docx$level[i] >= docx$level[i + 1]) {
+              pillars <- rbind(
+                pillars,
+                data.frame(
+                  pillar = pillar,
+                  subpillar = subpillar,
+                  point = point,
+                  subpoint = "",
+                  level = docx$level[i]
+                )
+              )
+            }
+          } else if (docx$level[i] > 2) {
+            pillars <- rbind(
+              pillars,
+              data.frame(
+                pillar = pillar,
+                subpillar = subpillar,
+                point = point,
+                subpoint = docx$text[i],
+                level = docx$level[i]
+              )
+            )
+          }
+
+        }
+
+        pillars <- pillars %>%
+          separate_wider_delim(pillar,":",names=c("pillar","description"))%>%
+          mutate(pillar=gsub(".. ","",pillar))
+
+        subpillars <- pillars %>%
+          mutate(subpillar=paste0(pillar,": ",subpillar)) %>%
+          group_by(pillar,description,subpillar) %>%
+          summarise(words=paste(point,subpoint,collapse=" "),
+                    .groups = 'drop') %>%
+          group_by(pillar,description,subpillar) %>%
+          unnest_tokens(word,words) %>%
+          anti_join(get_stopwords(),by="word") %>%
+          group_by(pillar,description,subpillar,word) %>%
+          summarise(n=n(),
+                    .groups = 'drop') %>%
+          ungroup()
+        subpillars_tf_idf <- subpillars %>%
+          bind_tf_idf(word,subpillar,n) %>%
+          arrange(desc(tf_idf))
+
+        tidy_om <- om %>%
+          select(project_id,overview) %>%
+          unique() %>%
+          unnest_tokens("word",overview) %>%
+          anti_join(stop_words) %>%
+          count(word, project_id)
+
+
+        scores <- tidy_om %>%
+          inner_join(subpillars_tf_idf,by="word",relationship =
+                       "many-to-many") %>%
+          group_by(project_id,subpillar) %>%
+          summarize(tf_idf_sum=sum(tf_idf),
+                    .groups = 'drop') %>%
+          ungroup() %>%
+          group_by(project_id) %>%
+          mutate(relative_weight=tf_idf_sum/sum(tf_idf_sum)) %>%
+          ungroup()
+        pal <- c(lighten("#1b9e77",0.4),
+                 lighten("#1b9e77",0.1),
+                 darken("#1b9e77",0.1),
+                 darken("#1b9e77",0.4),
+                 lighten("#7570b3",0.4),
+                 "#7570b3",
+                 darken("#7570b3",0.4),
+                 lighten("#d95f02",0.2),
+                 darken("#d95f02",0.2))
+        sp <- unique(scores$subpillar)
+        noIDS <- NULL
+        for (i in seq_along(sp)) {
+          noIDS[[i]] <- length(unique(scores$project_id[which(scores$subpillar == sp[i])]))
+        }
+        scores2 <- data.frame(matrix(NA, nrow = length(sp), ncol = 2))
+        if (dataframe) {
+          names(scores2) <- c("subpillar", "ids")
+          scores2$subpillar <- sp
+          kk <- NULL
+          for (i in seq_along(sp)){
+            k <- unique(scores$project_id[which(scores$subpillar == sp[i])])
+            kk[[i]] <- paste0(k, collapse=",")
+          }
+          scores2$ids <- unlist(kk)
+          return(scores2)
+        }
+        names(scores2) <- c("noIDS", "subpillar")
+        scores2$noIDS <- unlist(noIDS)
+        scores2$subpillar <- sp
+        #par(oma = c(2, 0, 0, 0))
+        par(mar = c(1, 3, 1, 3), mfrow=c(1,2), xpd=TRUE)  # c(bottom, left, top, right)
+        pie(scores2$noIDS, labels=scores2$noIDS, col=pal)
+        plot(0, type = "n", xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1), axes=FALSE)
+        legend("left", legend=unique(scores2$subpillar), col=pal, pch=20, cex=0.5, pt.cex=2, bty="n",inset = c(-0.31, 0))
+      }
 
     }
 }

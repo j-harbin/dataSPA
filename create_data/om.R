@@ -2,10 +2,15 @@
 if (!FALSE) {
   #library(dataSPA)
   namesOM <- c("project_id","category_display","project_year_id",
-               "amount","funding_source_display","category_type", "description", "tags", "tag_id", "fiscal_year",
-               "project_title","status", "overview", "objectives", "section_display", "lead_staff","functional_group","activity_type", "theme", "deliverables", "milestones",
-                "section_id","division_id", "region_id", "funding_id",
-               "theme_id","om_id", "branch_id")
+               "amount","funding_source_display",
+               "category_type",  "description", "tags",
+               "tag_id", "fiscal_year", "project_title",
+               "status","overview","objectives",
+               "lead_staff","section_display","functional_group",
+               "activity_type","theme", "deliverables",
+               "milestones", "section_id","division_id",
+               "region_id", "funding_id","theme_id",
+               "om_id","branch_id")
 
   om <- data.frame(matrix(NA, nrow = 10, ncol = length(namesOM)))
   names(om) <- namesOM

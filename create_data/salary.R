@@ -1,10 +1,16 @@
 if (!FALSE) {
-namesSal <- c("overtime_hours","smart_name","duration_weeks",
-"level_display","funding_source_display","employee_type_display",
-"project_year_id","project_id","fiscal_year","project_title","median_salary",
-"salary_per_week", "amount_week", "amount_overtime", "amount_total", "theme", "activity_type", "functional_group",
-"section_display", "overview", "objectives","tag", "tag_id", "status", "lead_staff", "deliverables",
-"milestones","section_id", "division_id", "region_id", "funding_id","theme_id","staff_id", "branch_id")
+namesSal <- c("overtime_hours",         "smart_name",             "duration_weeks"
+              ,"level_display",          "funding_source_display", "employee_type_display"
+              ,"project_year_id",        "project_id",             "fiscal_year"
+              ,"project_title",          "median_salary",          "salary_per_week"
+              ,"amount_week",            "amount_overtime",        "amount_total"
+              ,"theme",                  "activity_type",          "functional_group"
+              ,"section_display",        "overview",               "objectives"
+              ,"tag",                    "tag_id",                 "status"
+              ,"lead_staff",             "deliverables",           "milestones"
+              ,"section_id",             "division_id",            "region_id"
+              ,"funding_id",             "theme_id",               "branch_id"
+              ,"staff_id")
 
 
 salary <- data.frame(matrix(NA, nrow = 8, ncol = length(namesSal)))
