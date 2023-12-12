@@ -17,8 +17,8 @@ cat(paste0("Data pulled for this report was obtained on ", filedate))
 
 <p style="text-align:left;width: 90%">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-ID1 <- unique(index$project_id)
-ID2 <- unique(index2$project_id)
+ID1 <- unique(index$project_id[which(index$status == "Approved")])
+ID2 <- unique(index2$project_id[which(index2$status == "Approved")])
 IDs <- sort(unique(c(ID1, ID2)))
 
 path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/reports/"
@@ -30,7 +30,7 @@ if(!dir.exists(path)){
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
  
-cat("The project IDs included in this functional group are: ", LINKS)
+cat("The APPROVED project IDs included in this functional group are: ", LINKS)
 cat("\n")
 cat("\n")
 cat(paste0("This fact sheet summarizes both O&M and salary investments expected as well as potential risks due to inflation for Approved projects in the Maritimes Region for the ", unique(index$functional_group), " functional group. The 'Summary' tab shows the total investment for the entire functional group (for approved projects in the Maritimes region), while the 'Research' tab shows the investment for projects in functional group ", unique(index$functional_group), ' that are also classified as research, and so on.'))
@@ -43,11 +43,82 @@ cat(paste0("This fact sheet summarizes both O&M and salary investments expected 
 
 ## Summary
 
+```{r, echo=FALSE, fig.cap="Pie chart displaying the number of projects for each status type in the Maritimes region for this theme."}
+res <- try(plotSPA(om=index, salary=index2, functionalGroup =unique(index$functional_group), which="overviewStatus", status=NULL), silent=TRUE)
+```
+
+
+ <span style="color:red;">The rest of this report focuses on the approved projects.</span>
+
+**Quick Facts**
+
+<style>
+  .highlight-box {
+    border: 2px solid gray;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+  }
+</style>
+
+<div class="highlight-box">
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
+# GROUP
 cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 ```
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+# YEARS
+years1 <- min(c(index$fiscal_year[which(index$status == "Approved")], index2$fiscal_year[which(index2$status == "Approved")]))
+years2 <- max(c(index$fiscal_year[which(index$status == "Approved")], index2$fiscal_year[which(index2$status == "Approved")]))
+ycombined <- paste0(years1," - " ,years2)
+ 
+cat(paste0("Approved Projects ranging from: ", ycombined))
+```
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+# TOTAL OM SALARY
+omAmount <- round(sum(index$amount[which(index$status == "Approved")]),0)
+salaryAmount <- round(sum(index2$amount_total[which(index2$status == "Approved")]),0)
+
+cat(paste0("Total O&M amount invested : $", format(omAmount, big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+cat(paste0("Total Salary amount invested : $", format(salaryAmount, big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+cat(paste0("Total amount invested : $", format(sum(salaryAmount, omAmount), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+
+```
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+## GAP
+OMG <- try(plotSPA(om=index,which="predictOM", functionalGroup=unique(index$functional_group), status=status, dataframe=TRUE), silent=TRUE)
+
+if (exists("OMG") && class(OMG) == "data.frame") {
+omg1 <- OMG[[length(names(OMG))]]
+omg2 <- which(grepl("GAP", rownames(OMG)))
+cat(paste0("Total O&M gap in 3 years: $", format(sum(omg1[omg2]), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+}
+
+SG <-  try(plotSPA(salary=index2,which="predictSalary", functionalGroup=unique(index$functional_group), status=status, dataframe=TRUE), silent=TRUE)
+
+if (exists("SG") && class(SG) == "data.frame") {
+sg1 <- as.numeric(SG[[length(names(SG))]])
+sg2 <- which(grepl("GAP", rownames(SG)))
+cat(paste0("Total salary gap in 3 years: $", format(round(sum(sg1[sg2]),0), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+}
+
+```
+
+
 </font>
+</div>
+
+
+```{r, echo=FALSE, fig.cap="Pie chart displaying the number of projects that have a word match in their title or overview that align with words associated with a ecological based framework management (ebfm) pillar for the approved projects in the Maritimes region."}
+if (file.exists("//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx")) {
+res <- try(plotSPA(om=index, salary=index2, functionalGroup =unique(index$functional_group), which="ebfm", status=status), silent=TRUE)
+}
+```
+
 
 **Assumptions/ Disclaimers**
 
@@ -124,14 +195,33 @@ res <- try(plotSPA(salary=index2, which="predictSalary", functionalGroup=functio
 ```
 
 
+**Outcomes**
+
+```{r, echo=FALSE, results="asis"}
+cat("### Choose a project id to view associated deliverables {.tabset .tabset-dropdown}")
+```
+
+```{r, results="asis", echo=FALSE}
+headers <- sort(unique(index$project_id))
+for (j in seq_along(headers)) {
+      cat("#### ", headers[j], "\n\n"
+          ,knitr::knit_child("deliverables.Rmd", quiet = TRUE), "\n\n")
+}
+```
+
+### {-}
+
+
+
 ## Research
 
 Definition: Systematic investigation and study in order to establish facts and reach new conclusions.
 
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
-cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
+cat(paste0("Functional Group: ", paste0(unique(index$functional_group))), "\n")
 ```
+
 </font>
 
 ```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved research projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend.", results="asis", comment=NA}

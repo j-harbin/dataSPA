@@ -138,6 +138,8 @@
 #' @importFrom dplyr inner_join
 #' @importFrom dplyr select
 #' @importFrom dplyr summarize
+#' @importFrom tidytext get_stopwords
+#' @importFrom dplyr anti_join
 #' @examples
 #' \dontrun{
 #' # Example 1: Plot Bar graph of O&M Allocations
@@ -196,7 +198,8 @@ plotSPA <-
       project_year_id <-
       amount <-
       funding_source_display <-
-      fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <- subpoint <- words <- tf_idf <- overview <- stop_words <- tf_idf_sum <-    NULL
+      fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <-
+      stop_words <- words <- overview <- subpoint <- tf_idf_sum <- tf_idf <- NULL
 
     # remove all of the amount = 0
     if (!(is.null(om))) {
@@ -283,8 +286,12 @@ plotSPA <-
       }
       items <- titleNames[which(!(titles == "0"))]
       items2 <- titles[which(!(titles == "0"))]
-      mainTitle <- paste(items, items2, sep=": ")
-      PIE <- pie(status_counts, labels = paste0(names(status_counts), " (", status_counts, ")"), main = mainTitle, col=1:length(names(status_counts)))
+      #mainTitle <- paste(items, items2, sep=": ")
+      border <- rep("black", length(names(status_counts)))
+      border[which(names(status_counts) == "Approved")] <- "red"
+      par(lwd = 2)
+      PIE <- pie(status_counts, labels = paste0(names(status_counts), " (", status_counts, ")"), main = " ", border=border, col=1:length(names(status_counts)), edges=200)
+      on.exit(par(lwd = 1))
       return()
       }
 
@@ -761,6 +768,7 @@ plotSPA <-
           j <- sort(rep(which(sort(unique(om$funding_source_display)) %in% sort(namesFunding)),2))
           j <- col[as.numeric(j)]
           j[which(!(seq_along(j) %in% seq(from=1, to=length(j), by=2)))] <- "red"
+          if (!(dataframe)) {
           bp <-
             barplot(
               as.matrix(DF),
@@ -783,7 +791,6 @@ plotSPA <-
             cex = 0.55
           )
 
-        }
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
         abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
         m <- max(unlist(sums2)[1:length(years)])
@@ -802,7 +809,8 @@ plotSPA <-
           col="red",
           srt=90
         )
-
+        }
+}
         if (dataframe == TRUE) {
           return(DFs)
         }
@@ -2041,6 +2049,7 @@ legend(
   for (i in seq_along(DF[keep])) {
     DF[keep][,i] <- as.numeric(DF[keep][,i])
   }
+  if (!(dataframe)) {
   bp <-
     barplot(
       as.matrix(DF),
@@ -2062,7 +2071,6 @@ legend(
     cex = 0.55
   )
 
-}
 title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
 abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
 m <- max(unlist(sums2)[1:length(salyears)])
@@ -2081,7 +2089,8 @@ text(
   col="red",
   srt=90
 )
-
+  }
+}
 if (dataframe == TRUE) {
   return(dfROI2)
 }
@@ -2199,7 +2208,7 @@ if (dataframe == TRUE) {
                     .groups = 'drop') %>%
           group_by(pillar,description,subpillar) %>%
           unnest_tokens(word,words) %>%
-          anti_join(get_stopwords(),by="word") %>%
+          dplyr::anti_join(get_stopwords(),by="word") %>%
           group_by(pillar,description,subpillar,word) %>%
           summarise(n=n(),
                     .groups = 'drop') %>%
@@ -2207,15 +2216,12 @@ if (dataframe == TRUE) {
         subpillars_tf_idf <- subpillars %>%
           bind_tf_idf(word,subpillar,n) %>%
           arrange(desc(tf_idf))
-
         tidy_om <- om %>%
           select(project_id,overview) %>%
           unique() %>%
           unnest_tokens("word",overview) %>%
-          anti_join(stop_words) %>%
+          suppressMessages(dplyr::anti_join(stop_words)) %>%
           count(word, project_id)
-
-
         scores <- tidy_om %>%
           inner_join(subpillars_tf_idf,by="word",relationship =
                        "many-to-many") %>%
@@ -2259,7 +2265,7 @@ if (dataframe == TRUE) {
         par(mar = c(1, 3, 1, 3), mfrow=c(1,2), xpd=TRUE)  # c(bottom, left, top, right)
         pie(scores2$noIDS, labels=scores2$noIDS, col=pal)
         plot(0, type = "n", xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1), axes=FALSE)
-        legend("left", legend=unique(scores2$subpillar), col=pal, pch=20, cex=0.5, pt.cex=2, bty="n",inset = c(-0.31, 0))
+        legend("left", legend=unique(scores2$subpillar), col=pal, pch=20, cex=0.5, pt.cex=2, bty="n",inset = c(-0.29, 0))
       }
 
     }

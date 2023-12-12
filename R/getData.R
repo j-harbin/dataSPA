@@ -840,12 +840,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     # DDF activities_full
     SAL$deliverables <- 0
     SAL$milestones <- 0
-
     for (j in seq_along(unique(DDF$title))) {
       value <-
         SAL[which(SAL$project_title == unique(DDF$title)[j]),] # Look at one project
       d <- DDF[which(DDF$title == unique(DDF$title)[j]),]
-      if (!(length(value$id) == 0)) {
+      if (!(length(value$project_id) == 0)) {
         for (k in seq_along(unique(d$year))) {
           value2 <-
             value[which(value$fiscal_year == unique(d$year)[k]),] # Look at one year

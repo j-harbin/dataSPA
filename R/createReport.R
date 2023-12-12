@@ -122,12 +122,12 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
         stop("status must be either Reviewed, Approved, Draft, Cancelled, Submitted, Not Approved, or Recommended")
       } else {
         if (!(is.null(om))) {
-          om <- om[which(om$status == status),]
+          #om <- om[which(om$status == status),]
           if (length(om) == 0) {
             stop("No projects for this subset in this region.")
           }
         } else {
-          salary <- salary[which(salary$status == status),]
+          #salary <- salary[which(salary$status == status),]
           if (length(salary) == 0) {
             stop("No projects for this subset in this region.")
           }
