@@ -548,7 +548,7 @@ plotSPA <-
           value <- keep[which(keep$fiscal_year == years[i]),]
 
           # Deliverables
-          if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
+          #if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
             if (all(value$deliverables == 0)) {
             dv[[i]] <- 0
           } else {
@@ -561,12 +561,12 @@ plotSPA <-
           } else {
             ms[[i]] <- length(unlist(strsplit(unique(value$milestones), "|-----|", fixed=TRUE)))
           }
-          }
+          #}
         }
         # Creating place for legend
         if (which == "omBar") {
         par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
-        if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
+        #if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
           if (length(years) > 1) {
             df <- df[sort(rownames(df)), ]
           } else {
@@ -635,32 +635,32 @@ plotSPA <-
           return(df)
         }
 
-        } else {
-          # Configure margins for theme plot
-          if (length(years) > 6) {
-          holder <- data.frame(matrix(0, nrow = length(df[,1]), 1))
-          names(holder) <- c("  ")
-          DF <- cbind(df, holder)
-          } else {
-            DF <- df
-          }
-          DF <- DF[sort(rownames(DF)),]
-          barplot(
-            as.matrix(DF),
-            col = col[which(sort(unique(om$funding_source_display)) %in% sort(namesFunding))],
-            ylab = " ",
-            ylim = c(0, max(unlist(ylim))*1.5),
-            xlab = " ",
-            las=2,
-            legend.text = TRUE,
-            args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5)
-          )
-          title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
-
-          if (dataframe == TRUE) {
-            return(DF)
-          }
-        }
+        # } else {
+        #   # Configure margins for theme plot
+        #   if (length(years) > 6) {
+        #   holder <- data.frame(matrix(0, nrow = length(df[,1]), 1))
+        #   names(holder) <- c("  ")
+        #   DF <- cbind(df, holder)
+        #   } else {
+        #     DF <- df
+        #   }
+        #   DF <- DF[sort(rownames(DF)),]
+        #   barplot(
+        #     as.matrix(DF),
+        #     col = col[which(sort(unique(om$funding_source_display)) %in% sort(namesFunding))],
+        #     ylab = " ",
+        #     ylim = c(0, max(unlist(ylim))*1.5),
+        #     xlab = " ",
+        #     las=2,
+        #     legend.text = TRUE,
+        #     args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5)
+        #   )
+        #   title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
+        #
+        #   if (dataframe == TRUE) {
+        #     return(DF)
+        #   }
+        # }
 
       } else if (which == "predictOM") {
         # Only considering years up until the current fiscal date.

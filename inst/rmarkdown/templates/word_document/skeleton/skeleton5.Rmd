@@ -136,7 +136,7 @@ res <- try(plotSPA(om=index, salary=index2, division = DIV, which="ebfm", status
 
 **Plots**
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved projects in the Maritimes region for this division. Graph color coded by funding type as shown by the legend"}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved projects in the Maritimes region for this division. Graph color coded by funding type as shown by the legend and  show the number of deliverables and milestones per year in blue and red respectively."}
 
 res <- try(plotSPA(om=index, division=DIV, which="omBar", status=status), silent=TRUE)
 ```

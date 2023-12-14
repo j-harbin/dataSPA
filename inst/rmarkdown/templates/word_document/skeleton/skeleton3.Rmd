@@ -136,7 +136,7 @@ res <- try(plotSPA(om=index, salary=index2, functionalGroup =unique(index$functi
 
 **Plots**
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend."}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend and  show the number of deliverables and milestones per year in blue and red respectively."}
 res <- try(plotSPA(om=index, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
 ```
 
