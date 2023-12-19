@@ -790,7 +790,9 @@ plotSPA <-
             pch = rep(15, (length(namesFunding)+1)),
             cex = 0.55
           )
-
+          } # not data frame
+        } # else
+        if (!(dataframe)) {
         title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
         abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
         m <- max(unlist(sums2)[1:length(years)])
@@ -810,7 +812,6 @@ plotSPA <-
           srt=90
         )
         }
-}
         if (dataframe == TRUE) {
           return(DFs)
         }
@@ -2070,7 +2071,9 @@ legend(
     pch = rep(15, (length(salnamesFunding)+1)),
     cex = 0.55
   )
-
+  } # not data frame
+} # else
+if (!(dataframe)) {
 title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
 abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
 m <- max(unlist(sums2)[1:length(salyears)])
@@ -2089,7 +2092,6 @@ text(
   col="red",
   srt=90
 )
-  }
 }
 if (dataframe == TRUE) {
   return(dfROI2)

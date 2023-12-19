@@ -7,12 +7,14 @@ output: html_document
 deliverables1 <- unique(index$deliverables[which(index$project_id == headers[j])])
 deliverables2 <- unique(index2$deliverables[which(index2$project_id == headers[j])])
 deliverables3 <- unique(c(deliverables1, deliverables2))
-#if (length(deliverables) > 1 && any(deliverables3 == 0)) {
-#  deliverables3 <- deliverables3[-which(deliverables3 == 0)]
-#}
-#if (length(deliverables) == 1 && unique(deliverables3) == 0) {
-#cat("There are no identified deliverables for this project")
-#} else {
-cat(paste0(deliverables3, collapse=" , "))
-#}
+deliverables3 <- gsub("\\|-----\\|", " \n\n ", deliverables3)
+if (length(deliverables3) > 1 && any(deliverables3 == "0")) {
+ deliverables3 <- deliverables3[-which(deliverables3 == "0")]
+ 
+}
+if (length(deliverables3) == 1 && unique(deliverables3) == "0") {
+cat("There are no identified deliverables for this project")
+} else {
+cat(deliverables3)
+}
 ```
