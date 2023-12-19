@@ -549,14 +549,14 @@ plotSPA <-
 
           # Deliverables
           #if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
-            if (all(value$deliverables == 0)) {
+            if (all(value$deliverables == "0")) {
             dv[[i]] <- 0
           } else {
           dv[[i]] <- length(unlist(strsplit(unique(value$deliverables), "|-----|", fixed=TRUE)))
           }
 
           # Milestones
-          if (all(value$milestones == 0)) {
+          if (all(value$milestones == "0")) {
             ms[[i]] <- 0
           } else {
             ms[[i]] <- length(unlist(strsplit(unique(value$milestones), "|-----|", fixed=TRUE)))
@@ -1420,9 +1420,9 @@ plotSPA <-
                   2)
 
           INT <-
-            length(value$id[which(grepl("Indeterminate", value$employee_type_display))]) # For # of employees
+            length(value$staff_id[which(grepl("Indeterminate", value$employee_type_display))]) # For # of employees
           NON <-
-            length(value$id[which(!(grepl(
+            length(value$staff_id[which(!(grepl(
               "Indeterminate", value$employee_type_display
             )))])
           dfi[1] <- int
