@@ -340,6 +340,77 @@ cat("  \n")
 
 ```
 
+**Quick Facts**
+
+
+<style>
+  .highlight-box {
+    border: 2px solid gray;
+    padding: 10px;
+    border-radius: 5px;
+    text-align: center;
+  }
+</style>
+
+<div class="highlight-box">
+ <font size="4">
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+# YEARS
+years1 <- min(c(index$fiscal_year[which(index$status == "Approved")], index2$fiscal_year[which(index2$status == "Approved")]))
+years2 <- max(c(index$fiscal_year[which(index$status == "Approved")], index2$fiscal_year[which(index2$status == "Approved")]))
+ycombined <- paste0(years1," - " ,years2)
+ 
+cat(paste0("Approved Projects ranging from: ", ycombined))
+```
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+# TOTAL OM SALARY
+omAmount <- round(sum(index$amount[which(index$status == "Approved")]),0)
+salaryAmount <- round(sum(index2$amount_total[which(index2$status == "Approved")]),0)
+
+cat(paste0("Total O&M amount invested : $", format(omAmount, big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+cat(paste0("Total Salary amount invested : $", format(salaryAmount, big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+cat(paste0("Total amount invested : $", format(sum(salaryAmount, omAmount), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+
+```
+
+
+```{r, echo=FALSE, comment=NA, results="asis"}
+## GAP
+OMG <- try(plotSPA(om=index,which="predictOM", theme=unique(index$theme), status=status, dataframe=TRUE), silent=TRUE)
+
+if (exists("OMG") && class(OMG) == "data.frame") {
+omg1 <- OMG[[length(names(OMG))]]
+omg2 <- which(grepl("GAP", rownames(OMG)))
+cat(paste0("Total O&M gap in 3 years: $", format(sum(omg1[omg2]), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+}
+
+SG <-  try(plotSPA(salary=index2,which="predictSalary", theme=unique(index$theme), status=status, dataframe=TRUE), silent=TRUE)
+
+if (exists("SG") && class(SG) == "data.frame") {
+sg1 <- as.numeric(SG[[length(names(SG))]])
+sg2 <- which(grepl("GAP", rownames(SG)))
+cat(paste0("Total salary gap in 3 years: $", format(round(sum(sg1[sg2]),0), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+}
+
+```
+
+
+</font>
+</div>
+
+
+
+
+
+
+
+
+
+
+
+
 
 **Assumptions/ Disclaimers**
 
