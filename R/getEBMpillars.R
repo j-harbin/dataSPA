@@ -130,8 +130,11 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
 
     if (file.exists(file)) {
       message("You are using Stephenson et al. (unpublished) for pillar definitions")
-      source(file)
-      pillars <- TABLE3 %>%
+
+      local_env <- new.env()
+      source(file, local_env)
+
+      pillars <- local_env$TABLE3 %>%
         separate(table3,sep="---",into = c("pillar","objective","subobj","indicator"))
 
       objectives <- pillars %>%
