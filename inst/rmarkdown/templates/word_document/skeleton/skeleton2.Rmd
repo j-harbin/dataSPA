@@ -29,8 +29,11 @@ if(!dir.exists(path)){
 }
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
- 
-cat("The APPROVED project IDs included in this theme are: ", LINKS)
+if (length(IDs) == 0) {
+  cat("There are no approved projects for this theme.")
+} else {
+  cat("The APPROVED project IDs included in this theme are: ", LINKS)
+}
 cat("\n")
 cat("\n")
 cat(paste0("This fact sheet summarizes both O&M and salary investments expected as well as potential risks due to inflation for Approved projects in the Maritimes Region for the ", unique(index$theme), " theme. The 'Summary' tab shows the total investment for the entire theme (for approved projects in the Maritimes region), while the 'Research' tab shows the investment for projects in theme ", unique(index$theme), ' that are also classified as research, and so on.'))
@@ -62,6 +65,7 @@ res <- try(plotSPA(om=index, salary=index2, theme=unique(index$theme), which="ov
 <div class="highlight-box">
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
+status <- "Approved"
 cat(paste0("Theme: ", paste0(unique(index$theme))))
 ```
 
@@ -189,6 +193,22 @@ for (j in seq_along(headers)) {
 res <- try(plotSPA(salary=index2, which="predictSalary", theme=theme[i], status=status), silent=TRUE)
 
 ```
+
+**Outcomes**
+
+```{r, echo=FALSE, results="asis"}
+cat("### Choose a project id to view associated deliverables for the approved projects {.tabset .tabset-dropdown}")
+```
+
+```{r, results="asis", echo=FALSE}
+headers <- sort(unique(index$project_id[which(index$status == "Approved")]))
+for (j in seq_along(headers)) {
+      cat("#### ", headers[j], "\n\n"
+          ,knitr::knit_child("deliverables.Rmd", quiet = TRUE), "\n\n")
+}
+```
+
+### {-}
 
 
 ## Research

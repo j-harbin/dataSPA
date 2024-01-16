@@ -24,8 +24,11 @@ path <- "file://dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/outputs/
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
 SEC <- unique(gsub(".*- ","",unique(index$section_display)))
-
-cat("The APPROVED project IDs included in this section are: ", LINKS)
+if (length(IDs) == 0) {
+  cat("There are no approved projects for this section.")
+} else {
+  cat("The APPROVED project IDs included in this section are: ", LINKS)
+}
 cat("\n")
 cat("\n")
 cat(paste0("This fact sheet summarizes both O&M and salary investments expected as well as potential risks due to inflation for Approved projects in the Maritimes Region for the ", unique(SEC), " section. The 'Summary' tab shows the total investment for the entire section (for approved projects in the Maritimes region), while the 'Research' tab shows the investment for projects in section ", unique(SEC), ' that are also classified as research, and so on.'))
@@ -60,6 +63,7 @@ res <- try(plotSPA(om=index, salary=index2, section =SEC, which="overviewStatus"
 
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
+status <- "Approved"
 cat(paste0("section: ", paste0(unique(SEC))))
 ```
 
@@ -181,6 +185,24 @@ for (j in seq_along(headers)) {
 res <- try(plotSPA(salary=index2, which="predictSalary", section=SEC, status=status), silent=TRUE)
 
 ```
+
+
+**Outcomes**
+
+```{r, echo=FALSE, results="asis"}
+cat("### Choose a project id to view associated deliverables for the approved projects {.tabset .tabset-dropdown}")
+```
+
+```{r, results="asis", echo=FALSE}
+headers <- sort(unique(index$project_id[which(index$status == "Approved")]))
+for (j in seq_along(headers)) {
+      cat("#### ", headers[j], "\n\n"
+          ,knitr::knit_child("deliverables.Rmd", quiet = TRUE), "\n\n")
+}
+```
+
+### {-}
+
 
 
 ## Research

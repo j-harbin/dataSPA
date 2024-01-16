@@ -30,7 +30,11 @@ if(!dir.exists(path)){
 links <- paste0(path, IDs, ".html")
 LINKS <- paste0('<a href="',links,'">',IDs,'</a>')
  
-cat("The APPROVED project IDs included in this functional group are: ", LINKS)
+if (length(IDs) == 0) {
+  cat("There are no approved projects for this functional group.")
+} else {
+  cat("The APPROVED project IDs included in this functional group are: ", LINKS)
+}
 cat("\n")
 cat("\n")
 cat(paste0("This fact sheet summarizes both O&M and salary investments expected as well as potential risks due to inflation for Approved projects in the Maritimes Region for the ", unique(index$functional_group), " functional group. The 'Summary' tab shows the total investment for the entire functional group (for approved projects in the Maritimes region), while the 'Research' tab shows the investment for projects in functional group ", unique(index$functional_group), ' that are also classified as research, and so on.'))
@@ -65,6 +69,7 @@ res <- try(plotSPA(om=index, salary=index2, functionalGroup =unique(index$functi
  <font size="4">
 ```{r, echo=FALSE, comment=NA, results="asis"}
 # GROUP
+status <- "Approved"
 cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 ```
 
@@ -198,11 +203,11 @@ res <- try(plotSPA(salary=index2, which="predictSalary", functionalGroup=functio
 **Outcomes**
 
 ```{r, echo=FALSE, results="asis"}
-cat("### Choose a project id to view associated deliverables {.tabset .tabset-dropdown}")
+cat("### Choose a project id to view associated deliverables for the approved projects {.tabset .tabset-dropdown}")
 ```
 
 ```{r, results="asis", echo=FALSE}
-headers <- sort(unique(index$project_id))
+headers <- sort(unique(index$project_id[which(index$status == "Approved")]))
 for (j in seq_along(headers)) {
       cat("#### ", headers[j], "\n\n"
           ,knitr::knit_child("deliverables.Rmd", quiet = TRUE), "\n\n")

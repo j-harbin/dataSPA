@@ -10,7 +10,7 @@ highlightOverview(
   id = NULL,
   legend = FALSE,
   file =
-    "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+    "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R"
 )
 }
 \arguments{

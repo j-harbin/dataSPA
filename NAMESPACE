@@ -2,6 +2,7 @@
 
 export(createReport)
 export(getData)
+export(getEBMpillars)
 export(highlightOverview)
 export(plotSPA)
 export(subsetSPA)
