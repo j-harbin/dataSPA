@@ -271,14 +271,14 @@ cat(paste0(unique(test$objectives)))
 ```{r, echo=FALSE, comment=NA, results='asis'}
 if (!(length(test) == 0)) {
 years <- unique(test$fiscal_year)
-status <- NULL
+STATUS <- NULL
 if (!(length(unique(test$status)) == 1)) {
   for (Y in seq_along(years)) {
     ii <- test[which(test$fiscal_year == years[Y]),]
-    status[[Y]] <- unique(ii$status)
+    STATUS[[Y]] <- unique(ii$status)
   }
-  status <- unlist(status)
-  cat(paste0(years," : ", status, collapse=", "))
+  STATUS <- unlist(STATUS)
+  cat(paste0(years," : ", STATUS, collapse=", "))
 } else {
   cat(paste0(unique(test$status)), " for all project years")
 }

@@ -274,8 +274,7 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
           output_format = "html_document"
         )
       }
-}
-
+    }
   }
   }
 }
