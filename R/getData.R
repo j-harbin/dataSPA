@@ -77,31 +77,33 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   # LOADING CACHED DATA
-  if (type %in% c("om", "om_date")) {
-    if (age > 0) {
-      # Look for files in path, only return the most recent file the matches pattern
-      fn <- file.path(path, "dataSPA_om.rds")
-      if (file.exists(fn)) {
-        # Load file if more recent than `keep` days old
-        d <- as.Date(file.info(fn)$mtime)
-        if ((Sys.Date() - d) < age) {
-          if (type == "om") {
-            om <- readRDS(file = fn)
-            return(om)
-          } else if (type == "om_date") {
-            #message(paste0("returning date from file on disk(",fn,")"))
-            return(d)
-          }
+  if(age > 0 && type %in% c("om", "om_date")){
+    # Look for files in path, only return the file the matches pattern
+    fn <- file.path(path,"dataSPA_om.rds")
 
+    if(file.exists(fn)){
+      # Load file if more recent than `keep` days old
+      d <- as.Date(file.info(fn)$mtime)
+      if((Sys.Date()-d)<age){ # if this is false, it's out of date
+        if(type=="om"){
+          om <- readRDS(file = fn)
+          message(paste0("loading file from disk(",fn,")"))
+          return(om)
+        } else if(type=="om_date"){
+          #browser()
+          message(paste0("returning date from file on disk(",fn,")"))
+          return(d)
         }
-      }  else if (type == "om_date") {
-        stop(
-          paste(
-            "File (",
-            fn,
-            ") does not exist. User must first save om type AND be on the VPN. See examples in ?getData for how to fix this."
-          ))}}}
 
+      } else {
+        if (type == "om_date") {
+          stop("The saved om data is out of date compared to your age argument. Consider saving a new om data using getData(type='om',keep=TRUE) or increasing your age argument")
+        }
+      }
+    } else if(type=="om_date"){
+      stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
+    }
+  }
 
   if(age > 0 && type %in% c("salary", "salary_date")){
     # Look for files in path, only return the file the matches pattern
@@ -120,6 +122,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           return(d)
         }
 
+      } else {
+        if (type == "salary_date") {
+          stop("The saved salary data is out of date compared to your age argument. Consider saving a new salary data using getData(type='salary',keep=TRUE) or increasing your age argument")
+        }
       }
     } else if(type=="salary_date"){
       stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
@@ -471,6 +477,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     om$activity_type[which(om$activity_type == 5)] <- "Assessment"
   }
   ## Getting divisions ids ("http://dmapps/api/ppt/divisions/")
+
+  if (type %in% c("om", "salary")) {
   division_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/divisions/")]], function(x) x$id))
   full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/divisions/")]], function(x) x$display))
   division_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/divisions/")]], function(x) x$name))
@@ -521,7 +529,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   ## LINK 4: GETTING THEME DIFFERENTLY
   # Theme
   # Obtaining OM data from the API
-  if (type %in% c("om", "salary")) {
     req <- httr2::request("http://dmapps/api/ppt/themes/")
     # Add custom headers
     req <- req %>% httr2::req_headers("Cookie" = cookie)
@@ -871,6 +878,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   } else if (type == "salary") {
     index <- SAL
   }
+
+  # JAIM HERE
+  if (type %in% c("om", "salary")) {
   index$section_id <- 0
   # Adding ids in SAL
   # section_id (TO-BE DELETE still a problem)
@@ -965,6 +975,13 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   project_title <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/project-years")]], function(x) x$project$title))
   tags_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/project-years")]], function(x) x$project$tags_display))
 
+  ## branch_id
+  index$branch_id <- 0
+  for (b in seq_along(branch_id)) {
+    index$branch_id[which(grepl(branch_name[b], index$section_display) & grepl(Region_Name[b], index$section_display))] <- branch_id[b]
+  }
+
+  }
   ## om_id
   if (type == "om") {
   om_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$id))
@@ -978,12 +995,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   for (p in seq_along(project_id)) {
     index$om_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$category_display == category_display[p] & index$amount == om_amount[p])] <- om_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & category_display == category_display[p] & om_amount == om_amount[p])]
   }
-  }
-  ## branch_id
-index$branch_id <- 0
-  for (b in seq_along(branch_id)) {
-    index$branch_id[which(grepl(branch_name[b], index$section_display) & grepl(Region_Name[b], index$section_display))] <- branch_id[b]
-
   }
 
 
@@ -1000,7 +1011,6 @@ index$branch_id <- 0
     }
 
   }
-
 
 
   if (type == "salary") {
