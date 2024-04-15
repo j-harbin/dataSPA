@@ -74,7 +74,7 @@ subsetSPA <- function(om=NULL, salary=NULL, status=NULL, region=NULL, theme=NULL
       "activity_type","theme", "deliverables",
       "milestones", "section_id","division_id",
       "region_id", "funding_id","theme_id",
-      "om_id","branch_id"),
+      "branch_id", "om_id"),
     names(om)
   ))) {
 

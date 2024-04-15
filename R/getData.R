@@ -77,7 +77,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   # LOADING CACHED DATA
-  if(age > 0 && type %in% c("om", "om_date")){
+  if(type %in% c("om", "om_date")){
+    if (age > 0) {
     # Look for files in path, only return the file the matches pattern
     fn <- file.path(path,"dataSPA_om.rds")
 
@@ -90,7 +91,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           message(paste0("loading file from disk(",fn,")"))
           return(om)
         } else if(type=="om_date"){
-          #browser()
           message(paste0("returning date from file on disk(",fn,")"))
           return(d)
         }
@@ -103,9 +103,16 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     } else if(type=="om_date"){
       stop(paste("File (",fn,") does not exist. File must exist on disk for type 'om_date' to return a date of file creation"))
     }
+    } else {
+      if (type == "om_date") {
+        stop("The saved om data is out of date compared to your age argument. Consider saving a new om data using getData(type='om',keep=TRUE) or increasing your age argument")
+      }
   }
 
-  if(age > 0 && type %in% c("salary", "salary_date")){
+}
+
+  if(type %in% c("salary", "salary_date")){
+    if (age > 0) {
     # Look for files in path, only return the file the matches pattern
     fn <- file.path(path,"dataSPA_SAL.rds")
 
@@ -130,6 +137,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     } else if(type=="salary_date"){
       stop(paste("File (",fn,") does not exist. File must exist on disk for type 'salary_date' to return a date of file creation"))
     }
+    } else {
+      if (type == "salary_date") {
+        stop("The saved salary data is out of date compared to your age argument. Consider saving a new salary data using getData(type='salary',keep=TRUE) or increasing your age argument")
+      }
+    }
   }
 
   # FIXME: can't yet cache for collaborations or statusReport
@@ -137,9 +149,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # 1. LISTING LINKS
 
   if (type %in% c("salary", "salary_date")) {
-    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/", "http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/")
+    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/", "http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
   } else if (type %in% c("om", "om_date")) {
-    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/", "http://dmapps/api/ppt/divisions/","http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/")
+    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/", "http://dmapps/api/ppt/divisions/","http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
   } else if (type == "collaboration") {
     links <- c("http://dmapps/api/ppt/collaborations/")
   } else if (type == "statusReport") {
@@ -315,12 +327,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   ## Putting "http://dmapps/api/ppt/project-years" into a data frame
   if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
-
     t <- lapply(api_data2, function(x) x$project$years)
 
-    # Add objectives and overview
+    # Add objectives and overview JAIM
     p <- lapply(api_data2, function(x) x$project)
-    j <- lapply(api_data2, function(x) x$project$lead_staff)
+    #j <- lapply(api_data2, function(x) x$project$lead_staff)
 
     for (i in seq_along(p)) {
       if (length(p[[i]]$overview) == 0) {
@@ -353,20 +364,48 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     for (i in 1:length(p))  {
       lov <- c(lov, p[[i]])
     }
+    jNames <- c("id", "objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")
 
     for (i in seq_along(p)) {
-      if (length(j[[i]]) == 0) {
-        j[[i]] <- 0
-      } else if (is.na(j[[i]])) {
-        j[[i]]
+      for (j in jNames) {
+      if (length(p[[i]][[j]]) == 0) {
+        p[[i]][[j]] <- 0
+      } else if (is.na(p[[i]][[j]])) {
+        p[[i]][[j]] <- 0
+      }
       }
     }
-    pp <- lapply(p, function(x) as.data.frame(x[c("id", "objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")]))
+    pp <- lapply(p, function(x) as.data.frame(x[c("id", "objectives", "overview", "section_display", "functional_group", "activity_type", "tags_display")])) ## NAMES USED HERE
 
-    for (i in seq_along(pp)) {
-      pp[[i]]$lead_staff <- j[[i]]
+    yearsID <- unlist(lapply(API_DATA[[length(API_DATA)]], function(x) x$project$id))
+
+    yearsLead <- NULL
+    for (i in seq_along(API_DATA[[length(API_DATA)]])) {
+      leads <- API_DATA[[length(API_DATA)]][[i]]$project_leads_display
+      if (is.null(leads)) {
+        leads <- 0
+      }
+      if (is.na(leads)) {
+        leads <- 0
+      }
+      yearsLead[[i]] <- leads
     }
+
+    yearsLead <- unlist(yearsLead)
+
+    #yearsLead <- unlist(lapply(API_DATA[[length(API_DATA)]], function(x) x$project_leads_display))
+
+    # Adding lead staff in
+    for (i in seq_along(pp)) {
+      pp[[i]]$lead_staff <- 0
+      pp[[i]]$lead_staff <- paste0(unique(yearsLead[which(yearsID %in% pp[[i]]$id)]), collapse=",")
+    }
+
+
     ppp <- do.call(rbind, pp)
+
+    #browser()
+
 
     ## Fixing section_display for sections
 
@@ -646,7 +685,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   ## DEALING WITH "http://dmapps/api/ppt/staff"
   if (type == "salary") {
     api_data3 <- API_DATA[[4]]
-
+#JAIM2
     j <- lapply(api_data3, function(x) x[c('overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
 
     for (i in seq_along(j)) {
@@ -670,7 +709,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     list <- NULL
     for (i in seq_along(j)) {
-      #message("This is for ",i)
       list[[i]] <- as.data.frame(j[[i]])
     }
 
