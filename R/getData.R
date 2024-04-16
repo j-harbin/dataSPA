@@ -404,9 +404,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     ppp <- do.call(rbind, pp)
 
-    #browser()
-
-
     ## Fixing section_display for sections
 
     ## Dealing with tag_ids
@@ -677,7 +674,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     om$deliverables[which(om$deliverables == "")] <- 0
   }
 
-  #if(type == "om") return(om)
   ## WORKING WITH SALARY DATA FRAME
   salaries <- NULL
   load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
@@ -685,7 +681,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   ## DEALING WITH "http://dmapps/api/ppt/staff"
   if (type == "salary") {
     api_data3 <- API_DATA[[4]]
-#JAIM2
+#JAIMHERE
     j <- lapply(api_data3, function(x) x[c('overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
 
     for (i in seq_along(j)) {
@@ -693,6 +689,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         j[[i]]$overtime_hours <- 0
       } else if (!(is.finite(j[[i]]$overtime_hours))) {
         j[[i]]$overtime_hours <- 0
+      }
+
+      if (length(j[[i]]$smart_name) == 0) {
+        j[[i]]$smart_name <- 0
       }
 
       if (length(j[[i]]$duration_weeks) == 0) {
@@ -706,11 +706,14 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         j[[i]]$level_display <- 0
       }
     }
-
     list <- NULL
     for (i in seq_along(j)) {
+      message("This is for  ", i)
       list[[i]] <- as.data.frame(j[[i]])
     }
+
+
+
 
     SAL <- do.call(rbind, list)
 
@@ -812,7 +815,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       SAL$amount_total[i] <- ifelse(SAL$overtime_hours[i] == 0, SAL$amount_week[i], (SAL$amount_week[i] + SAL$amount_overtime[i]))
     }
     bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
+    if (!(length(bad) == 0)) {
     SAL <- SAL[-bad,]
+    }
   }
 
   if (type == "salary") {
@@ -866,7 +871,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     ## LEAD STAFF
     # j HAS THIS
-
     SAL$status <- 0
     SAL$lead_staff <- 0
     for (i in seq_along(SAL$smart_name)) {
@@ -917,7 +921,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     index <- SAL
   }
 
-  # JAIM HERE
   if (type %in% c("om", "salary")) {
   index$section_id <- 0
   # Adding ids in SAL
@@ -1035,7 +1038,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
   }
 
-
   if (type == "salary") {
     staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$id))
     project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$project_year_obj$project))
@@ -1047,6 +1049,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     for (p in seq_along(project_id)) {
       index$staff_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$smart_name == name_display[p])] <- staff_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & name_display == name_display[p])]
     }
+
+    #browser()
 
   }
 
