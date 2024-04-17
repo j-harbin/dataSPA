@@ -54,12 +54,14 @@ if (!(length(index$project_id) == 0)) {
 }
 
   if (file.exists("//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx")){
-    file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
+    file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx" # x jaim
+  } else if (file.exists("/home/mar-spa/Ecological Pillar Objectives 20 April 2023.docx")) {
+    file <- "/home/mar-spa/Ecological Pillar Objectives 20 April 2023.docx" 
   } else {
-    file <- "/home/mar-spa/Ecological Pillar Objectives 20 April 2023.docx"
+    file <- NULL
   }
 if (!(length(index$project_id) == 0) | (!(length(index2$project_id) == 0))) {
-if (file.exists(file)) {
+if (!(is.null(file))) {
   cat(highlightOverview(om=index, salary=index2, id=ID, file=file))
 } else {
   cat(paste0(ifelse(!(length(index$project_id) == 0), unique(index$overview), unique(index2$overview))))
@@ -69,7 +71,7 @@ if (file.exists(file)) {
 <center>
 ```{r pressure, echo=FALSE, fig.cap=" ", out.width = '70%'}
 if (!(length(index$project_id) == 0)) {
-  if (file.exists(file)) {
+  if (!(is.null(file))) {
     highlightOverview(om=index, id=unique(index$project_id), legend=TRUE, file=file)
   }
 }

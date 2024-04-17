@@ -3,8 +3,8 @@ cookie <- "csrftoken=AiS7y5VkbQfiT7zoW2bTSbDq7WNuwDJY; sessionid=0a5md5v1oh1vxi0
 # Note for salaryDat, omDat, and om_date I made the age 100 to avoid getting new data.
 # You may want to change this to get new data, but if you do I would recommend
 # Changing it for all three.
-omDat <- getData(type = "om", cookie = cookie, age=100,path = "./data")
-salaryDat <- getData(type = "salary", cookie = cookie, age=100, path = "./data")
+omDat <- getData(type = "om", cookie = cookie, age=0,path = "./data")
+salaryDat <- getData(type = "salary", cookie = cookie, age=0, path = "./data")
 om_date <- getData(type= "om_date", cookie = cookie, age=100,path = "./data")
 
 # Subset om and salary only for PSSI (b-base) funded projects
@@ -23,8 +23,8 @@ sal <- sal[which(sal$status == "Approved"),]
 IDS <- unique(c(unique(om$project_id), unique(sal$project_id))) # getting the unique project IDS
 
 # Create financial reports for projects funded by PSSI (b-base)
-createReport(om= om, salary=sal, id = IDS,
-             cookie = cookie, destdir = "./reports", path="./data")
+#createReport(om= om, salary=sal, id = IDS,
+#             cookie = cookie, destdir = "./reports", path="./data")
 
 
 # Status Reports
@@ -32,5 +32,4 @@ statusReport <- getData(type="statusReport", cookie = cookie, path = "./data")
 sr <- statusReport[which(statusReport$fiscal_year == "2023-2024"),]
 sr <- sr[which(sr$project_id %in% IDS),]
 
-createReport(statusReport = sr, cookie=cookie, destdir="./reports", path="./data")
-
+createReport(om=om, salary=sal, statusReport = sr, id=IDS, cookie=cookie, destdir="./reports", path="./data")
