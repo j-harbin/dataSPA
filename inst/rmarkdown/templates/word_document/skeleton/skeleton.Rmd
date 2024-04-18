@@ -17,10 +17,12 @@ if (!(length(index$project_id) == 0)) {
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
-if(!exists("filedate")){
-  filedate <- getData(type="om_date", age=4000, cookie=cookie)
+  filedate <- try(getData(type="om_date", age=4000, cookie=cookie,path=path), silent=TRUE)
+  if (inherits(filedate, "try-error")) {
+  message("Consider saving output from getData(keep=TRUE) in the specified path of createReport() to display date data was obtained in report.")
+  } else {
+  cat(paste0("Data pulled for this report was obtained on ", filedate))
 }
-cat(paste0("Data pulled for this report was obtained on ", filedate))
 ```
 
 **Title**
@@ -54,7 +56,7 @@ if (!(length(index$project_id) == 0)) {
 }
 
   if (file.exists("//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx")){
-    file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx" # x jaim
+    file <- "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Ecological Pillar Objectives 20 April 2023.docx"
   } else if (file.exists("/home/mar-spa/Ecological Pillar Objectives 20 April 2023.docx")) {
     file <- "/home/mar-spa/Ecological Pillar Objectives 20 April 2023.docx" 
   } else {
