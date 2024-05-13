@@ -39,6 +39,24 @@ if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
   salary <- as.data.frame(salary[-(unique(c(unlist(BAD),unlist(BAD2)))),])
 }
 
+
+if (any(grepl("W)", salary$Effective.Date, ignore.case=TRUE))) {
+  # This may be an exception (FO-02 https://www.tbs-sct.canada.ca/agreements-conventions/view-visualiser-eng.aspx?id=3#rates-fo)
+  good <- which(grepl("W)", salary$Effective.Date, ignore.case=TRUE))
+  good2 <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
+
+  if (!(all(good %in% good2))) {
+    # This means there is a W) with no "adjustment" (like FO-02 22)
+    fix <- good[which(!(good %in% good2))]
+    salary$Effective.Date[fix]
+    salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment")
+
+    # FIXME: This will then need to be removed
+  }
+
+}
+
+
 if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
   # There is no restructure but there could still be adjustment
   # There could so still be adjustment after restructure leaves
@@ -90,12 +108,14 @@ names(df) <- c("Classification", "Level and Step", "Annual Salary")
 df$Classification <- Classification
 df$`Level and Step` <- LevelAndStep
 
+# if (c ==5) {
+#   browser()
+# }
 
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   message("r = ", r, " and c = ", c)
   MED <- FALSE
 
-  # JAIM HERE MONDAY
   if (length(strsplit(df$`Level and Step`[1], "-")[[1]]) == 6) {
     # Three letter
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
@@ -103,15 +123,14 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
   }
 
-
-
-
-
   k2 <- which(year == sub("^[^ ]+ ", "", df$`Level and Step`[r])) # Condition 2: Making sure the year is the same
   keep <- salary[intersect(k1, k2),]
   k3 <- unlist(lapply(strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
 
   # Doing a check if there is a range instead
+  if (!(length(keep[,which(k3)]) == 1)) {
+browser()
+  }
   if (is.na(keep[,which(k3)])) {
     # See if there is any ranges
     if (any(sub(".*\\.", "", names(keep)[grepl("Range", names(keep))]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right"))) {
@@ -135,8 +154,6 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
 final[[c]] <- df
 
 } # end classification
-
-
 }
 
 FINAL <- do.call(rbind, final)
