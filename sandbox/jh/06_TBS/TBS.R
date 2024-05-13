@@ -3,7 +3,7 @@ library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
 # FIXME DO ALL GROUPS JAIM
-groups <- "SP"
+groups <- "AI"
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
 g <- 1
@@ -58,11 +58,28 @@ if (any(grepl("W)", salary$Effective.Date, ignore.case=TRUE))) {
 if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
   # There is no restructure but there could still be adjustment
   # There could so still be adjustment after restructure leaves
+
+  # Now we need to see if Adjustment is put before or after (see group=AI vs group=SP (AC))
+
   good <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
+
+  check <- good[1]-1
+  if (salary$date[check] == salary$date[good[1]]) {
+    below <- TRUE
+    above <- FALSE
+  } else {
+    below <- FALSE
+    above <- TRUE
+  }
+
 
   nextBAD <- NULL
   for (go in seq_along(good)) {
+    if (below) {
     bad <- good[go]-1
+    } else {
+      bad <- good[go]+1
+    }
     if (salary$date[bad] == salary$date[good[go]]) {
       nextBAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
     }
@@ -71,7 +88,6 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
   # FIX ME: There may need to be further checks here
 salary <- as.data.frame(salary[-(unlist(nextBAD)),])
 }
-
 # Find each Classification
 
 year <- regmatches(salary$date, regexpr("\\d{4}", salary$date))
