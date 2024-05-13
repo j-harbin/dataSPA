@@ -111,16 +111,13 @@ df$`Level and Step` <- LevelAndStep
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   #message("r = ", r, " and c = ", c)
   MED <- FALSE
-
   if (length(strsplit(df$`Level and Step`[r], "-")[[1]]) == 6) {
     # Three letter
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
-
     if (!(length(unique(salary$Classification[k1]))) == 1) {
       # This means we have a situation like SG-SRE-01 and SG-PAT-01
       k1 <- which(unlist(lapply(strsplit(salary$Classification[k1], "-"), function(x) x[[2]])) == strsplit(df$`Level and Step`[r], "-")[[1]][3])
     }
-
 
   } else {
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
@@ -160,3 +157,5 @@ final[[c]] <- df
 }
 
 FINAL <- do.call(rbind, final)
+
+df <- FINAL[-(which(is.na(FINAL$`Annual Salary`))),]
