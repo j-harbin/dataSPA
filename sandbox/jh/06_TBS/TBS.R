@@ -49,9 +49,7 @@ if (any(grepl("W)", salary$Effective.Date, ignore.case=TRUE))) {
     # This means there is a W) with no "adjustment" (like FO-02 22)
     fix <- good[which(!(good %in% good2))]
     salary$Effective.Date[fix]
-    salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment")
-
-    # FIXME: This will then need to be removed
+    salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment jaim")
   }
 
 }
@@ -109,7 +107,7 @@ df$Classification <- Classification
 df$`Level and Step` <- LevelAndStep
 
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
-  #message("r = ", r, " and c = ", c)
+  message("r = ", r, " and c = ", c)
   MED <- FALSE
   if (length(strsplit(df$`Level and Step`[r], "-")[[1]]) == 6) {
     # Three letter
