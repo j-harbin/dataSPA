@@ -2,7 +2,8 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "CS"
+groups <- "AV"
+letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
 g <- 1
@@ -16,6 +17,25 @@ classification <- substr(sal$Classification, 1, 2)
 for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
 salary <- as.data.frame(sal[which(classification == unique(classification)[c]),])
 
+# Test that there is 01 rather than 1
+test <- unlist(lapply(strsplit(salary$Classification, "-"), function(x) trimws(x[2], "left")))
+if(!(all(grepl("^0", test)))) {
+  k <- which(!(grepl("^0", test)))
+  if (!(length(k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))])) == 0) { # This means there is ones without leading 0s but they are all Letters (e.g. CO-DEV/PER)
+  letters <- TRUE
+  salary$Classification[k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))]] <- paste0(trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[1])), "right"), "-0",trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[2])), "left"))
+  }
+}
+
+# end test
+
+
+
+
+
+
+
+
 # See steps: https://github.com/dfo-mar-odis/TBSpayRates/issues/8
 if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
   good <- which(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))
@@ -24,6 +44,11 @@ if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
   for (go in seq_along(good)) {
     bad <- good[go]-1
     if (grepl("adjustment", salary$Effective.Date[bad], ignore.case=TRUE)) {
+      BAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
+      salary$date[good[go]] <- salary$date[bad] # filling in the date from above because restructure has no date
+    } else {
+      # Adjustment is not at the top (e.g. CO-01 (https://github.com/dfo-mar-odis/TBSpayRates/issues/10))
+      salary$Effective.Date[bad] <- paste0(salary$Effective.Date[bad], "adjustment jaim2")
       BAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
       salary$date[good[go]] <- salary$date[bad] # filling in the date from above because restructure has no date
     }
@@ -54,54 +79,9 @@ for (a in seq_along(adjust)) {
       salary$Effective.Date[fix]
       salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment jaim")
     }
-
-
-
   }
 
 }
-
-
-
-
-
-
-# if (any(grepl("W)", salary$Effective.Date, ignore.case = TRUE))) {
-#   W <- TRUE
-#   X <- FALSE
-#   adjustName <- TRUE
-# } else if (any(grepl("X)", salary$Effective.Date, ignore.case = TRUE))) {
-#   X <- TRUE
-#   adjustName <- TRUE
-# } else {
-#   W <- FALSE
-#   X <- FALSE
-#   adjustName <- FALSE
-# }
-#
-# if (adjustName) {
-#   # This may be an exception (FO-02 https://www.tbs-sct.canada.ca/agreements-conventions/view-visualiser-eng.aspx?id=3#rates-fo)
-#   if (W) {
-#   good <- which(grepl("W)", salary$Effective.Date, ignore.case=TRUE))
-#   }
-#   if (X) {
-#     good <- which(grepl("X)", salary$Effective.Date, ignore.case=TRUE))
-#   }
-#   good2 <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
-#
-#   if (!(all(good %in% good2))) {
-#     # This means there is a W) with no "adjustment" (like FO-02 22)
-#     fix <- good[which(!(good %in% good2))]
-#     salary$Effective.Date[fix]
-#     salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment jaim")
-#   }
-#
-# }
-#
-
-
-
-
 
 if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
   # There is no restructure but there could still be adjustment
@@ -123,11 +103,7 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
 
   nextBAD <- NULL
   for (go in seq_along(good)) {
-    #if (below) {
     bad <- good[go]-1
-    #} else {
-    #  bad <- good[go]+1
-    #}
     if (salary$date[bad] == salary$date[good[go]]) {
       nextBAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
     }
@@ -135,12 +111,15 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
   # FIX ME: There may need to be further checks here
 salary <- as.data.frame(salary[-(unlist(nextBAD)),])
 }
+
 # Find each Classification
 
 year <- regmatches(salary$date, regexpr("\\d{4}", salary$date))
 year <- substr(year, 3, 4)
 step <- max(as.numeric(regmatches(names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], regexpr("(?<=\\.)\\d+", names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], perl = TRUE))))
-class <- unique(str_extract(salary$Classification, "(?<=-)[0-9]{2}"))
+salary$Classification <- gsub(" ", "", salary$Classification) # removing spaces
+#class <- unique(str_extract(salary$Classification, "(?<=-)[0-9]{2}"))
+class <- unique(sub(".+\\-", "", salary$Classification)) # This allows letters to be obtained as well
 
 initial_vector <- paste0(paste0(gsub("-", "--", unique(salary$Classification))[1], "-"), 1:step)
 
@@ -181,7 +160,12 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
     }
 
   } else {
+    # JAIM TUESDAY
+    if (!(letters)) {
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
+    } else {
+    k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
+    }
   }
 
   k2 <- which(year == sub("^[^ ]+ ", "", df$`Level and Step`[r])) # Condition 2: Making sure the year is the same
@@ -205,11 +189,13 @@ browser()
   if (!(MED)) {
   df$`Annual Salary`[r] <- keep[,which(k3)]
   } else {
+    if (!(length(k3) == 0)) { # This means there is a range, but not for that step
     parts <- strsplit(keep[,k3], " to ")
     # Extract values
     num1 <- as.numeric(gsub(",", "", parts[[1]][1]))
     num2 <- as.numeric(gsub(",", "", parts[[1]][2]))
     df$`Annual Salary`[r] <- median(c(num1,num2))
+    }
   }
 }
 final[[c]] <- df
