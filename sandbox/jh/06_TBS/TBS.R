@@ -2,13 +2,15 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-# FIXME DO ALL GROUPS JAIM
-groups <- "AI"
+groups <- "CS"
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
 g <- 1
 group <- groups[[g]]
 sal <-  get_salaries(groups = group)
+
+# First check that the - is a number (this is for group=AV, classification= CO-DEV/PER)
+
 classification <- substr(sal$Classification, 1, 2)
 
 for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
@@ -39,20 +41,66 @@ if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
   salary <- as.data.frame(salary[-(unique(c(unlist(BAD),unlist(BAD2)))),])
 }
 
+adjust <- c("W)", "X)", "Y)")
 
-if (any(grepl("W)", salary$Effective.Date, ignore.case=TRUE))) {
-  # This may be an exception (FO-02 https://www.tbs-sct.canada.ca/agreements-conventions/view-visualiser-eng.aspx?id=3#rates-fo)
-  good <- which(grepl("W)", salary$Effective.Date, ignore.case=TRUE))
-  good2 <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
+for (a in seq_along(adjust)) {
+  if (any(grepl(adjust[a], salary$Effective.Date, ignore.case = TRUE))) {
+    good <- which(grepl(adjust[a], salary$Effective.Date, ignore.case=TRUE))
+    good2 <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
 
-  if (!(all(good %in% good2))) {
-    # This means there is a W) with no "adjustment" (like FO-02 22)
-    fix <- good[which(!(good %in% good2))]
-    salary$Effective.Date[fix]
-    salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment jaim")
+    if (!(all(good %in% good2))) {
+      # This means there is a W) with no "adjustment" (like FO-02 22)
+      fix <- good[which(!(good %in% good2))]
+      salary$Effective.Date[fix]
+      salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment jaim")
+    }
+
+
+
   }
 
 }
+
+
+
+
+
+
+# if (any(grepl("W)", salary$Effective.Date, ignore.case = TRUE))) {
+#   W <- TRUE
+#   X <- FALSE
+#   adjustName <- TRUE
+# } else if (any(grepl("X)", salary$Effective.Date, ignore.case = TRUE))) {
+#   X <- TRUE
+#   adjustName <- TRUE
+# } else {
+#   W <- FALSE
+#   X <- FALSE
+#   adjustName <- FALSE
+# }
+#
+# if (adjustName) {
+#   # This may be an exception (FO-02 https://www.tbs-sct.canada.ca/agreements-conventions/view-visualiser-eng.aspx?id=3#rates-fo)
+#   if (W) {
+#   good <- which(grepl("W)", salary$Effective.Date, ignore.case=TRUE))
+#   }
+#   if (X) {
+#     good <- which(grepl("X)", salary$Effective.Date, ignore.case=TRUE))
+#   }
+#   good2 <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
+#
+#   if (!(all(good %in% good2))) {
+#     # This means there is a W) with no "adjustment" (like FO-02 22)
+#     fix <- good[which(!(good %in% good2))]
+#     salary$Effective.Date[fix]
+#     salary$Effective.Date[fix] <- paste0(salary$Effective.Date[fix], "adjustment jaim")
+#   }
+#
+# }
+#
+
+
+
 
 
 if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
@@ -64,27 +112,26 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
   good <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
 
   check <- good[1]-1
-  if (salary$date[check] == salary$date[good[1]]) {
-    below <- TRUE
+  if (salary$date[check] == salary$date[good[1]]) { # if the date above is the same
+    below <- TRUE # Adjustment is below everything
     above <- FALSE
   } else {
     below <- FALSE
     above <- TRUE
+    good <- good+1
   }
-
 
   nextBAD <- NULL
   for (go in seq_along(good)) {
-    if (below) {
+    #if (below) {
     bad <- good[go]-1
-    } else {
-      bad <- good[go]+1
-    }
+    #} else {
+    #  bad <- good[go]+1
+    #}
     if (salary$date[bad] == salary$date[good[go]]) {
       nextBAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
     }
   }
-
   # FIX ME: There may need to be further checks here
 salary <- as.data.frame(salary[-(unlist(nextBAD)),])
 }
@@ -112,7 +159,7 @@ for (f in seq_along(levels)) {
 }
 
 LevelAndStep <- unlist(listy)
-# Do a test for instances like SG-SRE-01 jaim
+# Do a test for instances like SG-SRE-01
 # AC--01-1 21" (levelandstep for regular) and Classification is "AC"
 # "SG--SRE--01-1 21" and Class: "SG"
 
@@ -142,9 +189,9 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   k3 <- unlist(lapply(strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
 
   # Doing a check if there is a range instead
-#   if (!(length(keep[,which(k3)]) == 1)) {
-# browser()
-#   }
+  if (!(length(keep[,which(k3)]) == 1)) {
+browser()
+  }
   if (is.na(keep[,which(k3)])) {
     # See if there is any ranges
     if (any(sub(".*\\.", "", names(keep)[grepl("Range", names(keep))]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right"))) {
