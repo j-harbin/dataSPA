@@ -2,7 +2,7 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "EC"
+groups <- "FI"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
@@ -21,8 +21,10 @@ salary <- as.data.frame(sal[which(classification == unique(classification)[c]),]
 test <- unlist(lapply(strsplit(salary$Classification, "-"), function(x) trimws(x[2], "left")))
 if(!(all(grepl("^0", test)))) {
   k <- which(!(grepl("^0", test)))
+  if (any(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA))))) {
+    letters <- TRUE
+  }
   if (!(length(k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))])) == 0) { # This means there is ones without leading 0s but they are all Letters (e.g. CO-DEV/PER)
-  letters <- TRUE
   salary$Classification[k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))]] <- paste0(trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[1])), "right"), "-0",trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[2])), "left"))
   }
 }
@@ -152,7 +154,6 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
     }
 
   } else {
-    # JAIM TUESDAY
     if (!(letters)) {
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
     } else {
