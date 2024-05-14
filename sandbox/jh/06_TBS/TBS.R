@@ -2,7 +2,7 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "SP"
+groups <- "RE"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
@@ -141,7 +141,6 @@ df <- data.frame(matrix(NA, nrow = length(LevelAndStep), ncol = 3))
 names(df) <- c("Classification", "Level and Step", "Annual Salary")
 df$Classification <- Classification
 df$`Level and Step` <- LevelAndStep
-
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   message("r = ", r, " and c = ", c)
   MED <- FALSE
@@ -150,7 +149,13 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
     if (!(length(unique(salary$Classification[k1]))) == 1) {
       # This means we have a situation like SG-SRE-01 and SG-PAT-01
-      k1 <- which(unlist(lapply(strsplit(salary$Classification[k1], "-"), function(x) x[[2]])) == strsplit(df$`Level and Step`[r], "-")[[1]][3])
+      nextK <- which(sub(".*-(.*?)-.*", "\\1", salary$Classification) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r]))
+      k1 <- intersect(k1, nextK)
+
+
+
+
+      #k1 <- which(unlist(lapply(strsplit(salary$Classification[k1], "-"), function(x) x[[2]])) == strsplit(df$`Level and Step`[r], "-")[[1]][3])
     }
 
   } else {
