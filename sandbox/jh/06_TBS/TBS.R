@@ -2,7 +2,7 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "AV"
+groups <- "EC"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
@@ -26,14 +26,6 @@ if(!(all(grepl("^0", test)))) {
   salary$Classification[k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))]] <- paste0(trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[1])), "right"), "-0",trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[2])), "left"))
   }
 }
-
-# end test
-
-
-
-
-
-
 
 
 # See steps: https://github.com/dfo-mar-odis/TBSpayRates/issues/8
@@ -205,4 +197,8 @@ final[[c]] <- df
 
 FINAL <- do.call(rbind, final)
 
+if (any(is.na(FINAL$`Annual Salary`))) {
 df <- FINAL[-(which(is.na(FINAL$`Annual Salary`))),]
+} else {
+  df <- FINAL
+}
