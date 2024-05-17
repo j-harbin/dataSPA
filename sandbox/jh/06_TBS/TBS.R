@@ -10,15 +10,74 @@ g <- 1
 group <- groups[[g]]
 sal <-  get_salaries(groups = group)
 
-# First check that the - is a number (this is for group=AV, classification= CO-DEV/PER)
+# Create condition for AS--Development compared to AS-02 and PM-- Development
+if (any(grepl("development", sal$Classification, ignore.case = TRUE))) {
+  d1 <- which(grepl("development", sal$Classification, ignore.case=TRUE))
+  if (any(grepl("--", sal$Classification, ignore.case=TRUE))) {
+    d2 <- which(grepl("--", sal$Classification, ignore.case=TRUE))
+    d3 <- intersect(d1,d2)
+    sal$Classification[d3] <- gsub("--", "-", sal$Classification[d3])
+  }
 
+}
+
+
+# Check if there is - at the end of sal$Classification (group=PA)
+hyphen <- grepl("-$", sal$Classification)
+sal$Classification[which(hyphen)] <- sub("-$", "", sal$Classification[which(hyphen)])
+
+
+#TEST
+ if (any(grepl("special", sal$Classification, ignore.case=TRUE))) {
+ s1 <- which(grepl("special", sal$Classification, ignore.case=TRUE))
+
+
+ find_sequence_end <- function(vec) {
+   for (i in 2:length(vec)) {
+     if (vec[i] != vec[i - 1] + 1) {
+       return(i - 1)
+     }
+   }
+   return(length(vec))
+ }
+
+
+ # Use lapply to apply the function to each element of the vector
+ breaks <- unlist(lapply(list(s1), find_sequence_end))  # This is the location that the sequence ends
+ breaks <- c(1,breaks) # Adding the first special
+
+ for (b in seq_along(breaks)) {
+   if (!(b == max(seq_along(breaks)))) {
+     range1 <- b
+     range2 <- breaks[b+1]
+   } else {
+     range1 <- breaks[b]+1
+     range2 <- length(s1)
+   }
+
+   specialRange <- s1[range1:range2]
+   #DA-CON-SpecialLevelC
+   sal$Classification[specialRange] <- paste0(sub("^(.*)-.*$", "\\1", sal$Classification[s1[range1]-1]), "-", gsub("-", "", gsub(" ", "", sal$Classification[specialRange]))) # 1. Get DA-CON 2. Remove - 3. remove spaces
+ }
+ }
+
+
+
+
+# First check that the - is a number (this is for group=AV, classification= CO-DEV/PER)
 classification <- substr(sal$Classification, 1, 2)
+
+
+
+
+# END TEST
 
 for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
 salary <- as.data.frame(sal[which(classification == unique(classification)[c]),])
 
 # Test that there is 01 rather than 1
-test <- unlist(lapply(strsplit(salary$Classification, "-"), function(x) trimws(x[2], "left")))
+test <- trimws(sub("^.+-(.*)$", "\\1", salary$Classification), "left") # Keep everything after the last -
+#test <- unlist(lapply(strsplit(salary$Classification, "-"), function(x) trimws(x[2], "left")))
 if(!(all(grepl("^0", test)))) {
   k <- which(!(grepl("^0", test)))
   if (any(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA))))) {
@@ -102,12 +161,10 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
       nextBAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
     }
   }
-  # FIX ME: There may need to be further checks here
 salary <- as.data.frame(salary[-(unlist(nextBAD)),])
 }
 
 # Find each Classification
-
 year <- regmatches(salary$date, regexpr("\\d{4}", salary$date))
 year <- substr(year, 3, 4)
 step <- max(as.numeric(regmatches(names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], regexpr("(?<=\\.)\\d+", names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], perl = TRUE))))
@@ -127,11 +184,28 @@ final_vector <- unlist(list1)
 levels <- unique(class)
 
 listy <- NULL
+
 for (f in seq_along(levels)) {
   listy[[f]] <- gsub(levels[1], levels[f], final_vector)
 }
 
+listy <- unlist(listy)
+
+
+
+listx <- NULL
+for (cl in seq_along(unique(sub("^(.*)-.*$", "\\1", unique(salary$Classification))))) { # Added for SE-RES/SE-REM (https://github.com/dfo-mar-odis/TBSpayRates/issues/18)
+starting <- gsub("-", "--", unique(sub("^(.*)-.*$", "\\1", unique(salary$Classification)))[cl])
+replacing <-sub("\\s\\d{2}$", "", listy) # Remove last two letters at the end "SE--RES--01-1 21" to "SE--RES--01-1"
+replacing <- sub("-[^-]*$", "", replacing) # Removing everything after last - "SE--RES--01-1" to "SE--RES--01"
+replacing <- sub("--[^-]*$", "", replacing) # Keep everything before last -- "SE--RES--01-1 21" to "SE--RES"
+listx[[cl]] <- gsub(replacing[1],starting,listy)
+}
+
+listy <- unlist(listx)
+
 LevelAndStep <- unlist(listy)
+
 # Do a test for instances like SG-SRE-01
 # AC--01-1 21" (levelandstep for regular) and Classification is "AC"
 # "SG--SRE--01-1 21" and Class: "SG"
@@ -141,40 +215,45 @@ df <- data.frame(matrix(NA, nrow = length(LevelAndStep), ncol = 3))
 names(df) <- c("Classification", "Level and Step", "Annual Salary")
 df$Classification <- Classification
 df$`Level and Step` <- LevelAndStep
+# if (c == 8) {
+#   browser()
+# }
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   message("r = ", r, " and c = ", c)
   MED <- FALSE
   if (length(strsplit(df$`Level and Step`[r], "-")[[1]]) == 6) {
     # Three letter
-    k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
-    if (!(length(unique(salary$Classification[k1]))) == 1) {
+    #k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
+    k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*--([^\\-]*)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
+
+    if (length(strsplit(salary$Classification[k1], "-")[[1]]) == 3) {
       # This means we have a situation like SG-SRE-01 and SG-PAT-01
+      # If there is a nextK this means we have a case such as SE-REM-02 and SE-RES-02
       nextK <- which(sub(".*-(.*?)-.*", "\\1", salary$Classification) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r]))
-      k1 <- intersect(k1, nextK)
-
-
-
-
-      #k1 <- which(unlist(lapply(strsplit(salary$Classification[k1], "-"), function(x) x[[2]])) == strsplit(df$`Level and Step`[r], "-")[[1]][3])
+      k1 <- intersect(k1, nextK)  # This is like OE-BEO-03-1 20 (there is no 03) problem r=121
     }
-
   } else {
-    #if (!(letters)) {
-    #k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
-    #} else {
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
-    #}
   }
-
   k2 <- which(year == sub("^[^ ]+ ", "", df$`Level and Step`[r])) # Condition 2: Making sure the year is the same
   keep <- salary[intersect(k1, k2),]
   k3 <- unlist(lapply(strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
+
+  if (exists("nextK") && length(k1) == 0) {
+    # This is a test for OE-BEO-03-1 20 (there is no 03), r=121 in group="PA"
+    names <- names(keep)
+   keep <- data.frame(matrix(NA, ncol = ncol(keep), nrow = 1))
+   names(keep) <- names
+  }
 
   # Doing a check if there is a range instead
   if (!(length(keep[,which(k3)]) == 1)) {
 browser()
   }
-  if (is.na(keep[,which(k3)])) {
+  if (is.na(keep[,which(k3)]) && !(exists("nextK"))) {
+    if (exists("nextK")) {
+    rm(nextK)
+    }
     # See if there is any ranges
     if (any(sub(".*\\.", "", names(keep)[grepl("Range", names(keep))]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right"))) {
       MED <- TRUE
@@ -195,7 +274,7 @@ browser()
     df$`Annual Salary`[r] <- median(c(num1,num2))
     }
   }
-}
+  }
 final[[c]] <- df
 
 } # end classification
