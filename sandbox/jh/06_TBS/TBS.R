@@ -2,7 +2,7 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "SO"
+groups <- "RO"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
@@ -21,13 +21,10 @@ if (any(grepl("development", sal$Classification, ignore.case = TRUE))) {
 
 }
 
-
 # Check if there is - at the end of sal$Classification (group=PA)
 hyphen <- grepl("-$", sal$Classification)
 sal$Classification[which(hyphen)] <- sub("-$", "", sal$Classification[which(hyphen)])
 
-
-#TEST
  if (any(grepl("special", sal$Classification, ignore.case=TRUE))) {
  s1 <- which(grepl("special", sal$Classification, ignore.case=TRUE))
 
@@ -40,7 +37,6 @@ sal$Classification[which(hyphen)] <- sub("-$", "", sal$Classification[which(hyph
    }
    return(length(vec))
  }
-
 
  # Use lapply to apply the function to each element of the vector
  breaks <- unlist(lapply(list(s1), find_sequence_end))  # This is the location that the sequence ends
@@ -61,16 +57,8 @@ sal$Classification[which(hyphen)] <- sub("-$", "", sal$Classification[which(hyph
  }
  }
 
-
-
-
 # First check that the - is a number (this is for group=AV, classification= CO-DEV/PER)
 classification <- substr(sal$Classification, 1, 2)
-
-
-
-
-# END TEST
 
 for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
 salary <- as.data.frame(sal[which(classification == unique(classification)[c]),])
@@ -87,6 +75,14 @@ if(!(all(grepl("^0", test)))) {
   salary$Classification[k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))]] <- paste0(trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[1])), "right"), "-0",trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[2])), "left"))
   }
 }
+
+
+# Adding test for "New level 7" (group RO)
+if (any(grepl("new step", salary$Effective.Date, ignore.case=TRUE))) {
+  ns <- which(grepl("new step", salary$Effective.Date, ignore.case=TRUE))
+  salary$Effective.Date[ns] <- paste0(salary$Effective.Date[ns], "restructure jaim")
+}
+
 
 
 # See steps: https://github.com/dfo-mar-odis/TBSpayRates/issues/8
