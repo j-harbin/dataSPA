@@ -2,7 +2,7 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "RE"
+groups <- "SO"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
@@ -119,7 +119,7 @@ if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
   salary <- as.data.frame(salary[-(unique(c(unlist(BAD),unlist(BAD2)))),])
 }
 
-adjust <- c("W)", "X)", "Y)")
+adjust <- c("W)", "X)", "Y), Z)")
 
 for (a in seq_along(adjust)) {
   if (any(grepl(adjust[a], salary$Effective.Date, ignore.case = TRUE))) {
@@ -157,7 +157,7 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
   nextBAD <- NULL
   for (go in seq_along(good)) {
     bad <- good[go]-1
-    if (salary$date[bad] == salary$date[good[go]]) {
+    if (sub("-.*", "", salary$date[bad]) == sub("-.*", "", salary$date[good[go]])) {
       nextBAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
     }
   }
@@ -215,9 +215,7 @@ df <- data.frame(matrix(NA, nrow = length(LevelAndStep), ncol = 3))
 names(df) <- c("Classification", "Level and Step", "Annual Salary")
 df$Classification <- Classification
 df$`Level and Step` <- LevelAndStep
-# if (c == 8) {
-#   browser()
-# }
+
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   message("r = ", r, " and c = ", c)
   MED <- FALSE
