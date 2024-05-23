@@ -2,7 +2,7 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "RO"
+groups <- "LP"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
@@ -164,11 +164,24 @@ salary <- as.data.frame(salary[-(unlist(nextBAD)),])
 year <- regmatches(salary$date, regexpr("\\d{4}", salary$date))
 year <- substr(year, 3, 4)
 step <- max(as.numeric(regmatches(names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], regexpr("(?<=\\.)\\d+", names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], perl = TRUE))))
+
+# Test is there is any instances that have only range and no step associated (e.g. LP-05 in LR on website)
+
 salary$Classification <- gsub(" ", "", salary$Classification) # removing spaces
 #class <- unique(str_extract(salary$Classification, "(?<=-)[0-9]{2}"))
 class <- unique(sub(".+\\-", "", salary$Classification)) # This allows letters to be obtained as well
 
 initial_vector <- paste0(paste0(gsub("-", "--", unique(salary$Classification))[1], "-"), 1:step)
+
+if (any(tolower(trimws(names(salary), "both")) == "range")) {
+  isolatedR <- TRUE
+  R1 <- paste0(gsub("-", "--", unique(salary$Classification))[1], "-", "Rone")
+  R2 <- paste0(gsub("-", "--", unique(salary$Classification))[1], "-", "Rtwo")
+  initial_vector <- c(initial_vector, R1,R2)
+  names(salary)[which(tolower(trimws(names(salary), "both")) == "range")] <- "Step.Range"
+  } else {
+  isolatedR <- FALSE
+}
 
 list1 <- NULL
 for (y in seq_along(unique(year))) {
@@ -231,7 +244,13 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   }
   k2 <- which(year == sub("^[^ ]+ ", "", df$`Level and Step`[r])) # Condition 2: Making sure the year is the same
   keep <- salary[intersect(k1, k2),]
+  string <- sub(".*--[^-]*-(.*)", "\\1", df$`Level and Step`[r])
+  string <- strsplit(string, " ")[[1]][1]
+  if (!(string %in% c("Rone", "Rtwo"))) {
   k3 <- unlist(lapply(strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
+  } else {
+    k3 <- unlist(lapply(strsplit(tolower(names(keep)), "\\."), function(x) x[2]) == "range") # Condition 3. Determine which step
+  }
 
   if (exists("nextK") && length(k1) == 0) {
     # This is a test for OE-BEO-03-1 20 (there is no 03), r=121 in group="PA"
@@ -268,7 +287,17 @@ browser()
     df$`Annual Salary`[r] <- median(c(num1,num2))
     }
   }
+
+  # Add extra step for isolated R (e.g.LP--04)
+  if (string %in% c("Rone", "Rtwo")) {
+    if (string == "Rone") {
+      df$`Annual Salary`[r] <- as.numeric(gsub(",", "", strsplit(keep[,which(k3)], " ")[[1]][1]))
+    } else if (string == "Rtwo") {
+      df$`Annual Salary`[r] <- as.numeric(gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1)))
+    }
+
   }
+  } # end r
 final[[c]] <- df
 
 } # end classification
