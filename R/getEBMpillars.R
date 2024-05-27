@@ -13,7 +13,7 @@
 #' @importFrom dplyr ungroup
 #' @importFrom dplyr summarise
 #' @importFrom dplyr right_join
-#' @importFrom tidyr separate_wider_delim
+#' @importFrom tidyr separate_wider_delim separate
 #' @importFrom tidytext unnest_tokens
 #' @importFrom stringi stri_replace_all_regex
 #' @importFrom tidytext get_stopwords

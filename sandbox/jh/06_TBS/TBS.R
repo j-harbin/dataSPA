@@ -1,13 +1,33 @@
+#' Format open salary information
+#'
+#' This function is used to take the output of the get_salaries()
+#' function in the TBSPayRates package and transform it into a
+#' format that is compatible with the dataSPA package and HR
+#' framework.
+#'
+#' @param groups character vector with the groups listed here: https://www.tbs-sct.canada.ca/pubs_pol/hrpubs/coll_agre/rates-taux-eng.asp Note that this function only supports select groups. Use "all" (default) to download all supported groups
+#'
+#' @return data frame with public service pay rates
+#' @export
+#'
+#' @examples
+#' # getting salaries for the SP (Applied Science and Patent Examination) group
+#' salaries <- formatSalaries("SP")
+#'
+#' \dontrun{
+#' # getting all supported salaries
+#' groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
+#' df <- formatSalaries(groups=groups)
+#' }
+
+formatSalaries <- function(groups=NULL) {
 library(dataSPA)
 library(TBSpayRates)
 library(stringr)
-#groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "PA"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
-  message("g = ",g)
-g <- 1
+#message("g = ",g)
 group <- groups[[g]]
 sal <-  get_salaries(groups = group)
 
@@ -75,6 +95,7 @@ for (c in seq_along(unique(classification))) { # 2. Cycle through classification
 salary <- as.data.frame(sal[which(classification == unique(classification)[c]),])
 
 # Test that there is 01 rather than 1
+
 test <- trimws(sub("^.+-(.*)$", "\\1", salary$Classification), "left") # Keep everything after the last -
 #test <- unlist(lapply(strsplit(salary$Classification, "-"), function(x) trimws(x[2], "left")))
 if(!(all(grepl("^0", test)))) {
@@ -175,7 +196,7 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
     year <- sub("-.*", "", salary$date)
     good <- good - 1
     for (i in seq_along(good)) {
-      message(i)
+      #message(i)
       if (!(good[i] == 1)) {
         if (sub("-.*", "", salary$date[good[i]]) == sub("-.*", "", salary$date[good[i] - 1])) {
           nextBAD[[i]] <- good[i] - 1
@@ -271,7 +292,7 @@ df$`Level and Step` <- LevelAndStep
 
 
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
-  message("r = ", r, " and c = ", c)
+  #message("r = ", r, " and c = ", c)
   # if (r == 1133 && c== 4) {
   #   browser()
   # }
@@ -290,6 +311,7 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   } else {
     k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
   }
+
   k2 <- which(year == sub("^[^ ]+ ", "", df$`Level and Step`[r])) # Condition 2: Making sure the year is the same
   keep <- salary[intersect(k1, k2),]
   string <- sub(".*--[^-]*-(.*)", "\\1", df$`Level and Step`[r])
@@ -364,3 +386,6 @@ df <- FINAL[-(which(is.na(FINAL$`Annual Salary`))),]
 } else {
   df <- FINAL
 }
+
+}
+

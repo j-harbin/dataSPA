@@ -395,21 +395,21 @@ plotSPA <-
         stop("Must provide an om argument.")
 
       }
-      if (!(identical(
-        c("project_id","category_display","project_year_id",
-          "amount","funding_source_display",
-          "category_type",  "description", "tags",
-          "tag_id", "fiscal_year", "project_title",
-          "status","overview","objectives",
-          "lead_staff","section_display","functional_group",
-          "activity_type","theme", "deliverables",
-          "milestones", "section_id","division_id",
-          "region_id", "funding_id","theme_id",
-          "branch_id","om_id"),
-        names(om)
-      ))) {
-        stop("Must obtain data for x using getData(type='om')")
-      }
+      # if (!(identical(
+      #   c("project_id","category_display","project_year_id",
+      #     "amount","funding_source_display",
+      #     "category_type",  "description", "tags",
+      #     "tag_id", "fiscal_year", "project_title",
+      #     "status","overview","objectives",
+      #     "lead_staff","section_display","functional_group",
+      #     "activity_type","theme", "deliverables",
+      #     "milestones", "section_id","division_id",
+      #     "region_id", "funding_id","theme_id",
+      #     "branch_id","om_id"),
+      #   names(om)
+      # ))) {
+      #   stop("Must obtain data for x using getData(type='om')")
+      # }
 
         # Dealing with themes
 

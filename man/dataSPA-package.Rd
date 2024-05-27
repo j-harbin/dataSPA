@@ -2,6 +2,7 @@
 % Please edit documentation in R/AllClass.R
 \docType{package}
 \name{dataSPA-package}
+\alias{dataSPA}
 \alias{dataSPA-package}
 \title{A Package for Obtaining Data for DFO Strategic Planning}
 \description{
@@ -16,4 +17,12 @@ sections, and divisions.
 The sketch given below illustrates the typical workflow with the package
 
 \if{html}{\figure{workflow.png}{options: width="300" alt="Figure: workflow.png"}}
+}
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/j-harbin/dataSPA}
+  \item Report bugs at \url{https://github.com/j-harbin/dataSPA/issues}
+}
+
 }
