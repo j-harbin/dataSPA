@@ -1,14 +1,24 @@
 library(dataSPA)
 library(TBSpayRates)
 library(stringr)
-#groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "PR", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "LP"
+#groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
+groups <- "NR"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
+  message("g = ",g)
 g <- 1
 group <- groups[[g]]
 sal <-  get_salaries(groups = group)
+
+# Do a test that there is a hyphen where there should be (i.e. AR 01 instead of AR-01 (Group = NR))
+hd <- unlist(lapply(strsplit(sal$Classification, "-"), function(x) length(x)))
+if (any(hd == 1)) {
+  # There is something such as AR 01
+  k <- which(hd == 1)
+  sal$Classification[k] <- gsub("([a-zA-Z]+)\\s*(\\d+)", "\\1-\\2", sal$Classification[k])
+}
+
 
 # Create condition for AS--Development compared to AS-02 and PM-- Development
 if (any(grepl("development", sal$Classification, ignore.case = TRUE))) {
@@ -59,6 +69,7 @@ sal$Classification[which(hyphen)] <- sub("-$", "", sal$Classification[which(hyph
 
 # First check that the - is a number (this is for group=AV, classification= CO-DEV/PER)
 classification <- substr(sal$Classification, 1, 2)
+
 
 for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
 salary <- as.data.frame(sal[which(classification == unique(classification)[c]),])
@@ -115,7 +126,7 @@ if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
   salary <- as.data.frame(salary[-(unique(c(unlist(BAD),unlist(BAD2)))),])
 }
 
-adjust <- c("W)", "X)", "Y), Z)")
+adjust <- c("W)", "X)", "Y)", "Z)")
 
 for (a in seq_along(adjust)) {
   if (any(grepl(adjust[a], salary$Effective.Date, ignore.case = TRUE))) {
@@ -150,12 +161,44 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
     good <- good+1
   }
 
+
+  # Test for group = "TC", (EG-02 c=2)
   nextBAD <- NULL
+
+  if (good[length(good)] > length(salary$date)) {
+    tweak <- TRUE
+  } else {
+    tweak <- FALSE
+  }
+
+  if (tweak) {
+    year <- sub("-.*", "", salary$date)
+    good <- good - 1
+    for (i in seq_along(good)) {
+      message(i)
+      if (!(good[i] == 1)) {
+        if (sub("-.*", "", salary$date[good[i]]) == sub("-.*", "", salary$date[good[i] - 1])) {
+          nextBAD[[i]] <- good[i] - 1
+        }
+      }
+
+      if (!(good[i] == length(salary$date))) {
+        if (sub("-.*", "", salary$date[good[i]]) == sub("-.*", "", salary$date[good[i] + 1])) {
+          nextBAD[[i]] <- good[i] + 1
+        }
+      }
+
+    }
+  }
+
+
+  if (!(tweak)) {
   for (go in seq_along(good)) {
     bad <- good[go]-1
     if (sub("-.*", "", salary$date[bad]) == sub("-.*", "", salary$date[good[go]])) {
       nextBAD[[go]] <- bad # This is getting ready to remove adjustment before restructure
     }
+  }
   }
 salary <- as.data.frame(salary[-(unlist(nextBAD)),])
 }
@@ -250,6 +293,9 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   k3 <- unlist(lapply(strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
   } else {
     k3 <- unlist(lapply(strsplit(tolower(names(keep)), "\\."), function(x) x[2]) == "range") # Condition 3. Determine which step
+    # if (string == "Rtwo" && c==2) {
+    #   browser()
+    # }
   }
 
   if (exists("nextK") && length(k1) == 0) {
@@ -263,10 +309,8 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   if (!(length(keep[,which(k3)]) == 1)) {
 browser()
   }
+
   if (is.na(keep[,which(k3)]) && !(exists("nextK"))) {
-    if (exists("nextK")) {
-    rm(nextK)
-    }
     # See if there is any ranges
     if (any(sub(".*\\.", "", names(keep)[grepl("Range", names(keep))]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right"))) {
       MED <- TRUE
@@ -274,6 +318,9 @@ browser()
       kk <- which(sub(".*\\.", "", names(keep)) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right"))
       k3 <- intersect(k, kk)
     }
+  }
+  if (exists("nextK")) {
+    rm(nextK)
   }
 
   if (!(MED)) {
@@ -293,7 +340,15 @@ browser()
     if (string == "Rone") {
       df$`Annual Salary`[r] <- as.numeric(gsub(",", "", strsplit(keep[,which(k3)], " ")[[1]][1]))
     } else if (string == "Rtwo") {
+      # if (c ==2) {
+      #   browser()
+      # }
+      if (grepl("\\*", gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1)))) {
+        holder <- gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1))
+        df$`Annual Salary`[r] <- as.numeric(substring(holder, 1, nchar(holder)-1))
+      } else {
       df$`Annual Salary`[r] <- as.numeric(gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1)))
+      }
     }
 
   }
