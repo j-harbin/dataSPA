@@ -23,13 +23,14 @@
 formatSalaries <- function(groups=NULL) {
   letters <- FALSE
   final <- NULL
+  megaList <- NULL
   for (g in seq_along(groups)) { # 1. Cycle through each lead group
-    #message("g = ",g)
+    message("g = ",g)
     group <- groups[[g]]
     sal <-  TBSpayRates::get_salaries(groups = group)
 
     # Do a test that there is a hyphen where there should be (i.e. AR 01 instead of AR-01 (Group = NR))
-    hd <- unlist(lapply(stringr::strsplit(sal$Classification, "-"), function(x) length(x)))
+    hd <- unlist(lapply(strsplit(sal$Classification, "-"), function(x) length(x)))
     if (any(hd == 1)) {
       # There is something such as AR 01
       k <- which(hd == 1)
@@ -85,7 +86,7 @@ formatSalaries <- function(groups=NULL) {
     }
 
     # First check that the - is a number (this is for group=AV, classification= CO-DEV/PER)
-    classification <- stringr::substr(sal$Classification, 1, 2)
+    classification <- substr(sal$Classification, 1, 2)
 
 
     for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
@@ -101,7 +102,7 @@ formatSalaries <- function(groups=NULL) {
           letters <- TRUE
         }
         if (!(length(k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))])) == 0) { # This means there is ones without leading 0s but they are all Letters (e.g. CO-DEV/PER)
-          salary$Classification[k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))]] <- paste0(trimws(unlist(lapply(stringr::strsplit(salary$Classification[k], "-"), function(x) x[1])), "right"), "-0",trimws(unlist(lapply(stringr::strsplit(salary$Classification[k], "-"), function(x) x[2])), "left"))
+          salary$Classification[k[which(!(is.na(suppressWarnings(tryCatch(as.numeric(test[k]), error = function(e) NA)))))]] <- paste0(trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[1])), "right"), "-0",trimws(unlist(lapply(strsplit(salary$Classification[k], "-"), function(x) x[2])), "left"))
         }
       }
 
@@ -193,7 +194,6 @@ formatSalaries <- function(groups=NULL) {
           year <- sub("-.*", "", salary$date)
           good <- good - 1
           for (i in seq_along(good)) {
-            #message(i)
             if (!(good[i] == 1)) {
               if (sub("-.*", "", salary$date[good[i]]) == sub("-.*", "", salary$date[good[i] - 1])) {
                 nextBAD[[i]] <- good[i] - 1
@@ -223,7 +223,7 @@ formatSalaries <- function(groups=NULL) {
 
       # Find each Classification
       year <- regmatches(salary$date, regexpr("\\d{4}", salary$date))
-      year <- stringr::substr(year, 3, 4)
+      year <- substr(year, 3, 4)
       step <- max(as.numeric(regmatches(names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], regexpr("(?<=\\.)\\d+", names(salary)[which(grepl("step", names(salary), ignore.case = TRUE))], perl = TRUE))))
 
       # Test is there is any instances that have only range and no step associated (e.g. LP-05 in LR on website)
@@ -280,7 +280,7 @@ formatSalaries <- function(groups=NULL) {
       # AC--01-1 21" (levelandstep for regular) and Classification is "AC"
       # "SG--SRE--01-1 21" and Class: "SG"
 
-      Classification <- rep(stringr::strsplit(LevelAndStep, "-")[[1]][1], length(LevelAndStep))
+      Classification <- rep(strsplit(LevelAndStep, "-")[[1]][1], length(LevelAndStep))
       df <- data.frame(matrix(NA, nrow = length(LevelAndStep), ncol = 3))
       names(df) <- c("Classification", "Level and Step", "Annual Salary")
       df$Classification <- Classification
@@ -289,34 +289,31 @@ formatSalaries <- function(groups=NULL) {
 
 
       for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
-        #message("r = ", r, " and c = ", c)
-        # if (r == 1133 && c== 4) {
-        #   browser()
-        # }
+        message("r = ", r, " and c = ", c)
         MED <- FALSE
-        if (length(stringr::strsplit(df$`Level and Step`[r], "-")[[1]]) == 6) {
+        if (length(strsplit(df$`Level and Step`[r], "-")[[1]]) == 6) {
           # Three letter
           #k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*?(\\d+).*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
-          k1 <- which(unlist(lapply(stringr::strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*--([^\\-]*)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
+          k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[3])) == sub(".*--([^\\-]*)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
 
-          if (length(stringr::strsplit(salary$Classification[k1], "-")[[1]]) == 3) {
+          if (length(strsplit(salary$Classification[k1], "-")[[1]]) == 3) {
             # This means we have a situation like SG-SRE-01 and SG-PAT-01
             # If there is a nextK this means we have a case such as SE-REM-02 and SE-RES-02
             nextK <- which(sub(".*-(.*?)-.*", "\\1", salary$Classification) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r]))
             k1 <- intersect(k1, nextK)  # This is like OE-BEO-03-1 20 (there is no 03) problem r=121
           }
         } else {
-          k1 <- which(unlist(lapply(stringr::strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
+          k1 <- which(unlist(lapply(strsplit(salary$Classification, "-"), function(x) x[2])) == sub(".*--(.*?)-.*", "\\1", df$`Level and Step`[r])) # Condition 1: Check the "01"
         }
 
         k2 <- which(year == sub("^[^ ]+ ", "", df$`Level and Step`[r])) # Condition 2: Making sure the year is the same
         keep <- salary[intersect(k1, k2),]
         string <- sub(".*--[^-]*-(.*)", "\\1", df$`Level and Step`[r])
-        string <- stringr::strsplit(string, " ")[[1]][1]
+        string <- strsplit(string, " ")[[1]][1]
         if (!(string %in% c("Rone", "Rtwo"))) {
-          k3 <- unlist(lapply(stringr::strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
+          k3 <- unlist(lapply(strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
         } else {
-          k3 <- unlist(lapply(stringr::strsplit(tolower(names(keep)), "\\."), function(x) x[2]) == "range") # Condition 3. Determine which step
+          k3 <- unlist(lapply(strsplit(tolower(names(keep)), "\\."), function(x) x[2]) == "range") # Condition 3. Determine which step
         }
 
         if (exists("nextK") && length(k1) == 0) {
@@ -348,7 +345,7 @@ formatSalaries <- function(groups=NULL) {
           df$`Annual Salary`[r] <- keep[,which(k3)]
         } else {
           if (!(length(k3) == 0)) { # This means there is a range, but not for that step
-            parts <- stringr::strsplit(keep[,k3], " to ")
+            parts <- strsplit(keep[,k3], " to ")
             # Extract values
             num1 <- as.numeric(gsub(",", "", parts[[1]][1]))
             num2 <- as.numeric(gsub(",", "", parts[[1]][2]))
@@ -359,13 +356,13 @@ formatSalaries <- function(groups=NULL) {
         # Add extra step for isolated R (e.g.LP--04)
         if (string %in% c("Rone", "Rtwo") && !(is.na(keep[,which(k3)]))) {
           if (string == "Rone") {
-            df$`Annual Salary`[r] <- as.numeric(gsub(",", "", stringr::strsplit(keep[,which(k3)], " ")[[1]][1]))
+            df$`Annual Salary`[r] <- as.numeric(gsub(",", "", strsplit(keep[,which(k3)], " ")[[1]][1]))
           } else if (string == "Rtwo") {
-            if (grepl("\\*", gsub(",", "", tail(stringr::strsplit(keep[,which(k3)], " ")[[1]],1)))) {
-              holder <- gsub(",", "", tail(stringr::strsplit(keep[,which(k3)], " ")[[1]],1))
-              df$`Annual Salary`[r] <- as.numeric(stringr::substring(holder, 1, nchar(holder)-1))
+            if (grepl("\\*", gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1)))) {
+              holder <- gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1))
+              df$`Annual Salary`[r] <- as.numeric(substring(holder, 1, nchar(holder)-1))
             } else {
-              df$`Annual Salary`[r] <- as.numeric(gsub(",", "", tail(stringr::strsplit(keep[,which(k3)], " ")[[1]],1)))
+              df$`Annual Salary`[r] <- as.numeric(gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1)))
             }
           }
 
@@ -374,14 +371,17 @@ formatSalaries <- function(groups=NULL) {
       final[[c]] <- df
 
     } # end classification
-  }
+    FINAL <- do.call(rbind, final)
+    megaList[[g]] <- FINAL
+  } # end of g
 
-  FINAL <- do.call(rbind, final)
+  ML <- do.call(rbind, megaList)
 
-  if (any(is.na(FINAL$`Annual Salary`))) {
-    df <- FINAL[-(which(is.na(FINAL$`Annual Salary`))),]
+
+  if (any(is.na(ML$`Annual Salary`))) {
+    df <- ML[-(which(is.na(ML$`Annual Salary`))),]
   } else {
-    df <- FINAL
+    df <- ML
   }
 
 }
