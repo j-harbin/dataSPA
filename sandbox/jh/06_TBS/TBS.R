@@ -2,7 +2,7 @@ library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 #groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-groups <- "NR"
+groups <- "PA"
 letters <- FALSE
 final <- NULL
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
@@ -268,8 +268,13 @@ names(df) <- c("Classification", "Level and Step", "Annual Salary")
 df$Classification <- Classification
 df$`Level and Step` <- LevelAndStep
 
+
+
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   message("r = ", r, " and c = ", c)
+  # if (r == 1133 && c== 4) {
+  #   browser()
+  # }
   MED <- FALSE
   if (length(strsplit(df$`Level and Step`[r], "-")[[1]]) == 6) {
     # Three letter
@@ -293,14 +298,11 @@ for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
   k3 <- unlist(lapply(strsplit(names(keep), "\\."), function(x) x[2]) == trimws(regmatches(df$`Level and Step`[r], regexpr("\\d+\\s", df$`Level and Step`[r])), "right")) # Condition 3. Determine which step
   } else {
     k3 <- unlist(lapply(strsplit(tolower(names(keep)), "\\."), function(x) x[2]) == "range") # Condition 3. Determine which step
-    # if (string == "Rtwo" && c==2) {
-    #   browser()
-    # }
   }
 
   if (exists("nextK") && length(k1) == 0) {
     # This is a test for OE-BEO-03-1 20 (there is no 03), r=121 in group="PA"
-    names <- names(keep)
+  names <- names(keep)
    keep <- data.frame(matrix(NA, ncol = ncol(keep), nrow = 1))
    names(keep) <- names
   }
@@ -336,13 +338,10 @@ browser()
   }
 
   # Add extra step for isolated R (e.g.LP--04)
-  if (string %in% c("Rone", "Rtwo")) {
+  if (string %in% c("Rone", "Rtwo") && !(is.na(keep[,which(k3)]))) {
     if (string == "Rone") {
       df$`Annual Salary`[r] <- as.numeric(gsub(",", "", strsplit(keep[,which(k3)], " ")[[1]][1]))
     } else if (string == "Rtwo") {
-      # if (c ==2) {
-      #   browser()
-      # }
       if (grepl("\\*", gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1)))) {
         holder <- gsub(",", "", tail(strsplit(keep[,which(k3)], " ")[[1]],1))
         df$`Annual Salary`[r] <- as.numeric(substring(holder, 1, nchar(holder)-1))
