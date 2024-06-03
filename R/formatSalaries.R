@@ -404,8 +404,9 @@ formatSalaries <- function(groups=NULL) {
   if (any(df$`Annual Salary` < 1000)) {
     # Looking for hourly inputs
     df$`Annual Salary`[which(df$`Annual Salary` < 1000)] <- df$`Annual Salary`[which(df$`Annual Salary` < 1000)]*40*52
-
   }
+
+  return(df)
 
 }
 

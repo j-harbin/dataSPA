@@ -5,7 +5,7 @@ letters <- FALSE
 final <- NULL
 groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "RE", "RO", "SO", "SP", "TC", "TR", "UT", "SV")
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
-#message("g = ",g)
+message("g = ",g)
 group <- groups[[g]]
 sal <-  get_salaries(groups = group)
 
