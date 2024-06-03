@@ -1,31 +1,9 @@
-#' Format open salary information
-#'
-#' This function is used to take the output of the get_salaries()
-#' function in the TBSPayRates package and transform it into a
-#' format that is compatible with the dataSPA package and HR
-#' framework.
-#'
-#' @param groups character vector with the groups listed here: https://www.tbs-sct.canada.ca/pubs_pol/hrpubs/coll_agre/rates-taux-eng.asp Note that this function only supports select groups. Use "all" (default) to download all supported groups
-#'
-#' @return data frame with public service pay rates
-#' @export
-#'
-#' @examples
-#' # getting salaries for the SP (Applied Science and Patent Examination) group
-#' salaries <- formatSalaries("SP")
-#'
-#' \dontrun{
-#' # getting all supported salaries
-#' groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "RE", "RO", "SO", "SP", "TC", "TR", "UT")
-#' df <- formatSalaries(groups=groups)
-#' }
-
-formatSalaries <- function(groups=NULL) {
 library(dataSPA)
 library(TBSpayRates)
 library(stringr)
 letters <- FALSE
 final <- NULL
+groups <- c("AI", "AO", "AV", "CS", "CX", "EC", "EL", "FB", "FI", "FS", "LP", "NR", "PA", "RE", "RO", "SO", "SP", "TC", "TR", "UT", "SV")
 for (g in seq_along(groups)) { # 1. Cycle through each lead group
 #message("g = ",g)
 group <- groups[[g]]
@@ -53,7 +31,9 @@ if (any(grepl("development", sal$Classification, ignore.case = TRUE))) {
 
 # Check if there is - at the end of sal$Classification (group=PA)
 hyphen <- grepl("-$", sal$Classification)
+if (any(hyphen)) {
 sal$Classification[which(hyphen)] <- sub("-$", "", sal$Classification[which(hyphen)])
+}
 
  if (any(grepl("special", sal$Classification, ignore.case=TRUE))) {
  s1 <- which(grepl("special", sal$Classification, ignore.case=TRUE))
@@ -92,7 +72,17 @@ classification <- substr(sal$Classification, 1, 2)
 
 
 for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
+message("c = ", c)
 salary <- as.data.frame(sal[which(classification == unique(classification)[c]),])
+
+# Add a test for Y1) group="SV", AIM-00
+if (any(grepl("Y1)", salary$Effective.Date))) {
+  salary$date[which(grepl("Y1)", salary$Effective.Date))] <- salary$date[which(grepl("Y1)", salary$Effective.Date))-1]
+}
+
+if (any(grepl("Y2)", salary$Effective.Date))) {
+  salary$date[which(grepl("Y2)", salary$Effective.Date))] <- salary$date[which(grepl("Y2)", salary$Effective.Date))-1]
+}
 
 # Test that there is 01 rather than 1
 
@@ -114,8 +104,6 @@ if (any(grepl("new step", salary$Effective.Date, ignore.case=TRUE))) {
   ns <- which(grepl("new step", salary$Effective.Date, ignore.case=TRUE))
   salary$Effective.Date[ns] <- paste0(salary$Effective.Date[ns], "restructure jaim")
 }
-
-
 
 # See steps: https://github.com/dfo-mar-odis/TBSpayRates/issues/8
 if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
@@ -150,6 +138,7 @@ if (any(grepl("restructure", salary$Effective.Date, ignore.case=TRUE))) {
 adjust <- c("W)", "X)", "Y)", "Z)")
 
 for (a in seq_along(adjust)) {
+  message("a = ",a)
   if (any(grepl(adjust[a], salary$Effective.Date, ignore.case = TRUE))) {
     good <- which(grepl(adjust[a], salary$Effective.Date, ignore.case=TRUE))
     good2 <- which(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))
@@ -221,6 +210,7 @@ if (any(grepl("adjustment", salary$Effective.Date, ignore.case=TRUE))) {
     }
   }
   }
+
 salary <- as.data.frame(salary[-(unlist(nextBAD)),])
 }
 
@@ -232,6 +222,12 @@ step <- max(as.numeric(regmatches(names(salary)[which(grepl("step", names(salary
 # Test is there is any instances that have only range and no step associated (e.g. LP-05 in LR on website)
 
 salary$Classification <- gsub(" ", "", salary$Classification) # removing spaces
+
+if (any(grepl("Recruitmentrate", salary$Classification,ignore.case=TRUE))) {
+  if (any(grepl("--", salary$Classification))) {
+    salary$Classification[which(grepl("Recruitmentrate", salary$Classification))] <- gsub("--", "-", salary$Classification[which(grepl("Recruitmentrate", salary$Classification))])
+  }
+}
 #class <- unique(str_extract(salary$Classification, "(?<=-)[0-9]{2}"))
 class <- unique(sub(".+\\-", "", salary$Classification)) # This allows letters to be obtained as well
 
@@ -268,6 +264,7 @@ listy <- unlist(listy)
 
 listx <- NULL
 for (cl in seq_along(unique(sub("^(.*)-.*$", "\\1", unique(salary$Classification))))) { # Added for SE-RES/SE-REM (https://github.com/dfo-mar-odis/TBSpayRates/issues/18)
+  message("cl = ", cl)
 starting <- gsub("-", "--", unique(sub("^(.*)-.*$", "\\1", unique(salary$Classification)))[cl])
 replacing <-sub("\\s\\d{2}$", "", listy) # Remove last two letters at the end "SE--RES--01-1 21" to "SE--RES--01-1"
 replacing <- sub("-[^-]*$", "", replacing) # Removing everything after last - "SE--RES--01-1" to "SE--RES--01"
@@ -292,7 +289,7 @@ df$`Level and Step` <- LevelAndStep
 
 
 for (r in seq_along(1:nrow(df))) { # 3. Go through df to assign salary steps
-  #message("r = ", r, " and c = ", c)
+  message("r = ", r, " and c = ", c)
   # if (r == 1133 && c== 4) {
   #   browser()
   # }
@@ -386,6 +383,10 @@ df <- FINAL[-(which(is.na(FINAL$`Annual Salary`))),]
 } else {
   df <- FINAL
 }
+
+if (any(df$`Annual Salary` < 1000)) {
+  # Looking for hourly inputs
+  df$`Annual Salary`[which(df$`Annual Salary` < 1000)] <- df$`Annual Salary`[which(df$`Annual Salary` < 1000)]*40*52
 
 }
 

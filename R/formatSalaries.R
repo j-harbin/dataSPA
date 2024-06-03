@@ -51,7 +51,9 @@ formatSalaries <- function(groups=NULL) {
 
     # Check if there is - at the end of sal$Classification (group=PA)
     hyphen <- grepl("-$", sal$Classification)
+    if (any(hyphen)) {
     sal$Classification[which(hyphen)] <- sub("-$", "", sal$Classification[which(hyphen)])
+    }
 
     if (any(grepl("special", sal$Classification, ignore.case=TRUE))) {
       s1 <- which(grepl("special", sal$Classification, ignore.case=TRUE))
@@ -88,9 +90,17 @@ formatSalaries <- function(groups=NULL) {
     # First check that the - is a number (this is for group=AV, classification= CO-DEV/PER)
     classification <- substr(sal$Classification, 1, 2)
 
-
+    # Add a test for Y1) group="SV", AIM-00
     for (c in seq_along(unique(classification))) { # 2. Cycle through classifications
       salary <- as.data.frame(sal[which(classification == unique(classification)[c]),])
+
+      if (any(grepl("Y1)", salary$Effective.Date))) {
+        salary$date[which(grepl("Y1)", salary$Effective.Date))] <- salary$date[which(grepl("Y1)", salary$Effective.Date))-1]
+      }
+
+      if (any(grepl("Y2)", salary$Effective.Date))) {
+        salary$date[which(grepl("Y2)", salary$Effective.Date))] <- salary$date[which(grepl("Y2)", salary$Effective.Date))-1]
+      }
 
       # Test that there is 01 rather than 1
 
@@ -229,6 +239,13 @@ formatSalaries <- function(groups=NULL) {
       # Test is there is any instances that have only range and no step associated (e.g. LP-05 in LR on website)
 
       salary$Classification <- gsub(" ", "", salary$Classification) # removing spaces
+
+      if (any(grepl("Recruitmentrate", salary$Classification,ignore.case=TRUE))) {
+        if (any(grepl("--", salary$Classification))) {
+          salary$Classification[which(grepl("Recruitmentrate", salary$Classification))] <- gsub("--", "-", salary$Classification[which(grepl("Recruitmentrate", salary$Classification))])
+        }
+      }
+
       #class <- unique(str_extract(salary$Classification, "(?<=-)[0-9]{2}"))
       class <- unique(sub(".+\\-", "", salary$Classification)) # This allows letters to be obtained as well
 
@@ -382,6 +399,12 @@ formatSalaries <- function(groups=NULL) {
     df <- ML[-(which(is.na(ML$`Annual Salary`))),]
   } else {
     df <- ML
+  }
+
+  if (any(df$`Annual Salary` < 1000)) {
+    # Looking for hourly inputs
+    df$`Annual Salary`[which(df$`Annual Salary` < 1000)] <- df$`Annual Salary`[which(df$`Annual Salary` < 1000)]*40*52
+
   }
 
 }
