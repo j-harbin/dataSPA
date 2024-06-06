@@ -36,7 +36,7 @@
 #' @importFrom httr2 resp_body_json
 #' @importFrom magrittr %>%
 #' @importFrom readxl read_excel
-#' @importFrom stringr str_extract
+#' @importFrom stringr str_extract str_replace
 #' @importFrom stats median
 #' @examples
 #' \dontrun{
@@ -145,6 +145,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   # FIXME: can't yet cache for collaborations or statusReport
+  load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
+
 
   # 1. LISTING LINKS
 
@@ -675,13 +677,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   ## WORKING WITH SALARY DATA FRAME
-  salaries <- NULL
-  load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
+  #salaries <- NULL
 
   ## DEALING WITH "http://dmapps/api/ppt/staff"
   if (type == "salary") {
     api_data3 <- API_DATA[[4]]
-#JAIMHERE
     j <- lapply(api_data3, function(x) x[c('overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
 
     for (i in seq_along(j)) {
@@ -708,7 +708,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
     list <- NULL
     for (i in seq_along(j)) {
-      message("This is for  ", i)
+      #message("This is for  ", i)
       list[[i]] <- as.data.frame(j[[i]])
     }
 
@@ -761,6 +761,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         levels[[i]] <- paste0(level[i], "--")
       }
     }
+
     levels <- unlist(levels) # Some have --, some have - based on excel sheet
 
     class <- str_extract(SAL$level_display, '\\b\\w+$') # extract everything after -
@@ -770,6 +771,24 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       fundingLevel[[i]] <- paste0(levels[i], class[i])
     }
     fundingLevel <- unlist(fundingLevel)
+
+
+    # Making instances like EN--SUR--05-2 24 and SAL is in EN-SUR-03 match up
+    splits <-unlist(lapply(fundingLevel, function(x) length(strsplit(x, "--")[[1]])))
+    bads <- which(!(splits == 2)) # EN-SUR-03
+    fundingLevel[bads] <- gsub("-", "--", fundingLevel[bads])
+
+
+    # Making tweaks https://github.com/j-harbin/dataSPA/issues/34
+    #. 1. Change IT to CS
+    if (any(str_extract(fundingLevel, "^[^-]+") == "IT")) {
+    fundingLevel[which(str_extract(fundingLevel, "^[^-]+") == "IT")] <- str_replace(fundingLevel[which(str_extract(fundingLevel, "^[^-]+") == "IT")], "IT", "CS")
+    }
+    #. 2. Change GS-STS to GL-MAN
+    if (any(grepl("GS--STS", fundingLevel))) {
+      fundingLevel[which(grepl("GS--STS", fundingLevel))] <- str_replace(fundingLevel[which(grepl("GS--STS", fundingLevel))], "GS--STS", "GL--MAN")
+    }
+
     SAL$level_display <- fundingLevel
 
     # Now sub the excel sheet
@@ -779,7 +798,14 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     SAL$amount_week <- rep(NA, length(SAL$project_id))
     SAL$amount_overtime <- rep(NA, length(SAL$project_id))
     SAL$amount_total <- rep(NA, length(SAL$project_id))
-    fundingLevel[which(fundingLevel == "IT--03")] <- "CS--03"
+
+    # 3. remove EX info https://github.com/j-harbin/dataSPA/issues/34
+
+    if (any(grepl("EX", fundingLevel))) {
+      bad <- which(grepl("EX", fundingLevel))
+      SAL <- SAL[-bad,]
+      fundingLevel <- fundingLevel[-bad]
+    }
 
     for (i in seq_along(fundingLevel)) {
       j <- salaries[which(grepl(fundingLevel[i], salaries$`Level and Step`)),] # keeping relevant salaries from excel
@@ -814,10 +840,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       SAL$amount_overtime[i] <- (SAL$salary_per_week[i]/37.5)*SAL$overtime_hours[i] # 40 hours in a work week
       SAL$amount_total[i] <- ifelse(SAL$overtime_hours[i] == 0, SAL$amount_week[i], (SAL$amount_week[i] + SAL$amount_overtime[i]))
     }
-    bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
-    if (!(length(bad) == 0)) {
-    SAL <- SAL[-bad,]
-    }
+    # bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
+    # if (!(length(bad) == 0)) {
+    # SAL <- SAL[-bad,]
+    #}
   }
 
   if (type == "salary") {
@@ -1031,7 +1057,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   om_amount <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$amount))
   category_display <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$category_display))
 
-
   index$om_id <- 0
   for (p in seq_along(project_id)) {
     index$om_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$category_display == category_display[p] & index$amount == om_amount[p])] <- om_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & category_display == category_display[p] & om_amount == om_amount[p])]
@@ -1046,11 +1071,14 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     index$staff_id <- 0
 
-    for (p in seq_along(project_id)) {
-      index$staff_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$smart_name == name_display[p])] <- staff_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & name_display == name_display[p])]
-    }
+    # FIXME: STAFF ID ARE NOT PROPERLY BEING ENTERED
 
-    #browser()
+    # for (p in seq_along(project_id)) {
+    #   message("p = ", p)
+    #   if (!(length(staff_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & name_display == name_display[p])]) == 1) == 1) {
+    #   index$staff_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$smart_name == name_display[p])] <- staff_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & name_display == name_display[p])]
+    #   }
+    # }
 
   }
 
