@@ -151,15 +151,15 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # 1. LISTING LINKS
 
   if (type %in% c("salary", "salary_date")) {
-    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/","http://dmapps/api/ppt/staff", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/", "http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
+    links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/","https://dmapps/api/ppt/staff", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/", "https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
   } else if (type %in% c("om", "om_date")) {
-    links <- c("http://dmapps/api/ppt/om-costs","http://dmapps/api/ppt/project-years", "http://dmapps/api/ppt/activities-full/", "http://dmapps/api/ppt/divisions/","http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
+    links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/", "https://dmapps/api/ppt/divisions/","https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
   } else if (type == "collaboration") {
-    links <- c("http://dmapps/api/ppt/collaborations/")
+    links <- c("https://dmapps/api/ppt/collaborations/")
   } else if (type == "statusReport") {
-    links <- c("http://dmapps/api/ppt/status-reports/", "http://dmapps/api/ppt/project-years/")
+    links <- c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/project-years/")
   } else if (type == "tags") {
-    links <- c("http://dmapps/api/ppt/tags/")
+    links <- c("https://dmapps/api/ppt/tags/")
   }
 
   API_DATA <- NULL
@@ -183,25 +183,25 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     # Read the returned data as a JSON file
     page_data <- httr2::resp_body_json(resp)
-    if (type == "collaboration" && links[i] == "http://dmapps/api/ppt/collaborations/") {
+    if (type == "collaboration" && links[i] == "https://dmapps/api/ppt/collaborations/") {
       api_data <- page_data
     }
 
-    if (type == "statusReport" && links[i] == "http://dmapps/api/ppt/status-reports/") {
+    if (type == "statusReport" && links[i] == "https://dmapps/api/ppt/status-reports/") {
       api_data <- page_data
     }
 
-    if (type %in% c("om", "salary") && links[i] %in% c("http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/", "http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/", "http://dmapps/api/shared/branches/")) {
+    if (type %in% c("om", "salary") && links[i] %in% c("https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/")) {
       api_data <- page_data
     }
 
-    if (type == "tags" && links[i] == "http://dmapps/api/ppt/tags/") {
+    if (type == "tags" && links[i] == "https://dmapps/api/ppt/tags/") {
       return(data.frame(Reduce(rbind,page_data),row.names = NULL))
     }
 
     # Create a list to hold the list of full API results
     if (!(type %in% c("collaboration"))) {
-      if (!(links[i] %in% c("http://dmapps/api/ppt/status-reports/", "http://dmapps/api/ppt/divisions/", "http://dmapps/api/ppt/sections/","http://dmapps/api/ppt/regions/","http://dmapps/api/ppt/tags/", "http://dmapps/api/ppt/funding-sources/","http://dmapps/api/shared/branches/"))) {
+      if (!(links[i] %in% c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/","https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/","https://dmapps/api/shared/branches/"))) {
         api_data <- page_data$results
 
         # Get the information about the next page in the API results
@@ -251,10 +251,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
   names(API_DATA) <- links
 
-  # LINK 1: Dealing with "http://dmapps/api/ppt/om-costs"
-  if ("http://dmapps/api/ppt/om-costs" %in% names(API_DATA)) {
+  # LINK 1: Dealing with "https://dmapps/api/ppt/om-costs"
+  if ("https://dmapps/api/ppt/om-costs" %in% names(API_DATA)) {
     #api_data <- API_DATA[[1]]
-    api_data <- API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]]
+    api_data <- API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]]
 
     # Fix NULL descriptions
     for (i in seq_along(api_data)) {
@@ -275,22 +275,22 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       om <- om[, -which(names(om) == "id")]
     }
   }
-  ## LINK 2: Dealing with "http://dmapps/api/ppt/project-years"
-  if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
-    api_data2 <- API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/project-years")]]
+  ## LINK 2: Dealing with "https://dmapps/api/ppt/project-years"
+  if ("https://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
+    api_data2 <- API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]]
     #api_data2 <- API_DATA[[2]]
   }
 
 
-  ## LINK 3: Dealing with "http://dmapps/api/ppt/activities-full/"
-  if ("http://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
+  ## LINK 3: Dealing with "https://dmapps/api/ppt/activities-full/"
+  if ("https://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
     #api_data3 <- API_DATA[[3]]
-    api_data3 <- API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/activities-full/")]]
+    api_data3 <- API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/activities-full/")]]
   }
 
 
-  ## Putting "http://dmapps/api/ppt/activities-full/" into a data frame
-  if ("http://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
+  ## Putting "https://dmapps/api/ppt/activities-full/" into a data frame
+  if ("https://dmapps/api/ppt/activities-full/" %in% names(API_DATA)) {
 
     deliv <- lapply(api_data3, function(x) x[c("type_display", "description")])
     titles <- lapply(api_data3, function(x) x$project_year_obj)
@@ -327,8 +327,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     names(MILESTONES) <- unique(DDF$title)
   }
 
-  ## Putting "http://dmapps/api/ppt/project-years" into a data frame
-  if ("http://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
+  ## Putting "https://dmapps/api/ppt/project-years" into a data frame
+  if ("https://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
     t <- lapply(api_data2, function(x) x$project$years)
 
     # Add objectives and overview JAIM
@@ -514,12 +514,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     om$activity_type[which(om$activity_type == 4)] <- "Data Management"
     om$activity_type[which(om$activity_type == 5)] <- "Assessment"
   }
-  ## Getting divisions ids ("http://dmapps/api/ppt/divisions/")
+  ## Getting divisions ids ("https://dmapps/api/ppt/divisions/")
 
   if (type %in% c("om", "salary")) {
-  division_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/divisions/")]], function(x) x$id))
-  full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/divisions/")]], function(x) x$display))
-  division_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/divisions/")]], function(x) x$name))
+  division_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$id))
+  full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$display))
+  division_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/divisions/")]], function(x) x$name))
 
   duplicatedNamesDivision <- division_name[duplicated(division_name)]
   DIVISION_NAME <- division_name
@@ -532,9 +532,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   ## /sections/
-   section_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/sections/")]], function(x) x$id))
-   full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/sections/")]], function(x) x$full_name))
-   section_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/sections/")]], function(x) x$name)) # Aquatic Animal Health, Species at Risk Program
+   section_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$id))
+   full_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$full_name))
+   section_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/sections/")]], function(x) x$name)) # Aquatic Animal Health, Species at Risk Program
    if (any(section_name == "Centre for Science Advice -  Maritimes")) {
      section_name[which(section_name == "Centre for Science Advice -  Maritimes")] <- "Centre for Science Advice Maritimes"
    }
@@ -552,22 +552,22 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
    }
 
    ## /regions/
-   region_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/regions/")]], function(x) x$id))
-   region_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/regions/")]], function(x) x$name))
+   region_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/regions/")]], function(x) x$id))
+   region_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/regions/")]], function(x) x$name))
 
    ## /funding_sources/
-   fs_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/funding-sources/")]], function(x) x$id))
-   fs_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/funding-sources/")]], function(x) x$name))
+   fs_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/funding-sources/")]], function(x) x$id))
+   fs_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/funding-sources/")]], function(x) x$name))
 
    ## branch_id
-   branch_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$id))
-   branch_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$name))
-   Region_Name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/shared/branches/")]], function(x) x$sector_obj$region_obj$name))
+   branch_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$id))
+   branch_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$name))
+   Region_Name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/shared/branches/")]], function(x) x$sector_obj$region_obj$name))
 
   ## LINK 4: GETTING THEME DIFFERENTLY
   # Theme
   # Obtaining OM data from the API
-    req <- httr2::request("http://dmapps/api/ppt/themes/")
+    req <- httr2::request("https://dmapps/api/ppt/themes/")
     # Add custom headers
     req <- req %>% httr2::req_headers("Cookie" = cookie)
     req <- req %>% httr2::req_headers("Accept" = "application/json")
@@ -585,7 +585,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     # Obtaining OM data from the API
     project_ids <- NULL
     for (i in seq_along(themeNumbers)) {
-      req <- httr2::request(paste0("http://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
+      req <- httr2::request(paste0("https://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
       # Add custom headers
       req <- req %>% httr2::req_headers("Cookie" = cookie)
       req <- req %>% httr2::req_headers("Accept" = "application/json")
@@ -679,7 +679,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   ## WORKING WITH SALARY DATA FRAME
   #salaries <- NULL
 
-  ## DEALING WITH "http://dmapps/api/ppt/staff"
+  ## DEALING WITH "https://dmapps/api/ppt/staff"
   if (type == "salary") {
     api_data3 <- API_DATA[[4]]
     j <- lapply(api_data3, function(x) x[c('overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
@@ -935,8 +935,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       }
     }
     ## Dealing with staff_id
-    staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$id))
-    staff_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$smart_name))
+    staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/staff")]], function(x) x$id))
+    staff_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/staff")]], function(x) x$smart_name))
   }
 
 
@@ -1038,9 +1038,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   ## tags / tag_id
-  project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/project-years")]], function(x) x$project$id))
-  project_title <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/project-years")]], function(x) x$project$title))
-  tags_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/project-years")]], function(x) x$project$tags_display))
+  project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$id))
+  project_title <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$title))
+  tags_name <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years")]], function(x) x$project$tags_display))
 
   ## branch_id
   index$branch_id <- 0
@@ -1051,11 +1051,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
   ## om_id
   if (type == "om") {
-  om_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$id))
-  project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$project_id))
-  project_year_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$project_year_id))
-  om_amount <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$amount))
-  category_display <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/om-costs")]], function(x) x$category_display))
+  om_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$id))
+  project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$project_id))
+  project_year_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$project_year_id))
+  om_amount <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$amount))
+  category_display <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-costs")]], function(x) x$category_display))
 
   index$om_id <- 0
   for (p in seq_along(project_id)) {
@@ -1064,10 +1064,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   if (type == "salary") {
-    staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$id))
-    project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$project_year_obj$project))
-    project_year_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$project_year_obj$id))
-    name_display <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "http://dmapps/api/ppt/staff")]], function(x) x$smart_name))
+    staff_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/staff")]], function(x) x$id))
+    project_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/staff")]], function(x) x$project_year_obj$project))
+    project_year_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/staff")]], function(x) x$project_year_obj$id))
+    name_display <-  unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/staff")]], function(x) x$smart_name))
 
     index$staff_id <- 0
 
