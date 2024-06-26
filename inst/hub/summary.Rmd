@@ -48,7 +48,7 @@ DT::datatable(d,
 
 ```{r, echo=FALSE}
 functional <- unique(om$functional_group)
-functional <- functional[-which(functional == "")]
+functional <- functional[-which(functional == ""|functional == "0")]
 df <- data.frame(matrix(NA, ncol = 1, nrow = length(functional)))
 names(df) <- "Functional Group"
 #df$`Functional Group` <- functional
