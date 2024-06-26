@@ -17,7 +17,7 @@ if (!(length(index$project_id) == 0)) {
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
-if(!exists(filedate)){
+if(!exists("filedate")){
   filedate <- try(getData(type="om_date", age=4000, cookie=cookie,path=path), silent=TRUE)
 }
 if (inherits(filedate, "try-error")) {
