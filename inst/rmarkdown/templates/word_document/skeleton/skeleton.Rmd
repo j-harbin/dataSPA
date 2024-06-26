@@ -17,10 +17,12 @@ if (!(length(index$project_id) == 0)) {
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
+if(!exists(filedate)){
   filedate <- try(getData(type="om_date", age=4000, cookie=cookie,path=path), silent=TRUE)
-  if (inherits(filedate, "try-error")) {
+}
+if (inherits(filedate, "try-error")) {
   message("Consider saving output from getData(keep=TRUE) in the specified path of createReport() to display date data was obtained in report.")
-  } else {
+} else {
   cat(paste0("Data pulled for this report was obtained on ", filedate))
 }
 ```
