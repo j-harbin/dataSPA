@@ -77,10 +77,10 @@ if (!(is.null(file))) {
 ```
 
 <center>
-```{r pressure, echo=FALSE, message=FALSE, fig.cap=" ", out.width = '70%'}
+```{r pressure, echo=FALSE, message=FALSE, comment=NA, results='asis'}
 if (!(length(index$project_id) == 0)) {
   if (file.exists(file)) {
-    highlightOverview(om=index, id=unique(index$project_id), legend=TRUE, file=file)
+    cat(highlightOverview(om=index, id=unique(index$project_id), legend=TRUE, file=file))
   }
 }
 ```

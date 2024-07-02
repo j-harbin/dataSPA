@@ -50,16 +50,18 @@ highlightOverview <-
                                     ties = TRUE)
 
 
-    keep <- unlist(unique(om$overview[which(om$project_id == id)]))
-    highlightedtext <-  stri_replace_all_regex(keep, pattern=pillars$objectives_col$word,
-                                               replacement=pillars$objectives_col$hl_word,
-                                               vectorize_all=FALSE)
+
     if (!(legend)) {
+      keep <- unlist(unique(om$overview[which(om$project_id == id)]))
+      highlightedtext <-  stri_replace_all_regex(keep, pattern=pillars$objectives_col$word,
+                                                 replacement=pillars$objectives_col$hl_word,
+                                                 vectorize_all=FALSE)
       highlightedtext
     } else {
       # Create legend
-      cat("EBM Colour Legend")
-      paste0("<span style='background-color: ",pillars$pal,"'>",unique(pillars$objectives$pillar),"</span>")
+      leg <- paste("<b>EBM Colour Legend</b>:",
+                    paste0("<span style='background-color: ",pillars$pal,"'>",trimws(unique(pillars$objectives$pillar)),"</span>",collapse = "   "))
+      leg
     }
 
   }
