@@ -2161,7 +2161,7 @@ if (dataframe == TRUE) {
           salary <- salaryKeep
         }
         docx <-
-          (read_docx(EBFMFILE) %>%
+          (read_docx(EBFMFILE) |>
              docx_summary())[-c(1:4, 18), ]
         pillars <- data.frame()
 
@@ -2199,40 +2199,40 @@ if (dataframe == TRUE) {
 
         }
 
-        pillars <- pillars %>%
-          separate_wider_delim(pillar,":",names=c("pillar","description"))%>%
+        pillars <- pillars |>
+          separate_wider_delim(pillar,":",names=c("pillar","description"))|>
           mutate(pillar=gsub(".. ","",pillar))
 
-        subpillars <- pillars %>%
-          mutate(subpillar=paste0(pillar,": ",subpillar)) %>%
-          group_by(pillar,description,subpillar) %>%
+        subpillars <- pillars |>
+          mutate(subpillar=paste0(pillar,": ",subpillar)) |>
+          group_by(pillar,description,subpillar) |>
           summarise(words=paste(point,subpoint,collapse=" "),
-                    .groups = 'drop') %>%
-          group_by(pillar,description,subpillar) %>%
-          unnest_tokens(word,words) %>%
-          dplyr::anti_join(get_stopwords(),by="word") %>%
-          group_by(pillar,description,subpillar,word) %>%
+                    .groups = 'drop') |>
+          group_by(pillar,description,subpillar) |>
+          unnest_tokens(word,words) |>
+          dplyr::anti_join(get_stopwords(),by="word") |>
+          group_by(pillar,description,subpillar,word) |>
           summarise(n=n(),
-                    .groups = 'drop') %>%
+                    .groups = 'drop') |>
           ungroup()
-        subpillars_tf_idf <- subpillars %>%
-          bind_tf_idf(word,subpillar,n) %>%
+        subpillars_tf_idf <- subpillars |>
+          bind_tf_idf(word,subpillar,n) |>
           arrange(desc(tf_idf))
-        tidy_om <- om %>%
-          select(project_id,overview) %>%
-          unique() %>%
-          unnest_tokens("word",overview) %>%
-          suppressMessages(dplyr::anti_join(stop_words)) %>%
+        tidy_om <- om |>
+          select(project_id,overview) |>
+          unique() |>
+          unnest_tokens("word",overview) |>
+          suppressMessages(dplyr::anti_join(stop_words)) |>
           count(word, project_id)
-        scores <- tidy_om %>%
+        scores <- tidy_om |>
           inner_join(subpillars_tf_idf,by="word",relationship =
-                       "many-to-many") %>%
-          group_by(project_id,subpillar) %>%
+                       "many-to-many") |>
+          group_by(project_id,subpillar) |>
           summarize(tf_idf_sum=sum(tf_idf),
-                    .groups = 'drop') %>%
-          ungroup() %>%
-          group_by(project_id) %>%
-          mutate(relative_weight=tf_idf_sum/sum(tf_idf_sum)) %>%
+                    .groups = 'drop') |>
+          ungroup() |>
+          group_by(project_id) |>
+          mutate(relative_weight=tf_idf_sum/sum(tf_idf_sum)) |>
           ungroup()
         pal <- c(lighten("#1b9e77",0.4),
                  lighten("#1b9e77",0.1),

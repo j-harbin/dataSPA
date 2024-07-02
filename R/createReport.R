@@ -38,6 +38,7 @@
 #' @param destdir parameter indicating where to save the html report
 #' @return A fact sheet about the specified project id.
 #' @importFrom rmarkdown render
+#' @importFrom rlang .data
 #' @examples
 #' \dontrun{
 #' # Example 1
@@ -168,11 +169,11 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
    stop("Must obtain data for salary using getData(type='salary')")
   }
 
-  if (!(class(om) == "data.frame")) {
+  if (!(inherits(om,"data.frame"))) {
     stop("om must be a data frame created from getData(type='om')")
   }
 
-  if (!(class(salary) == "data.frame")) {
+  if (!(inherits(salary,"data.frame"))) {
     stop("salary must be a data frame created from getData(type='salary')")
   }
 

@@ -27,6 +27,7 @@
 #' @importFrom dplyr n
 #' @importFrom dplyr if_else
 #' @importFrom dplyr slice_max
+#' @importFrom rlang .data
 #' @export
 #' @author Remi Daigle and Jaimie Harbin
 getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R",n,ties=TRUE) {
@@ -36,7 +37,7 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
       if (file.exists(file)) {
       subpoint <- words <-  color <- NULL
       message("You are using Bundy et al. (unpublished) for pillar definitions")
-      docx <- (read_docx(file) %>%
+      docx <- (read_docx(file) |>
                  docx_summary())[-c(1:4,18),]
     } else {
       stop("You are either not on the VPN, or do not have access to the IN folder needed for this function")
@@ -61,7 +62,6 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
                                       level=docx$level[i]))
         }
       }else if(docx$level[i]>2){
-        # browser()
         pillars <- rbind(pillars,
                          data.frame(pillar=pillar,
                                     objective=objective,
@@ -72,23 +72,23 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
 
     }
 
-    pillars <- pillars %>%
-      separate_wider_delim(pillar,":",names=c("pillar","description"))%>%
+    pillars <- pillars |>
+      separate_wider_delim(pillar,":",names=c("pillar","description"))|>
       mutate(pillar=gsub(".. ","",pillar))
 
 
-    objectives <- pillars %>%
-      mutate(objective=paste0(pillar,": ",objective)) %>%
-      group_by(pillar,description,objective) %>%
+    objectives <- pillars |>
+      mutate(objective=paste0(pillar,": ",objective)) |>
+      group_by(pillar,description,objective) |>
       summarise(words=paste(point,subpoint,collapse=" "),
-                .groups = 'drop') %>%
-      group_by(pillar,description,objective) %>%
-      unnest_tokens(word,words) %>%
-      anti_join(get_stopwords(),by="word") %>%
-      filter(!nchar(word)<=3) %>%
-      group_by(pillar,description,objective,word) %>%
+                .groups = 'drop') |>
+      group_by(pillar,description,objective) |>
+      unnest_tokens(word,words) |>
+      anti_join(get_stopwords(),by="word") |>
+      filter(!nchar(word)<=3) |>
+      group_by(pillar,description,objective,word) |>
       summarise(n=n(),
-                .groups = 'drop') %>%
+                .groups = 'drop') |>
       ungroup()
 
 
@@ -103,11 +103,11 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
              darken("#d95f02",0.2))
 
 
-    objectives_col <- objectives %>%
+    objectives_col <- objectives |>
       right_join(data.frame(objective=as.factor(unique(objectives$objective)),
                             color=pal),
-                 by="objective")%>%
-      group_by(word) %>%
+                 by="objective")|>
+      group_by(word) |>
       summarise(hl_word=if_else(n()==1,
                                 paste0("<span style='background-color: ",color, "'>", word, "</span>",collapse = ""),
                                 lapply(seq(length(color)),function(c){
@@ -125,8 +125,8 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
                                                   (len %/% seg)*(c-1) + len %% seg + len %/% seg),
                                            "</span>",collapse = "")
                                   }
-                                }) %>%
-                                  unlist() %>%
+                                }) |>
+                                  unlist() |>
                                   paste0(collapse = "")
       )
       )
@@ -138,25 +138,25 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
       local_env <- new.env()
       source(file, local_env)
 
-      pillars <- local_env$TABLE3 %>%
-        separate(table3,sep="---",into = c("pillar","objective","subobj","indicator"))
+      pillars <- local_env$TABLE3 |>
+        separate(.data$table3,sep="---",into = c("pillar","objective","subobj","indicator"))
 
-      objectives <- pillars %>%
-        group_by(pillar) %>%
-        summarise(words=paste(objective,subobj,indicator,collapse=" "),
-                  .groups = 'drop') %>%
-        group_by(pillar) %>%
-        unnest_tokens(word,words) %>%
-        anti_join(get_stopwords(),by="word") %>%
-        filter(!nchar(word)<=3,word!='shall') %>%
-        group_by(pillar,word) %>%
+      objectives <- pillars |>
+        group_by(pillar) |>
+        summarise(words=paste(objective,.data$subobj,.data$indicator,collapse=" "),
+                  .groups = 'drop') |>
+        group_by(pillar) |>
+        unnest_tokens(word,words) |>
+        anti_join(get_stopwords(),by="word") |>
+        filter(!nchar(word)<=3,word!='shall') |>
+        group_by(pillar,word) |>
         summarise(n=n(),
-                  .groups = 'drop') %>%
-        ungroup() %>%
-        bind_tf_idf(word,pillar,n) %>%
-        arrange(desc(tf_idf)) %>%
-        group_by(pillar) %>%
-        slice_max(tf_idf,
+                  .groups = 'drop') |>
+        ungroup() |>
+        bind_tf_idf(word,pillar,n) |>
+        arrange(desc(.data$tf_idf)) |>
+        group_by(pillar) |>
+        slice_max(.data$tf_idf,
                   n=10,
                   with_ties = ties) #TODO think about how to handle ties?
 
@@ -165,11 +165,11 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
                "#fdc086",
                "#ffff99")
 
-      objectives_col <- objectives %>%
+      objectives_col <- objectives |>
         right_join(data.frame(pillar=as.factor(unique(objectives$pillar)),
                               color=pal),
-                   by="pillar")%>%
-        group_by(word) %>%
+                   by="pillar")|>
+        group_by(word) |>
         summarise(hl_word=if_else(n()==1,
                                   paste0("<span style='background-color: ",color, "'>", word, "</span>",collapse = ""),
                                   lapply(seq(length(color)),function(c){
@@ -187,8 +187,8 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
                                                     (len %/% seg)*(c-1) + len %% seg + len %/% seg),
                                              "</span>",collapse = "")
                                     }
-                                  }) %>%
-                                    unlist() %>%
+                                  }) |>
+                                    unlist() |>
                                     paste0(collapse = "")
         )
         )

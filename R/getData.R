@@ -34,7 +34,6 @@
 #' @importFrom httr2 req_perform
 #' @importFrom httr2 req_body_json
 #' @importFrom httr2 resp_body_json
-#' @importFrom magrittr %>%
 #' @importFrom readxl read_excel
 #' @importFrom stringr str_extract str_replace
 #' @importFrom stats median
@@ -168,11 +167,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     req <- httr2::request(links[i])
 
     # Add custom headers
-    req <- req %>% httr2::req_headers("Cookie" = cookie)
-    req <- req %>% httr2::req_headers("Accept" = "application/json")
+    req <- req |> httr2::req_headers("Cookie" = cookie)
+    req <- req |> httr2::req_headers("Accept" = "application/json")
 
     # Automatically retry if the request fails
-    req <- req %>% httr2::req_retry(max_tries = 5)
+    req <- req |> httr2::req_retry(max_tries = 5)
 
     # Get the requested data by querying the API
     resp <- try(httr2::req_perform(req), silent=TRUE)
@@ -216,10 +215,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           # Modifying API Call
           req <- httr2::request(next_page)
           # Add custom headers
-          req <- req %>% httr2::req_headers("Cookie" = cookie)
-          req <- req %>% httr2::req_headers("Accept" = "application/json")
+          req <- req |> httr2::req_headers("Cookie" = cookie)
+          req <- req |> httr2::req_headers("Accept" = "application/json")
           # Automatically retry if the request fails
-          req <- req %>% httr2::req_retry(max_tries = 5)
+          req <- req |> httr2::req_retry(max_tries = 5)
           # Get the requested data by querying the API
           resp <- httr2::req_perform(req)
           # Read the returned data as a JSON file
@@ -569,11 +568,11 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   # Obtaining OM data from the API
     req <- httr2::request("https://dmapps/api/ppt/themes/")
     # Add custom headers
-    req <- req %>% httr2::req_headers("Cookie" = cookie)
-    req <- req %>% httr2::req_headers("Accept" = "application/json")
+    req <- req |> httr2::req_headers("Cookie" = cookie)
+    req <- req |> httr2::req_headers("Accept" = "application/json")
 
     # Automatically retry if the request fails
-    req <- req %>% httr2::req_retry(max_tries = 5)
+    req <- req |> httr2::req_retry(max_tries = 5)
     # Get the requested data by querying the API
     resp <- httr2::req_perform(req)
     # Read the returned data as a JSON file
@@ -587,10 +586,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     for (i in seq_along(themeNumbers)) {
       req <- httr2::request(paste0("https://dmapps/api/ppt/project-years/?theme=", themeNumbers[i]))
       # Add custom headers
-      req <- req %>% httr2::req_headers("Cookie" = cookie)
-      req <- req %>% httr2::req_headers("Accept" = "application/json")
+      req <- req |> httr2::req_headers("Cookie" = cookie)
+      req <- req |> httr2::req_headers("Accept" = "application/json")
       # Automatically retry if the request fails
-      req <- req %>% httr2::req_retry(max_tries = 5)
+      req <- req |> httr2::req_retry(max_tries = 5)
       # Get the requested data by querying the API
       resp <- httr2::req_perform(req)
 
@@ -611,10 +610,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
         # Modifying API Call
         req <- httr2::request(next_page)
         # Add custom headers
-        req <- req %>% httr2::req_headers("Cookie" = cookie)
-        req <- req %>% httr2::req_headers("Accept" = "application/json")
+        req <- req |> httr2::req_headers("Cookie" = cookie)
+        req <- req |> httr2::req_headers("Accept" = "application/json")
         # Automatically retry if the request fails
-        req <- req %>% httr2::req_retry(max_tries = 5)
+        req <- req |> httr2::req_retry(max_tries = 5)
         # Get the requested data by querying the API
         resp <- httr2::req_perform(req)
         # Read the returned data as a JSON file

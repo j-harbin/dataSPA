@@ -10,7 +10,6 @@ Maintainer: Jaimie Harbin <jaimie.harbin@dfo-mpo.gc.ca>
 Depends: R (>= 3.5.0)
 Imports: 
     httr2,
-    magrittr,
     methods,
     readxl,
     stringr,
@@ -26,7 +25,6 @@ Imports:
     tidytext,
     colorspace,
     stringi,
-    stopwords,
     rlang,
     utils,
     TBSpayRates
