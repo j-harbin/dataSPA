@@ -58,7 +58,7 @@ highlightOverview <-
       highlightedtext
     } else {
       # Create legend
-      cat(EBM Colour Legend)
+      cat("EBM Colour Legend")
       paste0("<span style='background-color: ",pillars$pal,"'>",unique(pillars$objectives$pillar),"</span>")
     }
 
