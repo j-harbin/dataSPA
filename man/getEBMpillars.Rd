@@ -6,14 +6,20 @@
 \usage{
 getEBMpillars(
   file =
-    "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R"
+    "//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R",
+  n,
+  ties = TRUE
 )
 }
 \arguments{
-\item{file}{the word file describing the EBM framwork. Defaults to the IN folder}
+\item{file}{the word or R file describing the EBM framework. Defaults to the IN folder}
+
+\item{n}{highlights the n words with the highest term frequency–inverse document frequency (i.e. most important words that discriminate amongst pillars)}
+
+\item{ties}{Should ties be kept together? The default, TRUE, may return more rows than you request. Use FALSE to ignore ties, and return the first n rows.}
 }
 \description{
-Provides words and colours to be used in highlighting.
+Provides words and colours to be used in highlighting. Defaults to Stephenson et al. 2018 https://onlinelibrary.wiley.com/doi/full/10.1111/faf.12296
 }
 \author{
 Remi Daigle and Jaimie Harbin

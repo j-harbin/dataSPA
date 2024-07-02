@@ -26,6 +26,7 @@
 #' @importFrom colorspace darken
 #' @importFrom dplyr n
 #' @importFrom dplyr if_else
+#' @importFrom dplyr slice_max
 #' @export
 #' @author Remi Daigle and Jaimie Harbin
 getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R",n,ties=TRUE) {
