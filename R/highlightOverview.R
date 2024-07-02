@@ -32,34 +32,36 @@
 
 highlightOverview <-
   function(om = NULL,salary = NULL,id = NULL,legend = FALSE,
-file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R") {
+           file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R") {
 
-  if (is.null(om) && is.null(salary)) {
-    stop("In highlightOverview must provide an om or salary argument, likely from getData()")
+    if (is.null(om) && is.null(salary)) {
+      stop("In highlightOverview must provide an om or salary argument, likely from getData()")
+    }
+    if (is.null(id)) {
+      stop("Must provide an id argument in highlightOverview")
+    }
+
+    if (!(is.null(salary))) {
+      om <- salary
+    }
+
+    pillars <- getEBMpillars(file=file,
+                                    n=10,
+                                    ties = TRUE)
+
+
+    keep <- unlist(unique(om$overview[which(om$project_id == id)]))
+    highlightedtext <-  stri_replace_all_regex(keep, pattern=pillars$objectives_col$word,
+                                               replacement=pillars$objectives_col$hl_word,
+                                               vectorize_all=FALSE)
+    if (!(legend)) {
+      highlightedtext
+    } else {
+      # Create legend
+      par(mar=c(1, 1, 1, 1) + 0.1)
+      plot(1,1, xlab=" ", ylab=" ", col="white", ylim=c(0,1), xlim=c(0,1), axes=FALSE)
+      legend(0:1, 0:1, unique(pillars$objectives$objective), col=pillars$pal, pch=20, cex=0.75, pt.cex=2, bty="n")
+      #legend("center", unique(objectives$objective), col=pal, pch=20, cex=0.7, pt.cex=2)
+    }
+
   }
-  if (is.null(id)) {
-    stop("Must provide an id argument in highlightOverview")
-  }
-
-  if (!(is.null(salary))) {
-    om <- salary
-  }
-
-  getEBMpillars(file=file)
-
-
-keep <- unlist(unique(om$overview[which(om$project_id == id)]))
-highlightedtext <-  stri_replace_all_regex(keep, pattern=objectives_col$word,
-                                           replacement=objectives_col$hl_word,
-                                           vectorize_all=FALSE)
-if (!(legend)) {
-highlightedtext
-} else {
-  # Create legend
-  par(mar=c(1, 1, 1, 1) + 0.1)
-  plot(1,1, xlab=" ", ylab=" ", col="white", ylim=c(0,1), xlim=c(0,1), axes=FALSE)
-  legend(0:1, 0:1, unique(objectives$objective), col=pal, pch=20, cex=0.75, pt.cex=2, bty="n")
-  #legend("center", unique(objectives$objective), col=pal, pch=20, cex=0.7, pt.cex=2)
-}
-
-}

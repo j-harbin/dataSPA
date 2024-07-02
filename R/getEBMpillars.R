@@ -1,8 +1,11 @@
 #' Get the discriminating words used to identify EBM pillars or objectives.
 #'
-#' Provides words and colours to be used in highlighting.
+#' Provides words and colours to be used in highlighting. Defaults to Stephenson et al. 2018 https://onlinelibrary.wiley.com/doi/full/10.1111/faf.12296
 #'
-#' @param file the word file describing the EBM framwork. Defaults to the IN folder
+#' @param n highlights the n words with the highest term frequency–inverse document frequency (i.e. most important words that discriminate amongst pillars)
+#' @param ties Should ties be kept together? The default, TRUE, may return more rows than you request. Use FALSE to ignore ties, and return the first n rows.
+#' @param file the word or R file describing the EBM framework. Defaults to the IN folder
+#'
 #' @importFrom officer read_docx
 #' @importFrom officer docx_summary
 #' @importFrom tidyr separate_wider_delim
@@ -25,19 +28,19 @@
 #' @importFrom dplyr if_else
 #' @export
 #' @author Remi Daigle and Jaimie Harbin
-getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R") {
+getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Projects/dataSPA/inputs/Stephenson_ebfm.R",n,ties=TRUE) {
 
-  if(endsWith(file,"docx")){
-    message("You are using Bundy et al. (unpublished) for pillar definitions")
-    subpoint <- words <-  color <- NULL
 
-    if (file.exists(file)) {
+    if(endsWith(file,"docx")){
+      if (file.exists(file)) {
+      subpoint <- words <-  color <- NULL
       message("You are using Bundy et al. (unpublished) for pillar definitions")
       docx <- (read_docx(file) %>%
                  docx_summary())[-c(1:4,18),]
     } else {
       stop("You are either not on the VPN, or do not have access to the IN folder needed for this function")
     }
+
 
     pillars <- data.frame()
     for(i in seq_along(docx$text)){
@@ -129,7 +132,7 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
   } else if(endsWith(file,"R")){
 
     if (file.exists(file)) {
-      message("You are using Stephenson et al. (unpublished) for pillar definitions")
+      message("You are using Stephenson et al. 2019 for pillar definitions")
 
       local_env <- new.env()
       source(file, local_env)
@@ -144,11 +147,17 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
         group_by(pillar) %>%
         unnest_tokens(word,words) %>%
         anti_join(get_stopwords(),by="word") %>%
-        filter(!nchar(word)<=3) %>%
+        filter(!nchar(word)<=3,word!='shall') %>%
         group_by(pillar,word) %>%
         summarise(n=n(),
                   .groups = 'drop') %>%
-        ungroup()
+        ungroup() %>%
+        bind_tf_idf(word,pillar,n) %>%
+        arrange(desc(tf_idf)) %>%
+        group_by(pillar) %>%
+        slice_max(tf_idf,
+                  n=10,
+                  with_ties = ties) #TODO think about how to handle ties?
 
       pal <- c("#7fc97f",
                "#beaed4",
@@ -183,15 +192,10 @@ getEBMpillars <- function(file="//dcnsbiona01a/BIODataSvc/IN/MSP/PowerBI-Project
         )
         )
 
-      #going to try to limit the words to the "best" words in a later version
-      # test <- objectives %>%
-      #   bind_tf_idf(word,pillar,n) %>%
-      #   arrange(desc(tf_idf)) %>%
-      #   group_by(pillar) %>%
-      #   slice_max(tf_idf,n=30)
 
     } else {
       stop("You are either not on the VPN, or do not have access to the IN folder needed for this function")
     }
   }
+  return(list(objectives_col=objectives_col,objectives=objectives,pal=pal))
 }
