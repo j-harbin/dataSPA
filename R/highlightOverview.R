@@ -58,10 +58,8 @@ highlightOverview <-
       highlightedtext
     } else {
       # Create legend
-      par(mar=c(1, 1, 1, 1) + 0.1)
-      plot(1,1, xlab=" ", ylab=" ", col="white", ylim=c(0,1), xlim=c(0,1), axes=FALSE)
-      legend(0:1, 0:1, unique(pillars$objectives$objective), col=pillars$pal, pch=20, cex=0.75, pt.cex=2, bty="n")
-      #legend("center", unique(objectives$objective), col=pal, pch=20, cex=0.7, pt.cex=2)
+      cat(EBM Colour Legend)
+      paste0("<span style='background-color: ",pillars$pal,"'>",unique(pillars$objectives$pillar),"</span>")
     }
 
   }
