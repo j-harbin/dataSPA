@@ -20,7 +20,9 @@
 #' @param age maximum age in number of days that a file may be loaded.
 #' Set to `0` to download new data every time.
 #'
-#' @param path path to save file. Default is in the shared IN folder.
+#' @param path path to save file. Default is in the shared IN folder. Ensure
+#' you are giving the full directory name (e.g. "C:/Users/HarbinJ/Documents/"
+#' and not just "../Document")
 #'
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
@@ -1098,7 +1100,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
                   file.path(path,paste0("dataSPA_om_",date,".rds")))
       message(paste0("Renaming the pre-existing dataSPA_om.rds to: ",paste0("dataSPA_om_",date,".rds")))
     }
-
     saveRDS(om,file = fn)
   }
 
