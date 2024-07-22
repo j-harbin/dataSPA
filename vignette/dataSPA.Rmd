@@ -69,11 +69,11 @@ It should be noted that this function will only work for authorized Department o
 
 ![Figure 2: Right click to find "Inspect"](inspect.png)
 
-**3. Click the >> arrows next to "Welcome", "Elements", "Console", and "Sources" to locate and click on "Application"**
+**3. Click the + button to the right of "Elements" and click on "Application"**
 
 ![Figure 3: Click >> to find "Application"](application.png)
 
-**4. Under "Cookies", click on "http://dmapps" to find your csrftoken and sessionid and copy their value**
+**4. Under "Cookies" on the left, click on "http://dmapps" to find your csrftoken and sessionid and copy their value**
 
 **5. Assign a variable in R with the following format:**
 
