@@ -9,6 +9,8 @@ output:
 
 
 ```{r, echo=FALSE}
+st <- unique(c(index$status, index2$status))
+
 if (!(length(index$project_id) == 0)) {
   years <- unique(index$fiscal_year)
 } else if (!(length(index2$fiscal_year)== 0)) {
@@ -367,21 +369,45 @@ cat("  \n")
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
 # YEARS
+if ("Approved" %in% st) {
 years1 <- min(c(index$fiscal_year[which(index$status == "Approved")], index2$fiscal_year[which(index2$status == "Approved")]))
 years2 <- max(c(index$fiscal_year[which(index$status == "Approved")], index2$fiscal_year[which(index2$status == "Approved")]))
 ycombined <- paste0(years1," - " ,years2)
- 
 cat(paste0("Approved Projects ranging from: ", ycombined))
+}
 ```
 
 ```{r, echo=FALSE, comment=NA, results="asis"}
 # TOTAL OM SALARY
+if ("Approved" %in% st) {
 omAmount <- round(sum(index$amount[which(index$status == "Approved")]),0)
 salaryAmount <- round(sum(index2$amount_total[which(index2$status == "Approved")]),0)
-
+} else {
+  omAmount <- round(sum(index$amount),0)
+salaryAmount <- round(sum(index2$amount_total),0)
+}
+if (!(omAmount == 0)) {
 cat(paste0("Total O&M amount invested : $", format(omAmount, big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+}
+if (!(salaryAmount == 0)) {
 cat(paste0("Total Salary amount invested : $", format(salaryAmount, big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+}
+if (omAmount == 0) {
+  if (!(salaryAmount == 0)) {
+    cat(paste0("Total amount invested : $", format(sum(salaryAmount), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+  }
+}
+
+if (salaryAmount == 0) {
+  if (!(omAmount == 0)) {
+    cat(paste0("Total amount invested : $", format(sum(omAmount), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+  }
+}
+
+if (!(omAmount == 0) && !(salaryAmount == 0)) {
 cat(paste0("Total amount invested : $", format(sum(salaryAmount, omAmount), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
+}
+
 
 ```
 

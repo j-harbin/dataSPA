@@ -4,3 +4,4 @@
 .Ruserdata
 dataSPA_*.rds
 inst/hub/*.html
+*html

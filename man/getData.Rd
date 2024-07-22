@@ -35,7 +35,9 @@ will save \code{om} to disk in \code{path} unless there is an \code{om} file alr
 \item{age}{maximum age in number of days that a file may be loaded.
 Set to \code{0} to download new data every time.}
 
-\item{path}{path to save file. Default is in the shared IN folder.}
+\item{path}{path to save file. Default is in the shared IN folder. Ensure
+you are giving the full directory name (e.g. "C:/Users/HarbinJ/Documents/"
+and not just "../Document")}
 }
 \value{
 dataframe
