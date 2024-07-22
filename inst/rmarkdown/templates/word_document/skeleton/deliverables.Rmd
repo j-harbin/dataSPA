@@ -8,6 +8,11 @@ deliverables1 <- unique(index$deliverables[which(index$project_id == headers[j])
 deliverables2 <- unique(index2$deliverables[which(index2$project_id == headers[j])])
 deliverables3 <- unique(c(deliverables1, deliverables2))
 deliverables3 <- gsub("\\|-----\\|", " \n\n ", deliverables3)
+# Remove tabs from deliverables3 (project 338 problem)
+deliverables3 <- unlist(lapply(deliverables3, function(x) gsub("\t", "", x)))
+deliverables3 <- unlist(lapply(deliverables3, function(x) gsub("<div>", "", x)))
+deliverables3 <- unlist(lapply(deliverables3, function(x) sub("(</div>).*", "", x)))
+
 if (length(deliverables3) > 1 && any(deliverables3 == "0")) {
  deliverables3 <- deliverables3[-which(deliverables3 == "0")]
  
@@ -15,6 +20,7 @@ if (length(deliverables3) > 1 && any(deliverables3 == "0")) {
 if (length(deliverables3) == 1 && unique(deliverables3) == "0") {
 cat("There are no identified deliverables for this project")
 } else {
+
 cat(deliverables3)
 }
 ```
