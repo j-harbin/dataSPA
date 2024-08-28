@@ -154,7 +154,7 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm"
+        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate','predict', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm"
       )
     }
 
@@ -284,7 +284,6 @@ plotSPA <-
         "salaryBar",
         "salaryAllocation",
         "indeterminate",
-        'predictSummary',
         'predict',
         'predictSalary',
         'predictOM',
@@ -294,7 +293,7 @@ plotSPA <-
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm'")
+        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predict','predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm'")
     }
 
     # if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
@@ -315,7 +314,6 @@ plotSPA <-
     if (which %in% c(
       "omBar",
       "omAllocation",
-      'predictSummary',
       'predict',
       'predictOM',
       'overviewInvestment',
@@ -828,7 +826,6 @@ plotSPA <-
       "salaryBar",
       "salaryAllocation",
       "indeterminate",
-      "predictSummary",
       "predict",
       'predictSalary',
       'overviewInvestment',
@@ -1197,7 +1194,7 @@ plotSPA <-
 
     }
 
-    if (which %in% c("predictSummary", "predict")) {
+    if (which %in% c("predict")) {
       if (!(id == 1093)) {
         stop("This code is just being started and only works for snow crab project (i.e. id=1093)")
       }
@@ -1298,112 +1295,7 @@ plotSPA <-
       for (i in seq_along(totalnames)) {
         totalstations[totalnames[i]] <- sum(station[totalnames[i]])
       }
-      if (which == "predictSummary") {
-        # left of figure
-        layout(matrix(c(1, 2), 1, 2, byrow = TRUE))
-        bp <-
-          barplot(
-            as.matrix(cost),
-            col = c(1:length(namesFunding)),
-            ylim = c(0, sum(subset(
-              df, select = c(paste0(years[1]))
-            )) + 109000),
-            las = 2,
-            cex.names = 0.7,
-            ylab = ""
-          )
-        abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
-        title(ylab = "Amount of O&M Funding ($)", mgp = c(3.3, 1, 0))
-        tot <- rep(40000, length(names(cost)))
-        points(bp,
-               tot,
-               xpd = TRUE,
-               col = c(rep(1, length(years)), 1 + (1:length(funding))),
-               pch = 20)
-        legend(
-          "topright",
-          c(namesFunding),
-          col = c(1:length(namesFunding)),
-          pch = rep(20, length(namesFunding)),
-          cex = 0.6
-        )
-        p <- totalstations[1:length(years)]
-        yearPoint <- unlist(unname(p))
-        x <- 1:(length(years) + 1)
-        stationLabels <- NULL
-        for (i in seq_along(columnnames)) {
-          y <- c(yearPoint, unname(unlist(totalstations[length(years) + i])))
-          stationLabels[[i]] <- y[length(y)]
-          if (i == 1) {
-            xlim <- length(x) + 1
-            plot(
-              x,
-              y,
-              type = "o",
-              ylab = "Number of Stations",
-              pch = 20,
-              col = i + 1,
-              ylim = c(min(unlist(
-                unname(totalstations)
-              )) - 10, max(unlist(
-                unname(totalstations)
-              )) + 10),
-              xaxt = "n",
-              xlab = " ",
-              xlim = c(0, xlim)
-            )
-            axis(
-              1,
-              at = seq_along(y),
-              labels = c(years, newyear),
-              las = 2,
-              cex.axis = 0.7
-            )
-          } else {
-            lines(x,
-                  y,
-                  col = i + 1,
-                  type = "o",
-                  pch = 20)
-          }
-        }
-        abline(v = length(years), col = "red")
-        labels <- paste0(funding, ",", fundingChange, "%")
-        labels <- c("Status Quo", labels)
-        y <- c(yearPoint, yearPoint[length(yearPoint)])
-        lines(x,
-              y,
-              col = 1,
-              type = "o",
-              pch = 20)
-        text(
-          x = x[1:length(years)],
-          y = y[1:length(years)],
-          labels = y[1:length(years)],
-          pos = 3,
-          cex = 0.5
-        )
-        text(
-          x = rep((length(years) + 1), length(columnnames) + 1),
-          y = c(y[length(years) + 1], unlist(stationLabels)),
-          labels = round(c(y[length(years) + 1], unlist(
-            stationLabels
-          )), 0),
-          pos = 4,
-          cex = 0.5
-        )
-        legend(
-          "bottomleft",
-          labels,
-          col = 1:(length(x) + 1),
-          pch = 20,
-          cex = 0.7
-        )
-
-        if (dataframe == TRUE) {
-          return(totalstations)
-        }
-      } else if (which == "predict") {
+     if (which == "predict") {
         if (is.null(endDate)) {
           par(mar = c(5, 5, 4, 4) + 0.3)
           ny2 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", newyear))
