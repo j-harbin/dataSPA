@@ -15,12 +15,9 @@ plotSPA(
   division = NULL,
   region = NULL,
   item = NULL,
-  funding = NULL,
-  fundingChange = NULL,
   status = NULL,
   dataframe = FALSE,
   year = NULL,
-  endDate = NULL,
   debug = 0
 )
 }
@@ -57,16 +54,6 @@ of all regions is given.}
 specifying which category display to plot. If \code{which=salaryAllocation},
 the argument specifys whichs level to plot. By default all are plotted}
 
-\item{funding}{a variable used when \code{which='predictSummary'} or
-\code{which='predict'} used to indicate which funding source will
-experience change in the prediction. If \code{endDate} is provided,
-only the length of this argument must equal 1.}
-
-\item{fundingChange}{a percentage used when \verb{which='predictSummary}
-or \code{which=predict} used to indicate by how much the funding
-specified in \code{funding} will change by. If \code{endDate} is provided,
-this argument is ignored.}
-
 \item{status}{a character string indicating indicating which project
 status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
 Recommended, and Cancelled). If NULL, all projects are included.
@@ -79,10 +66,6 @@ data frames for each year is returned. This is mainly for package testing}
 \item{year}{a character indicating which year of the project to
 plot. This is given in the format "YYYY-YYYY". If \code{year} is \code{NULL}
 all years are plotted by default}
-
-\item{endDate}{the end date in "YYYY-YYYY" format that indicates
-when the funding specified by \code{funding} ends. This is used
-when \code{which='predict'} and can only be an interval of one year.}
 
 \item{debug}{integer value indicating level of debugging.
 If this is less than 1, no debugging is done. Otherwise,
@@ -103,13 +86,9 @@ The various plot types are as follows:
 \item For \code{which="omBar"}, a bar graph representing amount of money ($)
 coded by funding type. If plotting for a specific project, the number of
 deliverables and milestones per year are shown in blue and red respectively
-\item For \code{which="omPie"}, a pie chart representing amount of money ($)
-coded by funding type
 \item For \code{which="omAllocation"} Line graphs representing changes in O&M
 investment for categories over the years. The average rate of change
 per year for each category, where applicable, displayed on the graph in red
-\item For \code{which=omAllocationGeneral} a pie chat representing proportion of
-funding per category type is plotted for year each of the specified project
 \item For \code{which="salaryBar"} a bar graph representing amount of salary money ($)
 using the median values of a specific job classification. Graph color
 coded by funding type indicated by the legend.
@@ -117,18 +96,9 @@ coded by funding type indicated by the legend.
 investment for different classifications over the years. The average rate
 of change per year for each category, where applicable, displayed on the
 graph in red
-\item For \code{which="weekAllocation"} a bar graph representing time (weeks)
-invested per job classification for project years is plotted
 \item For \code{which="indeterminate"} a bar chart representing percentage of
 indeterminate vs non-Indeterminate employees for project years.
 Number of staff shown on the figure in red
-\item For \code{which="predictSummary"}a line chart showing the trends for
-changes in different funding scenarios
-\item For \code{which="predict"} a bar chart showing the trends for changes
-in different funding scenarios is plotted with the number of stations
-overlying the figure with a line. A new plot is plotted for each
-funding scenario. If \code{endDate} is provided, the bar chart will
-represent funding as status quo until the end date (See example 3)
 \item For \verb{which="predictSalary} a bar chat showing the trends of salary
 increasing while funding amount remains the same. Note: This plot does
 not include amount of overtime as that is hard to predict.
@@ -152,25 +122,7 @@ library(dataSPA)
 data <- getData(type="om", cookie=cookie)
 plotSPA(om=data, which="omBar")
 
-# Example 2: Plot a prediction of number of station
-# for NCP funding decreasing by 25\%, 50\%, 75\%, and 100\%
-for the Snow Crab project
-
-library(dataSPA)
-data(salaries)
-data <- getData(type='om', cookie=cookie)
-data2 <- getData(type='salary', cookie=cookie)
-plotSPA(om=data, salary=data2, which='predictSummary', id=1093,
-funding= rep("NCP (A-base)",4),
-fundingChange=c(-25, -5, -75, -100))
-
-# Example 3: Bar plot predicting of the change in
-number of stations impact as a result of a certain funding
-ending
-plotSPA(om=data, salary=data2, which='predict', id=1093,
-funding= "NCP (A-base)", endDate="2026-2027")
-
-# Example 4: Pie Chart showing number of projects by status
+# Example 2: Pie Chart showing number of projects by status
 plotSPA(om=data, salary=data2, which="overviewStatus")
 
 }

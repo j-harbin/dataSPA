@@ -1,0 +1,10 @@
+library(dataSPA)
+library(RColorBrewer)
+set.seed(1)
+om <- getData(type="om", cookie="hi", age=100)
+salary <- getData(type="salary", cookie="hi", age=100)
+funding <- c(unique(om$funding_source_display), unique(salary$funding_source_display))
+color <- colorRampPalette(brewer.pal(12,"Paired"))(length(funding))
+fundingPalette <- sample(color, length(color))
+names(fundingPalette) <- funding
+# save(fundingPalette, file="data/fundingPalette.rda")

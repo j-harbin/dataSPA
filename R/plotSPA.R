@@ -12,16 +12,9 @@
 #' coded by funding type. If plotting for a specific project, the number of
 #' deliverables and milestones per year are shown in blue and red respectively
 #'
-#' * For `which="omPie"`, a pie chart representing amount of money ($)
-#  invested in O&M per funding type for project years is plotted. Graph color
-#' coded by funding type
-#'
 #' * For `which="omAllocation"` Line graphs representing changes in O&M
 #' investment for categories over the years. The average rate of change
 #' per year for each category, where applicable, displayed on the graph in red
-#'
-#' * For `which=omAllocationGeneral` a pie chat representing proportion of
-#' funding per category type is plotted for year each of the specified project
 #'
 #' * For `which="salaryBar"` a bar graph representing amount of salary money ($)
 # invested per funding type for project years. Salaries are calculated
@@ -33,21 +26,9 @@
 #' of change per year for each category, where applicable, displayed on the
 #' graph in red
 #'
-#' * For `which="weekAllocation"` a bar graph representing time (weeks)
-#' invested per job classification for project years is plotted
-#'
 #' * For `which="indeterminate"` a bar chart representing percentage of
 #' indeterminate vs non-Indeterminate employees for project years.
 #' Number of staff shown on the figure in red
-#'
-#' * For `which="predictSummary"`a line chart showing the trends for
-#' changes in different funding scenarios
-#'
-#' * For `which="predict"` a bar chart showing the trends for changes
-#' in different funding scenarios is plotted with the number of stations
-#' overlying the figure with a line. A new plot is plotted for each
-#' funding scenario. If `endDate` is provided, the bar chart will
-#' represent funding as status quo until the end date (See example 3)
 #'
 #' * For `which="predictSalary` a bar chat showing the trends of salary
 #' increasing while funding amount remains the same. Note: This plot does
@@ -90,23 +71,12 @@
 #' status to include (Approved,Reviewed, Draft, Submitted, Not Approved,
 #' Recommended, and Cancelled). If NULL, all projects are included.
 #' are included
-#' @param funding a variable used when `which='predictSummary'` or
-#' `which='predict'` used to indicate which funding source will
-#' experience change in the prediction. If `endDate` is provided,
-#' only the length of this argument must equal 1.
-#' @param fundingChange a percentage used when `which='predictSummary`
-#' or `which=predict` used to indicate by how much the funding
-#' specified in `funding` will change by. If `endDate` is provided,
-#' this argument is ignored.
 #' @param dataframe a Boolean indicating if the user wants the data frame
 #' of what is being plotted returned. For multi-year projects, a list of
 #' data frames for each year is returned. This is mainly for package testing
 #' @param year a character indicating which year of the project to
 #' plot. This is given in the format "YYYY-YYYY". If `year` is `NULL`
 #' all years are plotted by default
-#' @param endDate the end date in "YYYY-YYYY" format that indicates
-#' when the funding specified by `funding` ends. This is used
-#' when `which='predict'` and can only be an interval of one year.
 #' @param item if`which='omAllocation'` an argument
 #' specifying which category display to plot. If `which=salaryAllocation`,
 #' the argument specifys whichs level to plot. By default all are plotted
@@ -147,25 +117,7 @@
 #' data <- getData(type="om", cookie=cookie)
 #' plotSPA(om=data, which="omBar")
 #'
-#' # Example 2: Plot a prediction of number of station
-#' # for NCP funding decreasing by 25%, 50%, 75%, and 100%
-#' for the Snow Crab project
-#'
-#' library(dataSPA)
-#' data(salaries)
-#' data <- getData(type='om', cookie=cookie)
-#' data2 <- getData(type='salary', cookie=cookie)
-#' plotSPA(om=data, salary=data2, which='predictSummary', id=1093,
-#' funding= rep("NCP (A-base)",4),
-#' fundingChange=c(-25, -5, -75, -100))
-#'
-#' # Example 3: Bar plot predicting of the change in
-#' number of stations impact as a result of a certain funding
-#' ending
-#' plotSPA(om=data, salary=data2, which='predict', id=1093,
-#' funding= "NCP (A-base)", endDate="2026-2027")
-#'
-#' # Example 4: Pie Chart showing number of projects by status
+#' # Example 2: Pie Chart showing number of projects by status
 #' plotSPA(om=data, salary=data2, which="overviewStatus")
 #'
 #' }
@@ -186,12 +138,9 @@ plotSPA <-
            division=NULL,
            region=NULL,
            item = NULL,
-           funding = NULL,
-           fundingChange = NULL,
            status = NULL,
            dataframe = FALSE,
            year = NULL,
-           endDate = NULL,
            debug = 0) {
     project_id <-
       category_display <-
@@ -565,8 +514,10 @@ plotSPA <-
         }
         # Creating place for legend
         if (which == "omBar") {
-        par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
-        #if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
+        if (dataframe == TRUE) {
+          return(df)
+        }
+
           if (length(years) > 1) {
             df <- df[sort(rownames(df)), ]
           } else {
@@ -577,90 +528,34 @@ plotSPA <-
             d[, 1] <- df[sort(rownames(df)), ]
             df <- d
           }
-        barplot(
-          as.matrix(df),
-          col = col[which(sort(unique(om$funding_source_display)) %in% sort(namesFunding))],
-          ylab = " ",
-          ylim = c(0, max(unlist(ylim))*1.5),
-          xlab = " ",
-          las=2,
-          legend.text = TRUE,
-          args.legend=list(x="bottomright", legend=wrapText(string=sort(namesFunding)), inset=c(-0.35,0), cex=0.7, bty="n")
-        )
-        title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
-        combine <- c(unlist(unname(ms)), unlist(unname(dv)))
-        # Add deliverables and milestones
-        par(new=TRUE)
-        plot(
-          1:length(dv),
-          unlist(unname(dv)),
-          type = "o",
-          pch = 20,
-          axes = FALSE,
-          xlab = "",
-          ylab = "",
-          ylim = c(min(combine)-(max(combine)-min(combine))*3, (max(unlist(unname(ms)), unlist(unname(dv))))),
-          col = "blue"
-        )
-        text(
-          x = 1:length(dv),
-          y = unlist(unname(dv)),
-          labels = unlist(unname(dv)),
-          pos = 3,
-          cex = 0.5,
-          col="blue"
-        )
-        par(new=TRUE)
-        plot(
-          1:length(ms),
-          unlist(unname(ms)),
-          type = "o",
-          pch = 20,
-          axes = FALSE,
-          xlab = "",
-          ylab = "",
-          ylim = c(min(combine)-(max(combine)-min(combine))*3, (max(unlist(unname(ms)), unlist(unname(dv))))),
-          col = "red"
-        )
-        text(
-          x = 1:length(ms),
-          y = unlist(unname(ms)),
-          labels = unlist(unname(ms)),
-          pos = 3,
-          cex = 0.5,
-          col="red"
-        )
+          milesanddels <- data.frame(Year=names(dv),
+                                     deliverable=unlist(dv),
+                                     milestone=unlist(ms)) %>%
+            mutate(dmoney=max(colSums(df))*1.05+deliverable*max(colSums(df)/5),
+                   mmoney=max(colSums(df))*1.05+milestone*max(colSums(df))/5)
 
-        if (dataframe == TRUE) {
-          return(df)
-        }
-
-        # } else {
-        #   # Configure margins for theme plot
-        #   if (length(years) > 6) {
-        #   holder <- data.frame(matrix(0, nrow = length(df[,1]), 1))
-        #   names(holder) <- c("  ")
-        #   DF <- cbind(df, holder)
-        #   } else {
-        #     DF <- df
-        #   }
-        #   DF <- DF[sort(rownames(DF)),]
-        #   barplot(
-        #     as.matrix(DF),
-        #     col = col[which(sort(unique(om$funding_source_display)) %in% sort(namesFunding))],
-        #     ylab = " ",
-        #     ylim = c(0, max(unlist(ylim))*1.5),
-        #     xlab = " ",
-        #     las=2,
-        #     legend.text = TRUE,
-        #     args.legend=list(x="topright", inset=c(-0.35,0), cex=0.5)
-        #   )
-        #   title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
-        #
-        #   if (dataframe == TRUE) {
-        #     return(DF)
-        #   }
-        # }
+          p <- ggplot(df %>%
+                        mutate(`Funding Source`=row.names(.)) %>%
+                        pivot_longer(cols=-`Funding Source`,names_to="Year",values_to="Amount"))+
+            geom_col(aes(x=Year,y=Amount,fill=`Funding Source`))+
+            labs(y="Amount of O&M Funding ($)")+
+            scale_fill_manual(values=fundingPalette,name="Funding Source")+
+            theme_classic()+
+            geom_line(data=milesanddels,
+                      aes(x=Year, y=dmoney, group=1), col="blue")+
+            geom_line(data=milesanddels,
+                      aes(x=Year, y=mmoney, group=1), col="red")+
+            geom_point(data=milesanddels,
+                       aes(x=Year, y=dmoney, group=1), col="blue")+
+            geom_point(data=milesanddels,
+                       aes(x=Year, y=mmoney, group=1), col="red")+
+            geom_text(data=milesanddels,
+                      aes(x=Year, y=dmoney*1.05,label=deliverable, group=1), col="blue")+
+            geom_text(data=milesanddels,
+                      aes(x=Year, y=mmoney*1.05, label=milestone, group=1), col="red")+
+            scale_y_continuous(labels = label_dollar(),
+                               expand = expansion(mult=c(0,0.2)))
+          return(ggplotly(p))
 
       } else if (which == "predictOM") {
         # Only considering years up until the current fiscal date.
@@ -1167,72 +1062,20 @@ plotSPA <-
       }
 
       if (which == "salaryBar") {
-        par(mfrow = c(1, 1))
-        par(mar = c(5, 5, 0.6, 8) + 0.3, xpd=TRUE)
-        ylim <- NULL
-        for (i in seq_along(salyears)) {
-          ylim[[i]] <- sum(subset(
-            saldf, select = c(paste0(salyears[i]))
-          ))
-        }
-        if (length(unique(unlist(unname(saldf)))) == 1) {
-          if (unique(unlist(unname(saldf))) == 0) {
-            stop("No time spent on this project")
-          }
-        }
-        if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
-        barplot(
-          as.matrix(saldf),
-          col = col[which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))],
-          #col = col,
-          ylab = " ",
-          ylim = c(0, max(unlist(ylim))*2),
-          xlab = " ",
-          las=2,
-          legend.text = TRUE,
-          args.legend=list(x="bottomright", legend=wrapText(sort(salnamesFunding)), inset=c(-0.35,0), cex=0.7),bty="n")
-        } else {
-          if (length(salyears) > 6) {
-          holder <- data.frame(matrix(0, nrow = length(saldf[,1]), 1))
-          names(holder) <- c("  ")
-          DF <- cbind(saldf, holder)
-          } else {
-            DF <- saldf
-          }
-
-          if (length(salyears) > 1) {
-            DF <- DF[sort(rownames(DF)), ]
-          } else {
-            d <-
-              data.frame(matrix(NA, nrow = length(salnamesFunding), ncol = length(salyears)))
-            names(d) <- salyears
-            rownames(d) <- sort(salnamesFunding)
-            d[, 1] <- DF[sort(rownames(DF)), ][1]
-            DF <- d
-          }
-          barplot(
-            as.matrix(DF),
-            col = col[which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))],
-            ylab = " ",
-            ylim = c(0, max(unlist(ylim))*2),
-            legend.text = TRUE,
-            xlab = " ",
-            args.legend=list(x="topright", legend=wrapText(sort(salnamesFunding)),inset=c(-0.35,0), cex=0.5,bty="n"),
-            las=2
-          )
-
-        }
-        title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
-        # legend(
-        #   "topleft",
-        #   c(salnamesFunding),
-        #   col = c(1:length(salnamesFunding)),
-        #   pch = rep(20, length(salnamesFunding)),
-        #   cex = 0.7
-        # )
         if (dataframe == TRUE) {
           return(saldf)
         }
+        p <- ggplot(saldf %>%
+                      mutate(`Funding Source`=row.names(.)) %>%
+                      pivot_longer(cols=-`Funding Source`,names_to="Year",values_to="Amount"))+
+          geom_col(aes(x=Year,y=Amount,fill=`Funding Source`))+
+          labs(y="Amount of Salary Funding ($)")+
+          scale_fill_manual(values=fundingPalette,name="Funding Source")+
+          theme_classic()+
+          scale_y_continuous(labels = label_dollar(),
+                             expand = expansion(mult=c(0,0.2)))
+        return(ggplotly(p))
+
       } else if (which %in% "salaryAllocation") {
         category <- unique(salaryKeep$level_display)
         salyears <- salyears[order(as.numeric(gsub(".*-","",salyears)))]
@@ -1875,6 +1718,8 @@ plotSPA <-
       fundingLevel[which(fundingLevel == "IT--03")] <- "CS--03"
       soi <- vector(mode = "list", length(unique(salary$level_display)))
       load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
+      load(file.path(system.file(package="dataSPA"),"data", "fundingPalette.rda"))
+
       for (i in seq_along(unique(fundingLevel))) {
         s <-
           salaries[which(grepl(unique(fundingLevel)[[i]], salaries$`Level and Step`)), ] # Find which salary spreadsheet to take median
