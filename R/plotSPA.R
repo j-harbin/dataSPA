@@ -154,7 +154,7 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate','predict', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm"
+        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm"
       )
     }
 
@@ -284,7 +284,6 @@ plotSPA <-
         "salaryBar",
         "salaryAllocation",
         "indeterminate",
-        'predict',
         'predictSalary',
         'predictOM',
         'overviewStatus',
@@ -293,7 +292,7 @@ plotSPA <-
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predict','predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm'")
+        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm'")
     }
 
     # if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
@@ -314,7 +313,6 @@ plotSPA <-
     if (which %in% c(
       "omBar",
       "omAllocation",
-      'predict',
       'predictOM',
       'overviewInvestment',
       'ebfm'
@@ -826,7 +824,6 @@ plotSPA <-
       "salaryBar",
       "salaryAllocation",
       "indeterminate",
-      "predict",
       'predictSalary',
       'overviewInvestment',
       'ebfm'
@@ -1194,290 +1191,7 @@ plotSPA <-
 
     }
 
-    if (which %in% c("predict")) {
-      if (!(id == 1093)) {
-        stop("This code is just being started and only works for snow crab project (i.e. id=1093)")
-      }
-
-      if (is.null(funding)) {
-        stop(
-          'must specify funding argument. Choose one of the following: ',
-          paste0(unique(keep$funding_source_display), collapse = ",")
-        )
-      }
-
-      if (is.null(fundingChange) && is.null(endDate)) {
-        stop("must specify fundingChange")
-      }
-
-      if (!(length(funding) == length(fundingChange)) &&
-          is.null(endDate)) {
-        stop("funding and fundingChange must be the same length")
-      }
-
-      for (i in seq_along(funding)) {
-        if (!(funding[i] %in% unique(keep$funding_source_display))) {
-          stop(
-            "funding ",
-            funding[i],
-            " did not fund stations in this project. Try : ",
-            paste0(unique(keep$funding_source_display), collapse = " or ")
-          )
-        }
-      }
-
-      # Cost allocated to station (Vessels, Boats)
-      stationFund <-
-        unique(keep$funding_source_display[which(keep$category_display == "Vessels, Boats")])
-      cost <-
-        data.frame(matrix(NA, nrow = length(stationFund), ncol = length(years)))
-      names(cost) <- years
-      rownames(cost) <- stationFund
-      for (i in seq_along(years)) {
-        for (j in seq_along(stationFund)) {
-          value <-
-            keep[which(keep$fiscal_year == years[i]), ] # Look at one year
-          value2 <-
-            value[which(value$category_display == "Vessels, Boats"), ] # Look at one year
-          cost[paste0(years[i])][, 1][j] <-
-            sum(value2$amount[which(value2$funding_source_display == stationFund[j])], na.rm =
-                  TRUE)
-        }
-      }
-      # identifying the new years to add
-      ly <-
-        gsub("^[^-]*-\\s*([^.]+).*", "\\1", years[length(years)]) # Getting last number of last year (ie. 2023-2024)
-      newyear <- paste0(ly, "-", as.numeric(ly) + 1)
-      if (!(is.null(endDate))) {
-        fundingChange <- -100
-      }
-      columnnames <- paste0(newyear, seq_along(funding))
-      # Addressing changes in funding based on user input
-      for (i in seq_along(funding)) {
-        for (j in seq_along(columnnames)) {
-          cc <-
-            cost[years[length(years)]][funding[i], ] #isolating cost from last year of specified funding
-          change <- cc * (fundingChange[j] / 100)
-          changeAmount <- cc + change
-          cost[columnnames[j]] <- NA
-          cost[columnnames[j]][funding[i], ] <- changeAmount
-        }
-      }
-      # Filling in value from previous year if user didn't specify a change
-      for (j in seq_along(columnnames)) {
-        same <- which(is.na(unname(unlist(cost[columnnames[j]]))))
-        #message("For j = ", j, " same = ", same)
-        cost[columnnames[j]][same, ] <- cost[years[length(years)]][same, ]
-      }
-      # right of figure
-      station <- cost # Setting dimensions for station
-
-      station[1, ] <- rep(390)
-      station[2, ] <- rep(24)
-
-      costPerStation <- cost[1:length(years)] / station[1:length(years)]
-
-      # Now take the number of cost in the most recent year
-      recent <- costPerStation[length(years)]
-      for (i in seq_along(columnnames)) {
-        for (j in seq_along(stationFund)) {
-          station[columnnames[i]][j, ] <-
-            cost[columnnames[i]][j, ] / recent[[1]][j]
-        }
-      }
-
-      totalnames <- c(years, columnnames)
-
-      # if we wanted color coded by funding this is where we would do it
-      totalstations <-
-        data.frame(matrix(NA, nrow = 1, ncol = length(totalnames)))
-      names(totalstations) <- totalnames
-      for (i in seq_along(totalnames)) {
-        totalstations[totalnames[i]] <- sum(station[totalnames[i]])
-      }
-     if (which == "predict") {
-        if (is.null(endDate)) {
-          par(mar = c(5, 5, 4, 4) + 0.3)
-          ny2 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", newyear))
-          newyear2 <- paste0(ny2, "-", ny2 + 1)
-          ny3 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", newyear2))
-          newyear3 <- paste0(ny3, "-", ny3 + 1)
-          labels <- c(years, newyear, newyear2, newyear3)
-
-          for (i in seq_along(fundingChange)) {
-            # Each scenario gets a separate plot
-            mat <-
-              cbind(cost[1:length(years)], cost[length(years) + i], cost[length(years) +
-                                                                           i], cost[length(years) + i])
-            names(mat) <- labels
-            bp <-
-              barplot(
-                as.matrix(mat),
-                col = c(1:length(namesFunding)),
-                ylim = c(0, sum(subset(
-                  df, select = c(paste0(years[1]))
-                )) + 109000),
-                las = 2,
-                cex.names = 0.7,
-                ylab = ""
-              )
-            abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
-            par(new = TRUE)
-            ts <-
-              cbind(totalstations[1:length(years)],
-                    totalstations[length(years) + i],
-                    totalstations[length(years) + i],
-                    totalstations[length(years) + i])
-            plot(
-              1:length(ts),
-              unlist(unname(ts)),
-              type = "o",
-              pch = 20,
-              axes = FALSE,
-              xlab = "",
-              ylab = "",
-              ylim = c(0, (max(
-                unlist(unname(ts))
-              ) * 1.15)),
-              col = "blue"
-            )
-            text(
-              x = 1:length(ts),
-              y = unlist(unname(ts)),
-              labels = unlist(unname(ts)),
-              pos = 3,
-              cex = 0.5
-            )
-            axis(
-              side = 4,
-              at = pretty(range(0, max(
-                unlist(unname(ts))
-              ))),
-              col = "blue",
-              col.ticks = "blue"
-            )
-            mtext(
-              "Number of Stations",
-              side = 4,
-              line = 3,
-              col = "blue"
-            )
-            title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
-          }
-        } else {
-          if (!(length(funding) == 1)) {
-            stop(
-              "Can only predict the ending of one funding at a time. Your funding argument has length = ",
-              length(funding)
-            )
-          }
-
-          # Determine how many years until ending
-          ny2 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", newyear))
-          endYears <- NULL
-          for (i in seq_along(0:20)) {
-            endYears[[i]] <- paste0(ny2 + i, "-", ny2 + (i + 1))
-          }
-
-          year1 <- as.numeric(gsub("(.+?)(\\-.*)", "\\1", endDate))
-          year2 <- as.numeric(gsub("^[^-]*-\\s*([^.]+).*", "\\1", endDate))
-          if (!(year2 - year1 == 1)) {
-            stop("endDate must only be one year interval not ",
-                 year2 - year1)
-          }
-
-          if (length(which(endYears %in% endDate)) == 0) {
-            stop(
-              "It's not possible to predict for endDate ",
-              endDate,
-              " Make
-   sure to have it in YYYY-YYYY format. You also may on predict for
-   up to 20 years in advance"
-            )
-          }
-          labels <- c(years, newyear, endYears[1:which(endYears %in% endDate)])
-          ey <- data.frame(matrix(NA, nrow = 2, ncol = length(labels)))
-          names(ey) <- labels
-          ey[1:length(years)] <- cost[1:length(years)]
-          ey[(length(years) + 1):(length(labels) - 1)] <- cost[length(years)]
-          rownames(ey) <- stationFund
-          ey[length(labels)][paste0(funding), ] <- 0
-          ey[length(labels)][which(!(stationFund %in% funding)), ] <-
-            ey[length(labels) - 1][which(!(stationFund %in% funding)), ] # copying over non impacting funding
-
-
-          # TEST NOW
-          par(mar = c(5, 5, 4, 4) + 0.3)
-          bp <-
-            barplot(
-              as.matrix(ey),
-              col = c(1:length(namesFunding)),
-              ylim = c(0, sum(subset(
-                df, select = c(paste0(years[1]))
-              )) + 109000),
-              las = 2,
-              cex.names = 0.7,
-              ylab = ""
-            )
-          abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red")
-
-          # Creating number of stations
-
-          ts <- data.frame(matrix(NA, nrow = 1, ncol = length(labels)))
-          names(ts) <- labels
-          ts[1:length(years)] <- totalstations[1:length(years)]
-          ts[(length(years) + 1):(length(labels) - 1)] <-
-            totalstations[length(years)]
-          gone <- station[length(years)][which(stationFund %in% funding), ]
-          ts[length(labels)] <-
-            unlist(unname(totalstations[length(years)])) - gone
-          par(new = TRUE)
-          plot(
-            1:length(ts),
-            unlist(unname(ts)),
-            type = "o",
-            pch = 20,
-            axes = FALSE,
-            xlab = "",
-            ylab = "",
-            ylim = c(0, (max(
-              unlist(unname(ts))
-            ) * 1.15)),
-            col = "blue"
-          )
-          text(
-            x = 1:length(ts),
-            y = unlist(unname(ts)),
-            labels = unlist(unname(ts)),
-            pos = 3,
-            cex = 0.5
-          )
-          axis(
-            side = 4,
-            at = pretty(range(0, max(
-              unlist(unname(ts))
-            ))),
-            col = "blue",
-            col.ticks = "blue"
-          )
-          mtext(
-            "Number of Stations",
-            side = 4,
-            line = 3,
-            col = "blue"
-          )
-          title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
-          legend(
-            "bottomleft",
-            c(salnamesFunding),
-            col = c(1:length(salnamesFunding)),
-            pch = rep(20, length(salnamesFunding)),
-            cex = 0.7
-          )
-
-        }
-      }
-    } else if (which == "predictSalary") {
+    if (which == "predictSalary") {
       if (as.numeric(str_extract(max(salyears), ".+?(?=-)")) > as.numeric(str_extract(Sys.time(), ".+?(?=-)"))) {
         fiscalyear <- as.numeric(str_extract(Sys.time(), ".+?(?=-)"))
         firstyears <- as.numeric(str_extract(names(saldf), ".+?(?=-)"))
