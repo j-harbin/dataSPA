@@ -27,7 +27,13 @@ Imports:
     stringi,
     rlang,
     utils,
-    TBSpayRates
+    TBSpayRates,
+    dplyr,
+    ggplot2,
+    magrittr,
+    tidyr,
+    scales,
+    plotly
 BugReports: https://github.com/j-harbin/dataSPA/issues
 Description: This package is intended to be used by Department
  Of Fisheries and Oceans Canada (DFO) employees to obtain data

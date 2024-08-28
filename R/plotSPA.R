@@ -83,33 +83,20 @@
 #' @param debug integer value indicating level of debugging.
 #'  If this is less than 1, no debugging is done. Otherwise,
 #'  some functions will print debugging information.
-#' @importFrom graphics barplot
-#' @importFrom graphics legend
-#' @importFrom graphics par
-#' @importFrom graphics pie
-#' @importFrom graphics title
-#' @importFrom graphics lines
-#' @importFrom graphics axis
-#' @importFrom graphics layout
-#' @importFrom graphics points
-#' @importFrom graphics abline
-#' @importFrom graphics mtext
-#' @importFrom graphics text
+#' @importFrom graphics barplot legend par pie title lines axis layout points
+#' @importFrom graphics abline mtext text
 #' @importFrom stats quantile
-#' @importFrom stats lm
-#' @importFrom stats coef
-#' @importFrom stringr str_count
-#' @importFrom stringr str_trim
+#' @importFrom stats lm coef
+#' @importFrom stringr str_count str_trim
 #' @importFrom grDevices extendrange
-#' @importFrom dplyr arrange
 #' @importFrom tidytext bind_tf_idf
-#' @importFrom dplyr count
-#' @importFrom dplyr desc
-#' @importFrom dplyr inner_join
-#' @importFrom dplyr select
-#' @importFrom dplyr summarize
+#' @importFrom dplyr count desc inner_join select summarize mutate arrange anti_join
 #' @importFrom tidytext get_stopwords
-#' @importFrom dplyr anti_join
+#' @importFrom magrittr %>%
+#' @importFrom ggplot2 ggplot
+#' @importFrom tidyr pivot_longer
+#' @importFrom scales label_dollar
+#' @importFrom plotly ggplotly
 #' @examples
 #' \dontrun{
 #' # Example 1: Plot Bar graph of O&M Allocations
@@ -119,7 +106,6 @@
 #'
 #' # Example 2: Pie Chart showing number of projects by status
 #' plotSPA(om=data, salary=data2, which="overviewStatus")
-#'
 #' }
 #' @export
 #'
@@ -142,6 +128,7 @@ plotSPA <-
            dataframe = FALSE,
            year = NULL,
            debug = 0) {
+
     project_id <-
       category_display <-
       project_year_id <-
@@ -149,6 +136,8 @@ plotSPA <-
       funding_source_display <-
       fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <-
       stop_words <- words <- overview <- subpoint <- tf_idf_sum <- tf_idf <- NULL
+
+    load(file.path(system.file(package="dataSPA"),"data", "fundingPalette.rda"))
 
     # remove all of the amount = 0
     if (!(is.null(om))) {
@@ -165,7 +154,7 @@ plotSPA <-
 
     if (is.null(which)) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral','salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm"
+        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predictSummary','predict', 'predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm"
       )
     }
 
@@ -291,12 +280,9 @@ plotSPA <-
     if (!(
       which %in% c(
         "omBar",
-        "omPie",
         "omAllocation",
-        "omAllocationGeneral",
         "salaryBar",
         "salaryAllocation",
-        "weekAllocation",
         "indeterminate",
         'predictSummary',
         'predict',
@@ -308,7 +294,7 @@ plotSPA <-
       )
     )) {
       stop(
-        "must provide a which argument of either 'omBar', 'omPie', 'omAllocation', 'omAllocationGeneral', 'salaryBar', 'salaryAllocation', 'weekAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm'")
+        "must provide a which argument of either 'omBar', 'omAllocation', 'salaryBar', 'salaryAllocation', 'indeterminate', 'predictSummary', 'predict','predictSalary', 'predictOM', 'overviewStatus', 'overviewInvestment', or 'ebfm'")
     }
 
     # if (is.null(id) && is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division) && (!which == "overviewStatus")) {
@@ -328,9 +314,7 @@ plotSPA <-
 
     if (which %in% c(
       "omBar",
-      "omPie",
       "omAllocation",
-      "omAllocationGeneral",
       'predictSummary',
       'predict',
       'predictOM',
@@ -517,6 +501,8 @@ plotSPA <-
         if (dataframe == TRUE) {
           return(df)
         }
+
+          #browser()
 
           if (length(years) > 1) {
             df <- df[sort(rownames(df)), ]
@@ -712,37 +698,6 @@ plotSPA <-
         }
 
       }
-      } else if (which == "omPie") {
-        df2 <- df # Create storage
-        for (i in seq_along(years)) {
-          for (j in seq_along(namesFunding)) {
-            df2[paste0(namesFunding[j]), paste0(years[i])] <-
-              100 * (df[paste0(namesFunding[j]), paste0(years[i])] / sum(df[paste0(years[i])]))
-          }
-        }
-
-        par(mfrow = c(1, length(years)))
-        for (i in seq_along(years)) {
-          pie(
-            unname(unlist(df2[paste0(years[i])])),
-            col = c(1:length(namesFunding)),
-            labels = paste0(round(unname(
-              unlist(df2[paste0(years[i])])
-            ), 2), "%")
-          )
-          title(paste0(years[i]))
-        }
-        legend(
-          "bottomright",
-          c(namesFunding),
-          col = c(1:length(namesFunding)),
-          pch = rep(20, length(namesFunding)),
-          cex = 0.7
-        )
-        if (dataframe == TRUE) {
-          return(df2)
-        }
-
       } else if (which == "omAllocation") {
         category <- unique(keep$category_display)
         years <- unique(keep$fiscal_year)
@@ -866,57 +821,12 @@ plotSPA <-
           return(amounty)
         }
 
-      } else if (which == "omAllocationGeneral") {
-        par(mfrow = c(1, length(unique(years))))
-        DFG <- NULL
-        for (i in seq_along(years)) {
-          value <-
-            keep[which(keep$fiscal_year == years[i]), ] # Look at one year
-          mg <- matrix(0, nrow = 1, ncol = length(unique(value$category_type)))
-          gdf <- as.data.frame(mg, col.names = unique(value$category_type))
-          names(gdf) <- unique(value$category_type)
-          for (j in seq_along(unique(value$category_type))) {
-            gdf[j] <-
-              sum(value$amount[which(value$category_type == unique(value$category_type)[j])], na.rm =
-                    TRUE)
-          }
-          # Fill in values
-          sum <- sum(unlist(unname(gdf)), na.rm = TRUE)
-          labels <- paste0(round(100 * (unname(
-            unlist(gdf)
-          ) / sum), 2), " %")
-          pie(
-            unname(unlist(gdf)),
-            labels <-
-              labels,
-            col = 1:length(unique(value$category_type)),
-            radius = 1
-          )
-          title(paste0(years[i]))
-          legend(
-            "topleft",
-            c(unique(value$category_type)),
-            col = c(1:length(unique(
-              value$category_type
-            ))),
-            pch = rep(20, length(unique(
-              value$category_type
-            ))),
-            cex = 0.7
-          )
-          DFG[[i]] <- gdf
-        }
-        if (dataframe == TRUE) {
-          return(DFG)
-        }
       }
-
     }
 
     if (which %in% c(
       "salaryBar",
       "salaryAllocation",
-      "weekAllocation",
       "indeterminate",
       "predictSummary",
       "predict",
@@ -1199,7 +1109,7 @@ plotSPA <-
           return(amounty)
         }
 
-      } else if (which %in% c("weekAllocation", "predictSalary")) {
+      } else if (which %in% c("predictSalary")) {
         # STEP ONE (PREDICTSALARY): LOOP ALL YEARS TO OBTAIN WEEKS FOR LEVEL CLASSIFICATION
         par(mfrow = c(1, length(salyears)))
         DFL2 <- NULL
@@ -1215,22 +1125,8 @@ plotSPA <-
                     TRUE)
           }
           DFL2[[i]] <- dfl2
-          # Fill in values
-          if (which == "weekAllocation") {
-            barplot(
-              as.matrix(dfl2),
-              col = 1,
-              ylab = "Time (weeks)",
-              xlab = "Job Classification"
-            )
-            title(paste0(salyears[i]))
-          }
-
         }
 
-        if (dataframe == TRUE && which == "weekAllocation") {
-          return(DFL2)
-        }
 
       } else if (which == "indeterminate") {
         par(mfrow = c(1, length(salyears)))
@@ -1718,7 +1614,6 @@ plotSPA <-
       fundingLevel[which(fundingLevel == "IT--03")] <- "CS--03"
       soi <- vector(mode = "list", length(unique(salary$level_display)))
       load(file.path(system.file(package="dataSPA"),"data", "salaries.rda"))
-      load(file.path(system.file(package="dataSPA"),"data", "fundingPalette.rda"))
 
       for (i in seq_along(unique(fundingLevel))) {
         s <-
@@ -2108,7 +2003,6 @@ if (dataframe == TRUE) {
         names(scores2) <- c("noIDS", "subpillar")
         scores2$noIDS <- unlist(noIDS)
         scores2$subpillar <- sp
-        #par(oma = c(2, 0, 0, 0))
         par(mar = c(1, 3, 1, 3), mfrow=c(1,2), xpd=TRUE)  # c(bottom, left, top, right)
         pie(scores2$noIDS, labels=scores2$noIDS, col=pal)
         plot(0, type = "n", xlab = "", ylab = "", xlim = c(0, 1), ylim = c(0, 1), axes=FALSE)
@@ -2117,5 +2011,3 @@ if (dataframe == TRUE) {
 
     }
 }
-
-

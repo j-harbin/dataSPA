@@ -124,7 +124,6 @@ plotSPA(om=data, which="omBar")
 
 # Example 2: Pie Chart showing number of projects by status
 plotSPA(om=data, salary=data2, which="overviewStatus")
-
 }
 }
 \author{
