@@ -487,7 +487,8 @@ res <- try(plotSPA(om=index, which="predictOM", id=ID,status=status), silent=TRU
 
 
 ```{r, echo=FALSE, fig.cap="Figure 4: Bar graph representing amount of salary money ($) planned to be spent on the project using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-res <- try(plotSPA(salary=index2, id=ID, which="salaryBar",status=status), silent=TRUE)
+#browser()
+try(plotSPA(salary=index2, id=ID, which="salaryBar",status=status), silent=TRUE)
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 5: Line graphs representing changes in salary investment for different classifications over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}

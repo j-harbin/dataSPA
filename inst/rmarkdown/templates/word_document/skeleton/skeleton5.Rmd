@@ -167,7 +167,7 @@ res <- try(plotSPA(om=index,which="predictOM", division=division[i], status=stat
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved projects in the Maritimes region for this division. Investments calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-res <- try(plotSPA(salary=index2, division=DIV, which="salaryBar", status=status), silent=TRUE)
+try(plotSPA(salary=index2, division=DIV, which="salaryBar", status=status), silent=TRUE)
 ```
 
 

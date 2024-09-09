@@ -167,7 +167,7 @@ res <- try(plotSPA(om=index,which="predictOM", functionalGroup=functionalGroup[i
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved projects in the Maritimes rergion for this functional group. Investment calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
-res <- try(plotSPA(salary=index2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
+try(plotSPA(salary=index2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
 ```
 
 
