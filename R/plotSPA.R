@@ -537,7 +537,7 @@ plotSPA <-
                       aes(x=Year, y=mmoney*1.05, label=milestone, group=1), col="red")+
             scale_y_continuous(labels = label_dollar(),
                                expand = expansion(mult=c(0,0.2)))
-          return(ggplotly(p))
+          return(suppressWarnings(ggplotly(p)))
 
       } else if (which == "predictOM") {
         # Only considering years up until the current fiscal date.
