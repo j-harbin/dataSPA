@@ -470,8 +470,8 @@ if (!(length(index$project_id) == 0)) {
 }
 ```
 
-```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively"}
-res <- try(plotSPA(om=index, id=ID, which="omBar", status=status), silent=TRUE)
+```{r, echo=FALSE, fig.cap="Figure 1: Bar chart showing the amount of O&M money ($) invested into the project. Graph color coded by funding type and show the number of deliverables and milestones per year in blue and red respectively", warning=FALSE}
+try(plotSPA(om=index, id=ID, which="omBar", status=status), silent=TRUE)
 ```
 
 ```{r, echo=FALSE, fig.cap="Figure 2: Line graphs representing changes in O&M investment for categories over the years for a specific project. Average rate of change per year for each category, where applicable, displayed on the graph in red"}

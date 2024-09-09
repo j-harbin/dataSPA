@@ -141,8 +141,8 @@ res <- try(plotSPA(om=index, salary=index2, functionalGroup =unique(index$functi
 
 **Plots**
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend and  show the number of deliverables and milestones per year in blue and red respectively."}
-res <- try(plotSPA(om=index, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend and  show the number of deliverables and milestones per year in blue and red respectively.", warning=FALSE}
+try(plotSPA(om=index, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
 ```
 
 ### Choose an om allocation plot {.tabset .tabset-dropdown}
@@ -229,11 +229,11 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))), "\n")
 
 </font>
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved research projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend.", results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved research projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend.", results="asis", comment=NA, warning=FALSE}
 run <- ifelse(("Research" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 research1 <- index[which(index$activity_type == "Research"),]
-res <- try(plotSPA(om=research1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
+try(plotSPA(om=research1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
 } else {
   cat(paste0("There are no Research projects for this functional group"))
 }
@@ -268,7 +268,7 @@ res <- try(plotSPA(om=research1,which="predictOM", functionalGroup=functionalGro
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved research projects in the Maritimes region for this functional group. Investment calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 research2 <- index2[which(index2$activity_type == "Research"),]
-res <- try(plotSPA(salary=research2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
+try(plotSPA(salary=research2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
 }
 ```
 
@@ -320,12 +320,12 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 </font>
 
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved monitoring projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved monitoring projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend",results="asis", comment=NA, warning=FALSE}
 
 runm <- ifelse(("Monitoring" %in% unique(index$activity_type)), TRUE, FALSE)
 if (runm) {
 monitor1 <- index[which(index$activity_type == "Monitoring"),]
-res <- try(plotSPA(om=monitor1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
+try(plotSPA(om=monitor1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
 } else {
   cat(paste0("There are no Monitoring projects for this functional group"))
 }
@@ -361,7 +361,7 @@ res <- try(plotSPA(om=monitor1,which="predictOM", functionalGroup=functionalGrou
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved monitoring projects in the Maritimes region for this specific functional group. Investment calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (runm) {
 monitor2 <- index2[which(index2$activity_type == "Monitoring"),]
-res <- try(plotSPA(salary=monitor2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
+try(plotSPA(salary=monitor2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
 }
 ```
 
@@ -411,11 +411,11 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 </font>
 
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved assessment projects in the Maritimes region for this specific functional group. Graph color coded by funding type as shown by legend",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved assessment projects in the Maritimes region for this specific functional group. Graph color coded by funding type as shown by legend",results="asis", comment=NA, warning=FALSE}
 run <- ifelse(("Assessment" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 assessment1 <- index[which(index$activity_type == "Assessment"),]
-res <- try(plotSPA(om=assessment1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
+try(plotSPA(om=assessment1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
 } else {
   cat(paste0("There are no Assessment projects for this functional group"))
 }
@@ -450,7 +450,7 @@ res <- try(plotSPA(om=assessment1,which="predictOM", functionalGroup=functionalG
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to be spent on the approved assessment projects in the Maritimes region for this functional group. Investments calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 assessment2 <- index2[which(index2$activity_type == "Assessment"),]
-res <- try(plotSPA(salary=assessment2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
+try(plotSPA(salary=assessment2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
 }
 ```
 
@@ -498,11 +498,11 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved data management projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved data management projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend",results="asis", comment=NA, warning=FALSE}
 run <- ifelse(("Data Management" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 management1 <- index[which(index$activity_type == "Data Management"),]
-res <- try(plotSPA(om=management1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
+try(plotSPA(om=management1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
 } else {
   cat(paste0("There are no Data Management projects for this functional group"))
 }
@@ -538,7 +538,7 @@ res <- try(plotSPA(om=management1,which="predictOM", functionalGroup=functionalG
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved data management projects in the Maritimes region for this specific functional group. Investment calculated using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 management2 <- index2[which(index2$activity_type == "Data Management"),]
-res <- try(plotSPA(salary=management2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent = TRUE)
+try(plotSPA(salary=management2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent = TRUE)
 }
 ```
 
@@ -587,11 +587,11 @@ cat(paste0("Functional Group: ", paste0(unique(index$functional_group))))
 ```
 </font>
 
-```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved other projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend",results="asis", comment=NA}
+```{r, echo=FALSE, fig.cap="Bar chart showing the amount of O&M money ($) invested into the approved other projects in the Maritimes region for this functional group. Graph color coded by funding type as shown by the legend",results="asis", comment=NA, warning=FALSE}
 run <- ifelse(("Other" %in% unique(index$activity_type)), TRUE, FALSE)
 if (run) {
 other1 <- index[which(index$activity_type == "Other"),]
-res <- try(plotSPA(om=other1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
+try(plotSPA(om=other1, functionalGroup=unique(index$functional_group), which="omBar", status=status), silent=TRUE)
 } else {
   cat(paste0("There are no Other projects for this functional group"))
 }
@@ -626,7 +626,7 @@ res <- try(plotSPA(om=other1,which="predictOM", functionalGroup=functionalGroup[
 ```{r, echo=FALSE, fig.cap="Bar graph representing amount of salary money ($) planned to spent on the approved other projects in the Maritimes region for this functional group. Investment calcualted using the median values of a specific job classification. Graph color coded by funding type indicated by the legend."}
 if (run) {
 other2 <- index2[which(index2$activity_type == "Other"),]
-res <- try(plotSPA(salary=other2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
+try(plotSPA(salary=other2, functionalGroup=unique(index2$functional_group), which="salaryBar", status=status), silent=TRUE)
 }
 ```
 
