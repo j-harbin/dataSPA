@@ -97,6 +97,7 @@
 #' @importFrom tidyr pivot_longer
 #' @importFrom scales label_dollar
 #' @importFrom plotly ggplotly
+#' @importFrom tibble rownames_to_column
 #' @examples
 #' \dontrun{
 #' # Example 1: Plot Bar graph of O&M Allocations
@@ -559,8 +560,12 @@ plotSPA <-
         names(DF) <- newyear
 
         for (i in seq_along(DF)) {
-          m <- 0.02*i
+          if (i == 1) {
+          m <- 0.02
           DF[,i] <- unlist(unname(df[length(years)]))*(1+m)
+          } else {
+            DF[,i]<- unlist(unname(DF[i-1]))*(1+0.02)
+          }
         }
 
         dfs <- cbind(df, DF)
@@ -582,6 +587,7 @@ plotSPA <-
           }
         }
         gap[(length(years)+1):length(names(gap))] <- newGap
+        #browser() #tuesday
 
         # FIXING DOUBLE GAPPING
         for (i in seq_along(dfs[,newyear])) {
@@ -594,7 +600,6 @@ plotSPA <-
 
         # Restructure gap
         DFs <- DFs[sort(rownames(DFs)),]
-          #browser() #tuesday
           # Reshape data to long format
           df_long <- DFs %>%
             rownames_to_column("FundingSource") %>%
