@@ -497,9 +497,6 @@ plotSPA <-
         if (dataframe == TRUE) {
           return(df)
         }
-
-          #browser()
-
           if (length(years) > 1) {
             df <- df[sort(rownames(df)), ]
           } else {
@@ -1235,6 +1232,7 @@ plotSPA <-
 dfROI2 <- data.frame(matrix(0, ncol=length(labels), nrow=length(salnamesFunding)+length(salnamesFunding)))
 names(dfROI2) <- labels
 rownames(dfROI2) <- c(salnamesFunding, paste0(salnamesFunding, "GAP"))
+
 dfROI2[1:length(salnamesFunding),] <- dfROI
 old <- dfROI[length(salyears)]
 N <- dfROI[(length(salyears)+1):length(labels)]
@@ -1257,27 +1255,19 @@ for (i in seq_along(keep)) {
     re <- as.numeric(dfROI2[keep][i][k,])-gap[[i]][k,]
     dfROI2[keep][i][k,] <- as.numeric(re)
       }
-
 }
+
+# FIXING DOUBLE GAPPING (HERE JAIM)
+for (i in keep) {
+  dfROI[,i] <- dfROI[,length(salyears)]
+}
+
 
 # Structuring data frame so reds aren't together
 dfROI2 <- dfROI2[sort(row.names(dfROI2)),]
-# Show gap + number
-cc <- which(sort(unique(salary$funding_source_display)) %in% sort(salnamesFunding))
-j <- sort(rep(cc,2))
-j <- col[as.numeric(j)]
-j[which(!(seq_along(j) %in% seq(from=1, to=length(j), by=2)))] <- "red"
-par(mfrow=c(1,1), mar = c(5, 5, 1.5, 4) + 0.1)
-#Print amount of money
 
-sums <- NULL
-for (i in seq_along(dfROI2[which(grepl("GAP", row.names(dfROI2))),][(length(salyears)+1):length(labels)])) {
-  sums[[i]] <- round(sum(as.numeric(unlist(unname(dfROI2[which(grepl("GAP", row.names(dfROI2))),][(length(salyears)+1):length(labels)][i])))),0)
-}
-sums2 <- NULL
-for (i in seq_along(dfROI)) {
-  sums2[[i]] <- round(sum(as.numeric(unlist(unname(dfROI[i])))),0)
-}
+dfROI2 <- dfROI2 %>%
+  mutate(across(everything(), as.numeric))
 
 if (length(unique(unlist(unname(dfROI2)))) == 1) {
   if (as.numeric(unique(unlist(unname(dfROI2))) == 0)) {
@@ -1286,92 +1276,33 @@ if (length(unique(unlist(unname(dfROI2)))) == 1) {
 
 }
 
-if (is.null(theme) && is.null(functionalGroup) && is.null(section) && is.null(division)) {
-bp <-
-  barplot(
-    as.matrix(dfROI2),
-    col = j,
-    ylim = c(0, max(unlist(sums2))*2),
-    xlab = " ",
-    las = 2,
-    ylab = " ",
-    cex.names=0.8
-  )
-legend(
-  "topleft",
-  wrapText(c(rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))], "Gap in funding")),
-  col = c(j[which(!(j == "red"))], "red"),
-  pch = rep(20, (length(salnamesFunding)+1)),
-  cex = 0.7,
-  bty="n"
-)
-} else {
+df_long <- dfROI2 %>%
+  rownames_to_column("FundingSource") %>%
+  pivot_longer(-FundingSource, names_to = "Year", values_to = "Amount")
 
-  if (length(salyears) == 1) {
-    # 1
-    l <- 1
-  } else if (length(salyears) > 1 && length(salyears) < 5) {
-    # 2,3,4
-    l <- 2
-  } else if (length(salyears) > 4 && length(salyears) < 7) {
-    # 5, 6
-    l <- 3
-  } else if (length(salyears) > 6) {
-    # To move further away, make l bigger
-    # 7
-    l <- 8
-  }
+# Separate GAP rows
+df_long <- df_long %>%
+  mutate(GAP = grepl("GAP", FundingSource),
+         FundingSource = gsub(" GAP", "", FundingSource))
 
-  holder <- data.frame(matrix(0, nrow = length(dfROI2[,1]), l))
-  names(holder) <- c("  ")
-  DF <- cbind(dfROI2, holder)
+# Create stacked bar chart
+p <- ggplot(df_long, aes(x = Year, y = Amount, fill = ifelse(GAP, "GAP", FundingSource))) +
+  geom_bar(stat = "identity") +
+  scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
+  guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
+  theme_minimal()+
+  labs(y = "Amount of Salary Funding", x = "Year") +  # Update y-axis label
+  theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
+return(ggplotly(p))
 
-  for (i in seq_along(DF[keep])) {
-    DF[keep][,i] <- as.numeric(DF[keep][,i])
-  }
-  if (!(dataframe)) {
-  bp <-
-    barplot(
-      as.matrix(DF),
-      col = j,
-      ylim = c(0, max(unlist(sums2))*1.3),
-      xlab = " ",
-      las = 2,
-      ylab = " ",
-      cex.names=0.8,
-    )
 
-  string <- rownames(dfROI2)[-(which(grepl("GAP", rownames(dfROI2))))]
-  strings <- wrapText(string=string, nchar=20)
-  legend(
-    "bottomright",
-    c(strings, "Gap in funding"),
-    col = c(j[which(!(j == "red"))], "red"),
-    pch = rep(15, (length(salnamesFunding)+1)),
-    cex = 0.55
-  )
-  } # not data frame
-} # else
-if (!(dataframe)) {
-title(ylab = "Amount of Salary Funding ($)", mgp = c(4, 1, 0))
-abline(v = mean(bp[length(salyears):(length(salyears) + 1)]), col = "red", lty=3)
-m <- max(unlist(sums2)[1:length(salyears)])
-pr <- max(unlist(sums2[(length(salyears)+1):(length(sums2))]))
-y <- unname(quantile(c(m,pr), .15))
-#y <- median(c(m,pr))
-if (m-pr < 0) {
-  y <- pr+(max(unlist(sums2))/20)
-}
-text(
-  x = bp[(length(salyears)+1):length(labels)],
-  y = y,
-  labels = paste0("$", sums),
-  pos = 3,
-  cex = 0.65,
-  col="red",
-  srt=90
-)
-}
+
+
+
+
+
+
+
 if (dataframe == TRUE) {
   return(dfROI2)
 }
