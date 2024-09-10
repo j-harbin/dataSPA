@@ -536,7 +536,9 @@ plotSPA <-
             geom_text(data=milesanddels,
                       aes(x=Year, y=mmoney*1.05, label=milestone, group=1), col="red")+
             scale_y_continuous(labels = label_dollar(),
-                               expand = expansion(mult=c(0,0.2)))
+                               expand = expansion(mult=c(0,0.2)))+
+            theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
+
           return(ggplotly(p))
 
       } else if (which == "predictOM") {
@@ -584,111 +586,40 @@ plotSPA <-
         }
         gap[(length(years)+1):length(names(gap))] <- newGap
 
+        # FIXING DOUBLE GAPPING
+        for (i in seq_along(dfs[,newyear])) {
+          dfs[,newyear][i] <- df[,length(df)]
+        }
+
         DFs <- rbind(dfs, gap)
+
         rownames(DFs) <- c(namesFunding, paste0(namesFunding, " GAP"))
 
         # Restructure gap
-        DFs <- DFs[sort(row.names(DFs)),]
-        par(mfrow=c(1,1), mar = c(5, 5, 1.5, 4) + 0.1)
-
-        sums <- NULL
-        for (i in seq_along(DFs[which(grepl("GAP", row.names(DFs))),][(length(years)+1):length(names(DFs))])) {
-          sums[[i]] <- round(sum(as.numeric(unlist(unname(DFs[which(grepl("GAP", row.names(DFs))),][(length(years)+1):length(names(DFs))][i])))),0)
-        }
-        sums2 <- NULL
-        for (i in seq_along(DFs)) {
-          sums2[[i]] <- round(sum(as.numeric(unlist(unname(DFs[i])))),0)
-        }
-        cc <- which(sort(unique(om$funding_source_display)) %in% sort(namesFunding))
-        j <- sort(rep(as.character(which(sort(unique(om$funding_source_display)) %in% sort(namesFunding))),2))
-        j <- col[as.numeric(j)]
-        j[which(!(seq_along(j) %in% seq(from=1, to=length(j), by=2)))] <- "red"
         DFs <- DFs[sort(rownames(DFs)),]
-        if (is.null(theme) && is.null(functionalGroup) && is.null(division) && is.null(section)) {
-          bp <-
-            barplot(
-              as.matrix(DFs),
-              col = j,
-              ylim = c(0, max(unlist(sums2))*2),
-              xlab = " ",
-              las = 2,
-              ylab = " ",
-              cex.names=0.8
-            )
-          legend(
-            "topleft",
-            wrapText(c(rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))], "Gap in funding")),
-            col = c(j[which(!(j == "red"))], "red"),
-            pch = rep(20, (length(namesFunding)+1)),
-            cex = 0.7
-          )
-        } else {
-          if (length(years) == 1) {
-            # 1
-            l <- 1
-          } else if (length(years) > 1 && length(years) < 5) {
-            # 2,3,4
-            l <- 2
-          } else if (length(years) > 4 && length(years) < 7) {
-            # 5, 6
-            l <- 3
-          } else if (length(years) > 6) {
-            # To move further away, make l bigger
-            # 7
-            l <- 8
-          }
+          #browser() #tuesday
+          # Reshape data to long format
+          df_long <- DFs %>%
+            rownames_to_column("FundingSource") %>%
+            pivot_longer(-FundingSource, names_to = "Year", values_to = "Amount")
 
-          holder <- data.frame(matrix(0, nrow = length(DFs[,1]), l))
-          names(holder) <- c("  ")
-          DF <- cbind(DFs, holder)
-          DF <- DF[sort(rownames(DF)),]
-          j <- sort(rep(which(sort(unique(om$funding_source_display)) %in% sort(namesFunding)),2))
-          j <- col[as.numeric(j)]
-          j[which(!(seq_along(j) %in% seq(from=1, to=length(j), by=2)))] <- "red"
-          if (!(dataframe)) {
-          bp <-
-            barplot(
-              as.matrix(DF),
-              col = j,
-              ylim = c(0, max(unlist(sums2))*1.3),
-              xlab = " ",
-              las = 2,
-              ylab = " ",
-              cex.names=0.8,
-            )
-           # Put legend labels on new line
-          string <- rownames(DFs)[-(which(grepl("GAP", rownames(DFs))))]
-          strings <- wrapText(string=string, nchar=20)
+          # Separate GAP rows
+          df_long <- df_long %>%
+            mutate(GAP = grepl("GAP", FundingSource),
+                   FundingSource = gsub(" GAP", "", FundingSource))
 
-          legend(
-            "topright",
-            c(strings, "Gap in funding"),
-            col = c(j[which(!(j == "red"))], "red"),
-            pch = rep(15, (length(namesFunding)+1)),
-            cex = 0.55
-          )
-          } # not data frame
-        } # else
-        if (!(dataframe)) {
-        title(ylab = "Amount of O&M Funding ($)", mgp = c(4, 1, 0))
-        abline(v = mean(bp[length(years):(length(years) + 1)]), col = "red", lty=3)
-        m <- max(unlist(sums2)[1:length(years)])
-        pr <- max(unlist(sums2[(length(years)+1):(length(sums2))]))
-        y <- unname(quantile(c(m,pr), .15))
-        #y <- median(c(m,pr))
-        if (m-pr < 0) {
-          y <- pr+(max(unlist(sums2))/20)
-        }
-        text(
-          x = bp[(length(years)+1):length(names(DFs))],
-          y = y,
-          labels = paste0("$", sums),
-          pos = 3,
-          cex = 0.65,
-          col="red",
-          srt=90
-        )
-        }
+          # Create stacked bar chart
+          p <- ggplot(df_long, aes(x = Year, y = Amount, fill = ifelse(GAP, "GAP", FundingSource))) +
+            geom_bar(stat = "identity") +
+            scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
+            guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
+            theme_minimal()+
+            labs(y = "Amount of O&M Funding", x = "Year") +  # Update y-axis label
+            theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
+          return(ggplotly(p))
+
+          # end tuesday
+
         if (dataframe == TRUE) {
           return(DFs)
         }
@@ -977,7 +908,9 @@ plotSPA <-
           scale_fill_manual(values=fundingPalette,name="Funding Source")+
           theme_classic()+
           scale_y_continuous(labels = label_dollar(),
-                             expand = expansion(mult=c(0,0.2)))
+                             expand = expansion(mult=c(0,0.2)))+
+          theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
+
         return(ggplotly(p))
 
       } else if (which %in% "salaryAllocation") {
