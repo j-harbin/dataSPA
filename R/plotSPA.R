@@ -108,6 +108,7 @@
 #' @importFrom ggplot2 labs
 #' @importFrom ggplot2 theme
 #' @importFrom ggplot2 expansion
+#' @importFrom ggplot2 element_text
 #' @importFrom ggplot2 theme
 #' @importFrom tidyr pivot_longer
 #' @importFrom scales label_dollar
