@@ -103,6 +103,7 @@
 #' @importFrom ggplot2 scale_fill_manual
 #' @importFrom ggplot2 scale_y_continuous
 #' @importFrom ggplot2 guides
+#' @importFrom ggplot2 guide_legend
 #' @importFrom ggplot2 theme_minimal
 #' @importFrom ggplot2 theme_classic
 #' @importFrom ggplot2 labs
