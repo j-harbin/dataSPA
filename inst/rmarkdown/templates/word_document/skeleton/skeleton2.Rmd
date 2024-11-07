@@ -156,7 +156,7 @@ for (j in seq_along(headers)) {
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-res <- try(plotSPA(om=index,which="predictOM", theme=theme[i], status=status), silent=TRUE)
+try(plotSPA(om=index,which="predictOM", theme=theme[i], status=status), silent=TRUE)
 ```
 
 
@@ -651,7 +651,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(salary=other2, which="predictSalary", theme=unique(index2$theme), status=status), silent=TRUE)
+try(plotSPA(salary=other2, which="predictSalary", theme=unique(index2$theme), status=status), silent=TRUE)
 }
 ```
 

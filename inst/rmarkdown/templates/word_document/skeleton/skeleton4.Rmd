@@ -155,7 +155,7 @@ for (j in seq_along(headers)) {
 
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
-res <- try(plotSPA(om=index,which="predictOM", section=section[i], status=status), silent=TRUE)
+try(plotSPA(om=index,which="predictOM", section=section[i], status=status), silent=TRUE)
 ```
 
 
@@ -182,7 +182,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-res <- try(plotSPA(salary=index2, which="predictSalary", section=SEC, status=status), silent=TRUE)
+try(plotSPA(salary=index2, which="predictSalary", section=SEC, status=status), silent=TRUE)
 
 ```
 
@@ -247,7 +247,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=research1,which="predictOM", section=section[i], status=status), silent=TRUE)
+try(plotSPA(om=research1,which="predictOM", section=section[i], status=status), silent=TRUE)
 }
 ```
 
@@ -288,7 +288,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-res <- try(plotSPA(salary=research2, which="predictSalary", section=SEC, status=status), silent=TRUE)
+try(plotSPA(salary=research2, which="predictSalary", section=SEC, status=status), silent=TRUE)
 }
 ```
 
@@ -337,7 +337,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=monitor1,which="predictOM", section=section[i], status=status), silent=TRUE)
+try(plotSPA(om=monitor1,which="predictOM", section=section[i], status=status), silent=TRUE)
 }
 ```
 
@@ -379,7 +379,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(salary=monitor2, which="predictSalary", section=SEC, status=status), silent=TRUE)
+try(plotSPA(salary=monitor2, which="predictSalary", section=SEC, status=status), silent=TRUE)
 }
 ```
 
@@ -426,7 +426,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=assessment1,which="predictOM", section=section[i], status=status), silent=TRUE)
+try(plotSPA(om=assessment1,which="predictOM", section=section[i], status=status), silent=TRUE)
 }
 ```
 
@@ -466,7 +466,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(salary=assessment2, which="predictSalary", section=SEC, status=status), silent=TRUE)
+try(plotSPA(salary=assessment2, which="predictSalary", section=SEC, status=status), silent=TRUE)
 }
 ```
 
@@ -512,7 +512,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
 if (run) {
-res <- try(plotSPA(om=management1,which="predictOM", section=section[i], status=status), silent=TRUE)
+try(plotSPA(om=management1,which="predictOM", section=section[i], status=status), silent=TRUE)
 }
 ```
 
@@ -550,7 +550,7 @@ for (j in seq_along(headers)) {
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
 #JAIM
-res <- try(plotSPA(salary=management2, which="predictSalary", section=SEC, status=status), silent=TRUE)
+try(plotSPA(salary=management2, which="predictSalary", section=SEC, status=status), silent=TRUE)
 }
 ```
 
@@ -596,7 +596,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and O&M increased by 2%. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(om=other1,which="predictOM", section=section[i], status=status), silent=TRUE)
+try(plotSPA(om=other1,which="predictOM", section=section[i], status=status), silent=TRUE)
 }
 ```
 
@@ -638,7 +638,7 @@ for (j in seq_along(headers)) {
 
 ```{r, echo=FALSE, fig.cap="Bar graph showing gap in funding (red) if funding stayed the same and salary cost continued to increase. The rate of increase is determined using linear regression. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 if (run) {
-res <- try(plotSPA(salary=other2, which="predictSalary", section=SEC, status=status), silent=TRUE)
+try(plotSPA(salary=other2, which="predictSalary", section=SEC, status=status), silent=TRUE)
 }
 ```
 
