@@ -97,7 +97,7 @@ cat(paste0("Total amount invested : $", format(sum(salaryAmount, omAmount), big.
 ## GAP
 OMG <- try(plotSPA(om=index,which="predictOM", functionalGroup=unique(index$functional_group), status=status, dataframe=TRUE), silent=TRUE)
 
-if (exists("OMG") && class(OMG) == "data.frame") {
+if (exists("OMG") && inherits(OMG,"data.frame")) {
 omg1 <- OMG[[length(names(OMG))]]
 omg2 <- which(grepl("GAP", rownames(OMG)))
 cat(paste0("Total O&M gap in 3 years: $", format(sum(omg1[omg2]), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
@@ -105,7 +105,7 @@ cat(paste0("Total O&M gap in 3 years: $", format(sum(omg1[omg2]), big.mark = ","
 
 SG <-  try(plotSPA(salary=index2,which="predictSalary", functionalGroup=unique(index$functional_group), status=status, dataframe=TRUE), silent=TRUE)
 
-if (exists("SG") && class(SG) == "data.frame") {
+if (exists("SG") && inherits(SG,"data.frame")) {
 sg1 <- as.numeric(SG[[length(names(SG))]])
 sg2 <- which(grepl("GAP", rownames(SG)))
 cat(paste0("Total salary gap in 3 years: $", format(round(sum(sg1[sg2]),0), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))

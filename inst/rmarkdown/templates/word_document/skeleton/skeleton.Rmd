@@ -416,7 +416,7 @@ cat(paste0("Total amount invested : $", format(sum(salaryAmount, omAmount), big.
 ## GAP
 OMG <- try(plotSPA(om=index,which="predictOM", theme=unique(index$theme), status=status, dataframe=TRUE), silent=TRUE)
 
-if (exists("OMG") && class(OMG) == "data.frame") {
+if (exists("OMG") && inherits(OMG,"data.frame")) {
 omg1 <- OMG[[length(names(OMG))]]
 omg2 <- which(grepl("GAP", rownames(OMG)))
 cat(paste0("Total O&M gap in 3 years: $", format(sum(omg1[omg2]), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
@@ -424,7 +424,7 @@ cat(paste0("Total O&M gap in 3 years: $", format(sum(omg1[omg2]), big.mark = ","
 
 SG <-  try(plotSPA(salary=index2,which="predictSalary", theme=unique(index$theme), status=status, dataframe=TRUE), silent=TRUE)
 
-if (exists("SG") && class(SG) == "data.frame") {
+if (exists("SG") && inherits(SG,"data.frame")) {
 sg1 <- as.numeric(SG[[length(names(SG))]])
 sg2 <- which(grepl("GAP", rownames(SG)))
 cat(paste0("Total salary gap in 3 years: $", format(round(sum(sg1[sg2]),0), big.mark = ",", decimal.mark = ".", trim = TRUE, nsmall = 2), "\n\n"))
@@ -481,7 +481,7 @@ res <- try(plotSPA(om=index, id=ID, which="omAllocation",status=status), silent=
 
 ```{r, echo=FALSE, fig.cap="Figure 3: Bar graph showing gap in funding (red) if funding stayed the same and an inflation rate of 2% was applied to O&M costs. Actual years are shown on the left of the dashed line, and predicted years are on the right of the dashed line. Total gap amount rounded to the nearest dollar shown in red text."}
 
-try(plotSPA(om=index, which="predictOM", id=ID,status=status), silent=TRUE)
+plotSPA(om=index, which="predictOM", id=ID,status=status)#, silent=TRUE)
 ```
 
 
