@@ -36,7 +36,7 @@ divisions <- sapply(div_sec,"[",3)
 sections <- sapply(div_sec,"[",4)
 salary <- getData(type="salary", cookie=cookie, keep=TRUE,age=14,path = datadir)
 filedate <- getData(type="om_date", cookie=cookie, keep=TRUE,age=14,path = datadir)
-filedate <- paste0(filedate, "using [this](https://github.com/j-harbin/dataSPA/tree/",system("git -C dataSPA/ rev-parse HEAD", intern=TRUE),") version of the dataSPA package.")
+filedate <- paste0(filedate, " using [this](https://github.com/j-harbin/dataSPA/tree/",system("git -C dataSPA/ rev-parse HEAD", intern=TRUE),") version of the dataSPA package.")
 
 # create all reports
 print("creating reports")
