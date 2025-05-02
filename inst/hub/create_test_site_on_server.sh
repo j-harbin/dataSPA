@@ -8,11 +8,11 @@ git pull
 # ssh -i C:/Users/DaigleR/.ssh/id_rsa -p 22018 rdaigle@glf-proxy
 
 # copy the data to the server
-scp -i C:/Users/DaigleR/.ssh/id_rsa -P 22018 dataSPA_om.rds rdaigle@glf-proxy:/home/mar-spa/
-scp -i C:/Users/DaigleR/.ssh/id_rsa -P 22018 dataSPA_SAL.rds rdaigle@glf-proxy:/home/mar-spa/
+scp -i C:/Users/DaigleR/.ssh/id_rsa -P 22 dataSPA_om.rds rdaigle@mar-spa.ent.dfo-mpo.ca:/home/mar-spa/
+scp -i C:/Users/DaigleR/.ssh/id_rsa -P 22 dataSPA_SAL.rds rdaigle@mar-spa.ent.dfo-mpo.ca:/home/mar-spa/
 
 # start the test site script in a tmux session so the script doesn't hang
-ssh -i C:/Users/DaigleR/.ssh/id_rsa -p 22018 rdaigle@glf-proxy << EOF
+ssh -i C:/Users/DaigleR/.ssh/id_rsa -p 22 rdaigle@mar-spa.ent.dfo-mpo.ca << EOF
    tmux new-session -A -s marspa -c /home/mar-spa -d
    tmux send-keys "sh /home/mar-spa/make_test_site.sh" C-m
 EOF
