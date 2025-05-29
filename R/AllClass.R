@@ -65,3 +65,16 @@ NULL
 #' @name salary
 NULL
 
+#' A pallete for funding sources
+#'
+#' This was created so that each funding source is assigned a color.
+#' This ensures funding sources are consistent with reports.
+#'
+#' @examples
+#' \dontrun{
+#' library(dataSPA)
+#' data(fundingPalette)
+#' fundingPalette
+#' }
+#' @name fundingPalette
+NULL

@@ -5,7 +5,7 @@
 #'
 #' @param type the type of data that is wished to be extracted
 #' (either `om`, `om_date`, `salary`, `salary_date`, `collaboration`,
-#' `statusReport`, or `tags`).The types that end in `_date` will return the
+#' `statusReport`, `tags`, or `allocation`).The types that end in `_date` will return the
 #' date of creation of a locally stored file.
 #'
 #' @param cookie a sessionid and csrftoken from a Department of
@@ -63,15 +63,15 @@
 getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="//dcnsbiona01a/BIODataSVC/IN/MSP/PowerBI-Projects/dataSPA/") {
 
   if (is.null(type)) {
-    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', or 'tags'")
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', 'tags', or 'allocation'")
   }
 
   if (is.null(cookie)) {
     stop("Must provide a cookie argument in the following format:csrftoken=YOURTOKEN; sessionid=YOURSESSIONID")
   }
 
-  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport", "tags"))) {
-    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', or 'tags'")
+  if (!(type %in% c("om", "salary", "om_date", "salary_date", "collaboration", "statusReport", "tags", "allocation"))) {
+    stop("Must provide a type argument of either 'om', 'om_date', 'salary','salary_date', 'collaboration', 'statusReport', 'allocation', or ,'tags'")
   }
   if (debug > 0) {
     message("type = ", type)
@@ -161,6 +161,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     links <- c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/project-years/")
   } else if (type == "tags") {
     links <- c("https://dmapps/api/ppt/tags/")
+  } else if (type == "allocation") {
+    #HERE JAIM
+    links <- c("https://dmapps/api/ppt/project-years/", "https://dmapps/api/ppt/salary-allocations/", "https://dmapps/api/ppt/om-allocations/", "https://dmapps/api/ppt/capital-allocations/")
   }
 
   API_DATA <- NULL
@@ -185,6 +188,10 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     # Read the returned data as a JSON file
     page_data <- httr2::resp_body_json(resp)
     if (type == "collaboration" && links[i] == "https://dmapps/api/ppt/collaborations/") {
+      api_data <- page_data
+    }
+
+    if (type == "allocation" && links[i] == "https://dmapps/api/ppt/collaborations/") {
       api_data <- page_data
     }
 
@@ -251,6 +258,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     API_DATA[[i]] <- api_data
   }
   names(API_DATA) <- links
+
 
   # LINK 1: Dealing with "https://dmapps/api/ppt/om-costs"
   if ("https://dmapps/api/ppt/om-costs" %in% names(API_DATA)) {
@@ -332,7 +340,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   if ("https://dmapps/api/ppt/project-years" %in% names(API_DATA)) {
     t <- lapply(api_data2, function(x) x$project$years)
 
-    # Add objectives and overview JAIM
+    # Add objectives and overview
     p <- lapply(api_data2, function(x) x$project)
     #j <- lapply(api_data2, function(x) x$project$lead_staff)
 
@@ -489,6 +497,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     ttt <- do.call(rbind, tt)
   }
+
+#JAIM
   # CONCLUSION: id from ttt is equal to project_year_id in om
   # All om$project_year_id are in ttt$id
   # Adding fiscal year to om data
@@ -681,8 +691,9 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   #salaries <- NULL
 
   ## DEALING WITH "https://dmapps/api/ppt/staff"
-  if (type == "salary") {
-    api_data3 <- API_DATA[[4]]
+  if (type %in% c("salary")) {
+    # JAIM
+    api_data3 <- API_DATA[[which(links == "https://dmapps/api/ppt/staff")]]
     j <- lapply(api_data3, function(x) x[c('overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
 
     for (i in seq_along(j)) {
@@ -841,10 +852,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
       SAL$amount_overtime[i] <- (SAL$salary_per_week[i]/37.5)*SAL$overtime_hours[i] # 40 hours in a work week
       SAL$amount_total[i] <- ifelse(SAL$overtime_hours[i] == 0, SAL$amount_week[i], (SAL$amount_week[i] + SAL$amount_overtime[i]))
     }
-    # bad <- which(grepl("EX", SAL$level_display)) # Removing identified EX
-    # if (!(length(bad) == 0)) {
-    # SAL <- SAL[-bad,]
-    #}
   }
 
   if (type == "salary") {
@@ -1207,4 +1214,104 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     return(st)
   }
+
+
+  if (type == "allocation") {
+
+    salary_distributed_amount <- lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/salary-allocations/")]], function(x) x$distributed_amount)
+    salary_distributed_amount[sapply(salary_distributed_amount, is.null)] <- NA
+    salary_distributed_amount <- unlist(salary_distributed_amount)
+
+
+    sal_all <- data.frame(
+    project_year_id = unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/salary-allocations/")]], function(x) x$project_year_id)),
+    salary_description=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/salary-allocations/")]], function(x) x$description)),
+    salary_funding_source=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/salary-allocations/")]], function(x) x$funding_source_display)),
+    salary_amount=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/salary-allocations/")]], function(x) x$amount)),
+    salary_distributed_amount=salary_distributed_amount
+                          )
+
+
+    om_distributed_amount <- lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-allocations/")]], function(x) x$distributed_amount)
+    om_distributed_amount[sapply(om_distributed_amount, is.null)] <- NA
+    om_distributed_amount <- unlist(om_distributed_amount)
+
+    om_all <- data.frame(
+      project_year_id = unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-allocations/")]], function(x) x$project_year_id)),
+      om_description=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-allocations/")]], function(x) x$description)),
+      om_funding_source=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-allocations/")]], function(x) x$funding_source_display)),
+      om_amount=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/om-allocations/")]], function(x) x$amount)),
+      om_distributed_amount=om_distributed_amount
+    )
+
+    capital_distributed_amount <- lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/capital-allocations/")]], function(x) x$distributed_amount)
+    capital_distributed_amount[sapply(capital_distributed_amount, is.null)] <- NA
+    capital_distributed_amount <- unlist(capital_distributed_amount)
+
+    capital_all <- data.frame(
+      project_year_id = unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/capital-allocations/")]], function(x) x$project_year_id)),
+      capital_description=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/capital-allocations/")]], function(x) x$description)),
+      capital_funding_source=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/capital-allocations/")]], function(x) x$funding_source_display)),
+      capital_amount=unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/capital-allocations/")]], function(x) x$amount)),
+      capital_distributed_amount=capital_distributed_amount
+    )
+
+    p_ids <- lapply(API_DATA[[which(names(API_DATA)== "https://dmapps/api/ppt/project-years/")]], function(x) x$project$id)
+
+    my_list <- vector("list", length = length(unique(unlist(p_ids))))
+    names(my_list) <- unique(unlist(p_ids))
+
+    for (i in seq_along(names(my_list))) {
+      keep <- which(p_ids == names(my_list)[i][[1]])
+      my_list[[i]] <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years/")]][[which(p_ids == names(my_list)[i])[1]]]$project$year, function(x) x$id))
+    }
+
+    proj_years <- unlist(unname(my_list))
+
+    # Assigning year and project ID
+
+    assign_id_year <- function(df) {
+      # 1. Assign project_id by matching to my_list
+      df$project_id <- sapply(df$project_year_id, function(id) {
+        match_idx <- which(sapply(my_list, function(x) id %in% x))
+        if (length(match_idx) > 0) as.numeric(names(my_list)[match_idx[1]]) else NA
+      })
+
+      # 2. Create id -> display_name mapping
+      id_to_display <- list()
+      data_source <- API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/project-years/")]]
+      for (entry in data_source) {
+        if (!is.null(entry$project$years)) {
+          for (yr in entry$project$years) {
+            id_to_display[[as.character(yr$id)]] <- yr$display_name
+          }
+        }
+      }
+
+      # 3. Match fiscal_year
+      df$fiscal_year <- unlist(id_to_display[as.character(df$project_year_id)])
+
+      # 4. Remove project_year_id
+      df$project_year_id <- NULL
+
+      # 5. Reorder columns: project_id and fiscal_year first
+      df <- df[c("project_id", "fiscal_year", setdiff(names(df), c("project_id", "fiscal_year")))]
+
+      return(df)
+    }
+
+
+    list_of_df <- list()
+    list_of_df[[1]] <- sal_all
+    list_of_df[[2]] <- om_all
+    list_of_df[[3]] <- capital_all
+
+
+
+    dfs <- lapply(list_of_df, assign_id_year)
+    names(dfs) <- c("Salary_Allocation", "OM_Allocation", "Capital_Allocation")
+
+    return(dfs)
+  }
+
 }

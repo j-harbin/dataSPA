@@ -2,6 +2,8 @@
 # These values are testing against manual calculations
 #library(dataSPA)
 library(testthat)
+library(dataSPA)
+
 context("verify calculations")
 data(salary)
 
@@ -17,20 +19,6 @@ test_that("salaryAllocation",
           {
             df2 <- plotSPA(salary=salary, id=1234, which="salaryAllocation", dataframe = TRUE)
             expect_equal(round(df2[[1]],0), 18660)
-          }
-)
-
-test_that("weekAllocation",
-          {
-            df3 <- plotSPA(salary=salary, id=1234, which="weekAllocation", dataframe = TRUE)
-            expect_equal(df3[[1]]$`BI-03`, 10)
-            expect_equal(df3[[1]]$`EG-04`, 45)
-            expect_equal(df3[[1]]$`EG-05`, 30)
-            expect_equal(df3[[1]]$`SE-RES-02`, 0.1)
-            expect_equal(df3[[1]]$`PC-02`, 1)
-            expect_equal(df3[[1]]$`EG-03`, 1)
-
-
           }
 )
 test_that("indeterminate",

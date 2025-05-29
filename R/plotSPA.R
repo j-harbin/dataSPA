@@ -115,6 +115,7 @@
 #' @importFrom scales label_dollar
 #' @importFrom plotly ggplotly
 #' @importFrom tibble rownames_to_column
+#' @importFrom dplyr across everything
 #' @examples
 #' \dontrun{
 #' # Example 1: Plot Bar graph of O&M Allocations
@@ -153,7 +154,9 @@ plotSPA <-
       amount <-
       funding_source_display <-
       fiscal_year <- project_year_id <- category_type <- deliverables <- milestones <- salaries <-
-      stop_words <- words <- overview <- subpoint <- tf_idf_sum <- tf_idf <- NULL
+      stop_words <- words <- overview <- subpoint <- tf_idf_sum <- tf_idf <- salaries <- deliverable <-
+      milestone <- . <-  Year <- Amount <- fundingPalette <- dmoney <- mmoney <- FundingSource <-
+      GAP <- NULL
 
     load(file.path(system.file(package="dataSPA"),"data", "fundingPalette.rda"))
 

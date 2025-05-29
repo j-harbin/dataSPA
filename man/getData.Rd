@@ -16,7 +16,7 @@ getData(
 \arguments{
 \item{type}{the type of data that is wished to be extracted
 (either \code{om}, \code{om_date}, \code{salary}, \code{salary_date}, \code{collaboration},
-\code{statusReport}, or \code{tags}).The types that end in \verb{_date} will return the
+\code{statusReport}, \code{tags}, or \code{allocation}).The types that end in \verb{_date} will return the
 date of creation of a locally stored file.}
 
 \item{cookie}{a sessionid and csrftoken from a Department of

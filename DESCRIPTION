@@ -16,10 +16,8 @@ Imports:
     stats,
     graphics,
     rmarkdown,
-    testthat,
     grDevices,
     officer,
-    tidyr,
     dplyr,
     desc,
     tidytext,
@@ -28,12 +26,13 @@ Imports:
     rlang,
     utils,
     TBSpayRates,
-    dplyr,
     ggplot2,
     magrittr,
     tidyr,
     scales,
-    plotly
+    plotly,
+    tibble
+Suggests: testthat
 BugReports: https://github.com/j-harbin/dataSPA/issues
 Description: This package is intended to be used by Department
  Of Fisheries and Oceans Canada (DFO) employees to obtain data
