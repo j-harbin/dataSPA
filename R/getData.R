@@ -156,13 +156,12 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   } else if (type %in% c("om", "om_date")) {
     links <- c("https://dmapps/api/ppt/om-costs","https://dmapps/api/ppt/project-years", "https://dmapps/api/ppt/activities-full/", "https://dmapps/api/ppt/divisions/","https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/", "https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/", "https://dmapps/api/shared/branches/", "https://dmapps/api/ppt/years/")
   } else if (type == "collaboration") {
-    links <- c("https://dmapps/api/ppt/collaborations/")
+    links <- c("https://dmapps/api/ppt/collaborations/", "https://dmapps/api/ppt/project-years/")
   } else if (type == "statusReport") {
     links <- c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/project-years/")
   } else if (type == "tags") {
     links <- c("https://dmapps/api/ppt/tags/")
   } else if (type == "allocation") {
-    #HERE JAIM
     links <- c("https://dmapps/api/ppt/project-years/", "https://dmapps/api/ppt/salary-allocations/", "https://dmapps/api/ppt/om-allocations/", "https://dmapps/api/ppt/capital-allocations/")
   }
 
@@ -208,8 +207,8 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     }
 
     # Create a list to hold the list of full API results
-    if (!(type %in% c("collaboration"))) {
-      if (!(links[i] %in% c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/","https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/","https://dmapps/api/shared/branches/"))) {
+    #if (!(type %in% c("collaboration"))) {
+      if (!(links[i] %in% c("https://dmapps/api/ppt/status-reports/", "https://dmapps/api/ppt/divisions/", "https://dmapps/api/ppt/sections/","https://dmapps/api/ppt/regions/","https://dmapps/api/ppt/tags/", "https://dmapps/api/ppt/funding-sources/","https://dmapps/api/shared/branches/","https://dmapps/api/ppt/collaborations/"))) {
         api_data <- page_data$results
 
         # Get the information about the next page in the API results
@@ -253,7 +252,7 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
           cat(paste0(next_page, '\n'))
         }
       }
-    }
+    #}
 
     API_DATA[[i]] <- api_data
   }
@@ -498,7 +497,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
     ttt <- do.call(rbind, tt)
   }
 
-#JAIM
   # CONCLUSION: id from ttt is equal to project_year_id in om
   # All om$project_year_id are in ttt$id
   # Adding fiscal year to om data
@@ -692,7 +690,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
   ## DEALING WITH "https://dmapps/api/ppt/staff"
   if (type %in% c("salary")) {
-    # JAIM
     api_data3 <- API_DATA[[which(links == "https://dmapps/api/ppt/staff")]]
     j <- lapply(api_data3, function(x) x[c('overtime_hours', 'smart_name', 'duration_weeks', 'level_display', 'funding_source_display', 'employee_type_display')])
 
@@ -1081,13 +1078,6 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
 
     # FIXME: STAFF ID ARE NOT PROPERLY BEING ENTERED
 
-    # for (p in seq_along(project_id)) {
-    #   message("p = ", p)
-    #   if (!(length(staff_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & name_display == name_display[p])]) == 1) == 1) {
-    #   index$staff_id[which(index$project_id == project_id[p] & index$project_year_id == project_year_id[p] & index$smart_name == name_display[p])] <- staff_id[which(project_id == project_id[p] & project_year_id == project_year_id[p] & name_display == name_display[p])]
-    #   }
-    # }
-
   }
 
 
@@ -1129,18 +1119,61 @@ getData <- function(type=NULL, cookie=NULL, debug=0, keep=FALSE, age = 7, path="
   }
 
   if (type == "collaboration") {
-    coll <- data.frame(matrix(NA, nrow = length(API_DATA[[1]]), ncol = 5), row.names = NULL)
-    names(coll) <- c("project_id", "new_or_existing", "type", "critical", "organization")
-    coll$project_id <- lapply(API_DATA[[1]], function(x) x$project_id)
-    coll$new_or_existing <- unlist(lapply(API_DATA[[1]], function(x) x$new_or_existing_display))
-    coll$type <- unlist(lapply(API_DATA[[1]], function(x) x$type_display))
-    coll$critical <- unlist(lapply(API_DATA[[1]], function(x) x$critical))
-    for (i in seq_along(API_DATA[[i]])) {
-      if (is.null(API_DATA[[1]][[i]]$organization)) {
-        API_DATA[[1]][[i]]$organization <- 0
+    #JAIM
+    coll <- data.frame(matrix(NA, nrow = length(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/collaborations/")]]), ncol = 6), row.names = NULL)
+    names(coll) <- c("project_id", "project_year_id", "new_or_existing", "type", "critical", "organization")
+    coll$project_id <- lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/collaborations/")]], function(x) x$project_id)
+    coll$new_or_existing <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/collaborations/")]], function(x) x$new_or_existing_display))
+    coll$type <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/collaborations/")]], function(x) x$type_display))
+    coll$critical <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/collaborations/")]], function(x) x$critical))
+    coll$project_year_id <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/collaborations/")]], function(x) x$project_year_id))
+
+
+    API_DATA[["https://dmapps/api/ppt/collaborations/"]] <- lapply(
+      API_DATA[["https://dmapps/api/ppt/collaborations/"]],
+      function(entry) {
+        if (is.null(entry$organization)) {
+          entry$organization <- 0
+        }
+        return(entry)
       }
-    }
-    coll$organization <- unlist(lapply(API_DATA[[1]], function(x) x$organization))
+    )
+
+    coll$organization <- unlist(lapply(API_DATA[[which(names(API_DATA) == "https://dmapps/api/ppt/collaborations/")]], function(x) x$organization))
+
+    ## Assigning project_year_ids to fiscal years.
+
+    p_ids <- lapply(API_DATA[["https://dmapps/api/ppt/project-years/"]], function(x) x$project$id) # project_ids
+
+    my_list <- vector("list", length = length(unique(unlist(p_ids))))
+    names(my_list) <- unique(unlist(p_ids))
+    names_list <- names(my_list)  # Store once for reuse
+
+
+    my_list <- lapply(seq_along(names_list), function(i) {
+      keep <- which(p_ids == names_list[[i]])[1]
+
+      project_years <- API_DATA[["https://dmapps/api/ppt/project-years/"]][[keep]]$project$year
+
+      unlist(lapply(project_years, function(x) x$id))
+    })
+
+    names(my_list) <- names_list
+
+    # 2. Create id -> display_name mapping
+    id_to_display <- list()
+    data_source <- API_DATA[["https://dmapps/api/ppt/project-years/"]]
+    lapply(data_source, function(entry) {
+        if (!is.null(entry$project$years)) {
+          lapply(entry$project$years, function(yr) {
+            id_to_display[[as.character(yr$id)]] <<- yr$display_name
+          })
+        }
+      })
+
+      # 3. Match fiscal_year
+      coll$fiscal_year <- unlist(id_to_display[as.character(coll$project_year_id)])
+
     return(coll)
   }
 
