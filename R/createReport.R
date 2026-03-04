@@ -90,6 +90,7 @@ createReport <- function(om=NULL, salary=NULL, statusReport=NULL, cookie=NULL, i
       )
     }
   }
+
   if (is.null(statusReport)) {
   if (is.null(om)) {
     stop("In createReport() must provide an om argument")
