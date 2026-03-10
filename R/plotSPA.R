@@ -628,10 +628,11 @@ plotSPA <-
           # Separate GAP rows
           df_long <- df_long %>%
             mutate(GAP = grepl("GAP", FundingSource),
-                   FundingSource = gsub(" GAP", "", FundingSource))
+                   FundingSource = gsub(" GAP", "", FundingSource),
+                   FillGroup = ifelse(GAP, "GAP", FundingSource))
 
           # Create stacked bar chart
-          p <- ggplot(df_long, aes(x = Year, y = Amount, fill = ifelse(GAP, "GAP", FundingSource))) +
+          p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
             geom_bar(stat = "identity") +
             scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
             guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
@@ -1308,10 +1309,11 @@ df_long <- dfROI2 %>%
 # Separate GAP rows
 df_long <- df_long %>%
   mutate(GAP = grepl("GAP", FundingSource),
-         FundingSource = gsub(" GAP", "", FundingSource))
+         FundingSource = gsub(" GAP", "", FundingSource),
+         FillGroup = ifelse(GAP, "GAP", FundingSource))
 
 # Create stacked bar chart
-p <- ggplot(df_long, aes(x = Year, y = Amount, fill = ifelse(GAP, "GAP", FundingSource))) +
+p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
   guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
