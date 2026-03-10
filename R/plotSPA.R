@@ -553,11 +553,10 @@ plotSPA <-
                       aes(x=Year, y=dmoney*1.05,label=deliverable, group=1), col="blue")+
             geom_text(data=milesanddels,
                       aes(x=Year, y=mmoney*1.05, label=milestone, group=1), col="red")+
-            scale_y_continuous(labels = label_dollar(),
-                               expand = expansion(mult=c(0,0.2)))+
+            scale_y_continuous(labels = label_dollar())+
             theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
 
-          return(p)
+          return(ggplotly(p))
 
       } else if (which == "predictOM") {
         # Only considering years up until the current fiscal date.
@@ -639,7 +638,7 @@ plotSPA <-
             theme_minimal()+
             labs(y = "Amount of O&M Funding", x = "Year") +  # Update y-axis label
             theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
-          return(p)
+          return(ggplotly(p))
 
           # end tuesday
 
@@ -930,11 +929,10 @@ plotSPA <-
           labs(y="Amount of Salary Funding ($)")+
           scale_fill_manual(values=fundingPalette,name="Funding Source")+
           theme_classic()+
-          scale_y_continuous(labels = label_dollar(),
-                             expand = expansion(mult=c(0,0.2)))+
+          scale_y_continuous(labels = label_dollar())+
           theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
 
-        return(p)
+        return(ggplotly(p))
 
       } else if (which %in% "salaryAllocation") {
         category <- unique(salaryKeep$level_display)
@@ -1320,7 +1318,7 @@ p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
   theme_minimal()+
   labs(y = "Amount of Salary Funding", x = "Year") +  # Update y-axis label
   theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
-return(p)
+return(ggplotly(p))
 
 
 
