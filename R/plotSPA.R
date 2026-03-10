@@ -557,7 +557,7 @@ plotSPA <-
                                expand = expansion(mult=c(0,0.2)))+
             theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
 
-          return(ggplotly(p))
+          return(p)
 
       } else if (which == "predictOM") {
         # Only considering years up until the current fiscal date.
@@ -639,7 +639,7 @@ plotSPA <-
             theme_minimal()+
             labs(y = "Amount of O&M Funding", x = "Year") +  # Update y-axis label
             theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
-          return(ggplotly(p))
+          return(p)
 
           # end tuesday
 
@@ -934,7 +934,7 @@ plotSPA <-
                              expand = expansion(mult=c(0,0.2)))+
           theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
 
-        return(ggplotly(p))
+        return(p)
 
       } else if (which %in% "salaryAllocation") {
         category <- unique(salaryKeep$level_display)
@@ -1320,7 +1320,7 @@ p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
   theme_minimal()+
   labs(y = "Amount of Salary Funding", x = "Year") +  # Update y-axis label
   theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
-return(ggplotly(p))
+return(p)
 
 
 
