@@ -634,7 +634,7 @@ plotSPA <-
           p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
             geom_bar(stat = "identity") +
             scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
-            guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
+            # guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
             theme_minimal()+
             labs(y = "Amount of O&M Funding", x = "Year") +  # Update y-axis label
             theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
@@ -1314,7 +1314,7 @@ df_long <- df_long %>%
 p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
-  guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
+  # guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
   theme_minimal()+
   labs(y = "Amount of Salary Funding", x = "Year") +  # Update y-axis label
   theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
