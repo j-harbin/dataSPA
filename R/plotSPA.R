@@ -553,7 +553,8 @@ plotSPA <-
                       aes(x=Year, y=dmoney*1.05,label=deliverable, group=1), col="blue")+
             geom_text(data=milesanddels,
                       aes(x=Year, y=mmoney*1.05, label=milestone, group=1), col="red")+
-            scale_y_continuous(labels = label_dollar())+
+            scale_y_continuous(labels = label_dollar(),
+                               expand = expansion(mult=c(0,0.2)))+
             theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
 
           return(ggplotly(p))
@@ -627,14 +628,13 @@ plotSPA <-
           # Separate GAP rows
           df_long <- df_long %>%
             mutate(GAP = grepl("GAP", FundingSource),
-                   FundingSource = gsub(" GAP", "", FundingSource),
-                   FillGroup = ifelse(GAP, "GAP", FundingSource))
+                   FundingSource = gsub(" GAP", "", FundingSource))
 
           # Create stacked bar chart
-          p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
+          p <- ggplot(df_long, aes(x = Year, y = Amount, fill = ifelse(GAP, "GAP", FundingSource))) +
             geom_bar(stat = "identity") +
             scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
-            # guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
+            guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
             theme_minimal()+
             labs(y = "Amount of O&M Funding", x = "Year") +  # Update y-axis label
             theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
@@ -929,7 +929,8 @@ plotSPA <-
           labs(y="Amount of Salary Funding ($)")+
           scale_fill_manual(values=fundingPalette,name="Funding Source")+
           theme_classic()+
-          scale_y_continuous(labels = label_dollar())+
+          scale_y_continuous(labels = label_dollar(),
+                             expand = expansion(mult=c(0,0.2)))+
           theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
 
         return(ggplotly(p))
@@ -1307,14 +1308,13 @@ df_long <- dfROI2 %>%
 # Separate GAP rows
 df_long <- df_long %>%
   mutate(GAP = grepl("GAP", FundingSource),
-         FundingSource = gsub(" GAP", "", FundingSource),
-         FillGroup = ifelse(GAP, "GAP", FundingSource))
+         FundingSource = gsub(" GAP", "", FundingSource))
 
 # Create stacked bar chart
-p <- ggplot(df_long, aes(x = Year, y = Amount, fill = FillGroup)) +
+p <- ggplot(df_long, aes(x = Year, y = Amount, fill = ifelse(GAP, "GAP", FundingSource))) +
   geom_bar(stat = "identity") +
   scale_fill_manual(values = c(fundingPalette, "GAP" = "red")) +
-  # guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
+  guides(fill = guide_legend(override.aes = list(color = NA), title = "Funding Source")) +
   theme_minimal()+
   labs(y = "Amount of Salary Funding", x = "Year") +  # Update y-axis label
   theme(axis.text.x = element_text(angle = 90, hjust = 1))  # Rotate x-axis labels vertically
